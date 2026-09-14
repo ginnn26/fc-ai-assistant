@@ -8,6 +8,20 @@
   <title>FC AI Assistant</title>
 
   <style>
+    #micButton {
+      border: none;
+      border-radius: 10px;
+      padding: 0 16px;
+      background: #eee;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    #micButton.recording {
+      background: #333;
+      color: white;
+    }
+
     * {
       box-sizing: border-box;
     }
@@ -176,7 +190,11 @@
             placeholder="Ask FC AI Assistant..."
     >
 
-    <button id="sendButton">
+    <button id="micButton" type="button">
+      🎙️
+    </button>
+
+    <button id="sendButton" type="button">
       Send
     </button>
 
@@ -189,6 +207,106 @@
   const chatBox = document.getElementById("chatBox");
   const messageInput = document.getElementById("messageInput");
   const sendButton = document.getElementById("sendButton");
+  const micButton = document.getElementById("micButton");
+
+  let mediaRecorder;
+  let audioChunks = [];
+  micButton.addEventListener("click", async function () {
+
+    if (!mediaRecorder || mediaRecorder.state === "inactive") {
+
+      try {
+
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true
+        });
+
+        audioChunks = [];
+
+        mediaRecorder = new MediaRecorder(stream);
+
+        mediaRecorder.ondataavailable = function (event) {
+          audioChunks.push(event.data);
+        };
+
+        mediaRecorder.onstop = async function () {
+
+          const audioBlob = new Blob(audioChunks, {
+            type: "audio/webm"
+          });
+
+          console.log("Recording completed.");
+          console.log("Audio size:", audioBlob.size, "bytes");
+
+          // Stop microphone
+          stream.getTracks().forEach(track => track.stop());
+
+          try {
+
+            const formData = new FormData();
+
+            formData.append(
+                    "audio",
+                    audioBlob,
+                    "recording.webm"
+            );
+
+            console.log("Uploading audio for transcription...");
+
+            const response = await fetch("/chat/transcribe", {
+              method: "POST",
+              body: formData
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+              throw new Error(data.error || "Transcription failed");
+            }
+
+            console.log("Transcript:", data.transcript);
+
+// Put transcript into input
+            messageInput.value = data.transcript;
+
+// Automatically send transcript to AI
+            await sendMessage();
+
+          } catch (error) {
+
+            console.error("Transcription error:", error);
+
+            alert("Failed to transcribe audio.");
+
+          }
+
+        };
+
+        mediaRecorder.start();
+
+        micButton.textContent = "⏹️";
+        micButton.classList.add("recording");
+
+        console.log("Recording started.");
+
+      } catch (error) {
+
+        console.error("Microphone error:", error);
+
+        alert("Microphone permission is required to record audio.");
+      }
+
+    } else {
+
+      mediaRecorder.stop();
+
+      micButton.textContent = "🎙️";
+      micButton.classList.remove("recording");
+
+      console.log("Recording stopped.");
+    }
+
+  });
 
   async function sendMessage() {
 
