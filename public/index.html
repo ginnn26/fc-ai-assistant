@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,132 +8,280 @@
   <title>FC AI Assistant</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
+      margin: 0;
       font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: 40px auto;
+      background: #f7f5ef;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
       padding: 20px;
     }
 
+    .assistant-container {
+      width: 100%;
+      max-width: 600px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 20px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .header h2 {
+      margin: 0 0 5px;
+      font-size: 20px;
+    }
+
+    .header p {
+      margin: 0;
+      font-size: 14px;
+      color: #777;
+    }
+
     #chatBox {
-      border: 1px solid #ddd;
-      min-height: 300px;
-      padding: 15px;
-      margin-bottom: 15px;
+      height: 400px;
+      padding: 20px;
       overflow-y: auto;
+      background: #fff;
     }
 
     .message {
-      margin-bottom: 12px;
+      margin-bottom: 16px;
+      line-height: 1.5;
+      word-wrap: break-word;
     }
 
-    .user {
-      font-weight: bold;
+    .user-message {
+      display: flex;
+      justify-content: flex-end;
     }
 
-    .assistant {
+    .user-message .bubble {
+      background: #333;
+      color: white;
+      padding: 10px 14px;
+      border-radius: 14px 14px 4px 14px;
+      max-width: 80%;
+    }
+
+    .assistant-message {
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .assistant-message .bubble {
+      background: #f1f0ec;
       color: #333;
+      padding: 10px 14px;
+      border-radius: 14px 14px 14px 4px;
+      max-width: 80%;
+    }
+
+    .input-area {
+      display: flex;
+      gap: 10px;
+      padding: 15px;
+      border-top: 1px solid #eee;
+      background: white;
     }
 
     #messageInput {
-      width: 75%;
-      padding: 10px;
+      flex: 1;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    #messageInput:focus {
+      border-color: #999;
     }
 
     #sendButton {
-      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      padding: 0 20px;
+      background: #333;
+      color: white;
       cursor: pointer;
+      font-size: 14px;
+    }
+
+    #sendButton:hover {
+      opacity: 0.85;
+    }
+
+    #sendButton:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .loading {
+      color: #777;
+      font-size: 14px;
+      font-style: italic;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 0;
+      }
+
+      .assistant-container {
+        min-height: 100vh;
+        border-radius: 0;
+      }
+
+      #chatBox {
+        height: calc(100vh - 150px);
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <h2>FC AI Assistant</h2>
+<div class="assistant-container">
 
-  <div id="chatBox"></div>
+  <div class="header">
+    <h2>✨ FC AI Assistant</h2>
+    <p>Your wellness support assistant</p>
+  </div>
 
-  <input
-    type="text"
-    id="messageInput"
-    placeholder="Ask FC AI Assistant..."
-  >
+  <div id="chatBox">
+    <div class="message assistant-message">
+      <div class="bubble">
+        Hello! I'm the FC AI Assistant. How can I help you today?
+      </div>
+    </div>
+  </div>
 
-  <button id="sendButton">
-    Send
-  </button>
+  <div class="input-area">
 
-  <script>
+    <input
+            type="text"
+            id="messageInput"
+            placeholder="Ask FC AI Assistant..."
+    >
 
-    const chatBox = document.getElementById("chatBox");
-    const messageInput = document.getElementById("messageInput");
-    const sendButton = document.getElementById("sendButton");
+    <button id="sendButton">
+      Send
+    </button>
 
-    async function sendMessage() {
+  </div>
 
-      const message = messageInput.value.trim();
+</div>
 
-      if (!message) {
-        return;
-      }
+<script>
 
-      // Show user message
-      chatBox.innerHTML += `
-        <div class="message">
-          <span class="user">You:</span>
-          ${message}
+  const chatBox = document.getElementById("chatBox");
+  const messageInput = document.getElementById("messageInput");
+  const sendButton = document.getElementById("sendButton");
+
+  async function sendMessage() {
+
+    const message = messageInput.value.trim();
+
+    if (!message) {
+      return;
+    }
+
+    // Show user message
+    chatBox.innerHTML += `
+        <div class="message user-message">
+          <div class="bubble">
+            ${message}
+          </div>
         </div>
       `;
 
-      messageInput.value = "";
+    messageInput.value = "";
+    sendButton.disabled = true;
 
-      try {
+    // Show loading message
+    const loadingMessage = document.createElement("div");
 
-        const response = await fetch("/chat", {
-          method: "POST",
+    loadingMessage.className = "message assistant-message";
+    loadingMessage.innerHTML = `
+        <div class="bubble loading">
+          FC AI is thinking...
+        </div>
+      `;
 
-          headers: {
-            "Content-Type": "application/json"
-          },
+    chatBox.appendChild(loadingMessage);
 
-          body: JSON.stringify({
-            message: message
-          })
-        });
+    chatBox.scrollTop = chatBox.scrollHeight;
 
-        const data = await response.json();
+    try {
 
-        chatBox.innerHTML += `
-          <div class="message">
-            <span class="assistant">FC AI:</span>
-            ${data.reply}
+      const response = await fetch("/chat", {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          message: message
+        })
+      });
+
+      const data = await response.json();
+
+      loadingMessage.remove();
+
+      chatBox.innerHTML += `
+          <div class="message assistant-message">
+            <div class="bubble">
+              ${data.reply || "Sorry, I couldn't generate a response."}
+            </div>
           </div>
         `;
 
-      } catch (error) {
+    } catch (error) {
 
-        console.error(error);
+      console.error(error);
 
-        chatBox.innerHTML += `
-          <div class="message">
-            Error connecting to FC AI.
+      loadingMessage.remove();
+
+      chatBox.innerHTML += `
+          <div class="message assistant-message">
+            <div class="bubble">
+              Sorry, there was an error connecting to FC AI.
+            </div>
           </div>
         `;
-      }
-
     }
 
-    sendButton.addEventListener("click", sendMessage);
+    sendButton.disabled = false;
 
-    messageInput.addEventListener("keydown", function(event) {
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
 
-      if (event.key === "Enter") {
-        sendMessage();
-      }
+  sendButton.addEventListener("click", sendMessage);
 
-    });
+  messageInput.addEventListener("keydown", function(event) {
 
-  </script>
+    if (event.key === "Enter") {
+      sendMessage();
+    }
+
+  });
+
+</script>
 
 </body>
 </html>
+```
