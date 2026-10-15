@@ -301,6 +301,57 @@
       background: var(--error);
     }
 
+    .permission-help {
+      width: 100%;
+      margin: 18px 0 0;
+      padding: 16px 18px;
+      border: 1px solid #e8c9c4;
+      border-radius: var(--radius-sm);
+      background: var(--error-soft);
+      color: #6f3933;
+      text-align: left;
+    }
+
+    .permission-help strong,
+    .permission-help p {
+      display: block;
+      margin: 0;
+    }
+
+    .permission-help strong {
+      font-size: 14px;
+    }
+
+    .permission-help p {
+      margin-top: 5px;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .permission-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 13px;
+    }
+
+    .permission-action {
+      min-height: 38px;
+      padding: 8px 13px;
+      border: 1px solid rgba(111, 57, 51, 0.28);
+      border-radius: 999px;
+      background: #fff;
+      color: #6f3933;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 750;
+      text-decoration: none;
+    }
+
+    .permission-action:hover {
+      background: #fff9f8;
+    }
+
     @keyframes pulse {
       50% { opacity: 0.35; transform: scale(0.72); }
     }
@@ -631,6 +682,14 @@
               <span class="status-dot" aria-hidden="true"></span>
               <span id="statusText">Ready to listen · 准备聆听</span>
             </div>
+            <div class="permission-help" id="permissionHelp" role="alert" hidden>
+              <strong id="permissionTitle"></strong>
+              <p id="permissionMessage"></p>
+              <div class="permission-actions">
+                <button class="permission-action" id="retryPermissionButton" type="button">Try microphone again</button>
+                <a class="permission-action" id="openDirectLink" href="/" target="_blank" rel="noopener noreferrer" hidden>Open in a new tab</a>
+              </div>
+            </div>
           </div>
 
           <div class="transcript" id="transcript" hidden>
@@ -674,6 +733,11 @@
       stopIcon: document.getElementById("stopIcon"),
       status: document.getElementById("status"),
       statusText: document.getElementById("statusText"),
+      permissionHelp: document.getElementById("permissionHelp"),
+      permissionTitle: document.getElementById("permissionTitle"),
+      permissionMessage: document.getElementById("permissionMessage"),
+      retryPermissionButton: document.getElementById("retryPermissionButton"),
+      openDirectLink: document.getElementById("openDirectLink"),
       transcript: document.getElementById("transcript"),
       transcriptLabel: document.getElementById("transcriptLabel"),
       transcriptText: document.getElementById("transcriptText"),
@@ -696,7 +760,21 @@
         transcribing: "Turning your voice into text…",
         recommending: "Finding supportive FC content…",
         complete: "Recommendations are ready",
-        permission: "Microphone access was denied. You can type below instead.",
+        permission: "Microphone access was denied. Follow the steps below to enable it.",
+        permissionTitle: "Allow microphone access",
+        permissionHelp: "Open your browser's site controls (lock or settings icon), set Microphone to Allow, then tap Try microphone again. On a phone, also allow microphone access for the browser in device Settings.",
+        iframePermission: "Microphone access is blocked by the page containing this assistant.",
+        iframeTitle: "Open FC securely to use your microphone",
+        iframeHelp: "Open the assistant in a new tab, or update the LearnWorlds iframe to include allow=\"microphone\". The browser cannot show a device permission prompt until the parent page allows it.",
+        insecure: "Microphone access requires a secure HTTPS page.",
+        insecureTitle: "A secure connection is required",
+        insecureHelp: "Open the deployed HTTPS address directly. Microphone access is unavailable on ordinary HTTP pages.",
+        noDevice: "No microphone was found on this device.",
+        noDeviceTitle: "No microphone available",
+        noDeviceHelp: "Connect or enable a microphone, check the device's privacy settings, then try again.",
+        deviceBusy: "The microphone is unavailable or being used by another app.",
+        deviceBusyTitle: "Microphone is busy",
+        deviceBusyHelp: "Close other apps using the microphone, check the device input settings, then try again.",
         unsupported: "Voice recording is not supported here. You can type below instead.",
         recordingError: "The recording could not be completed. Please try again or type below.",
         transcriptionError: "We couldn't transcribe that recording. Please try again or type below.",
@@ -708,7 +786,9 @@
         listen: "Listen now",
         unavailable: "Listening link coming soon",
         empty: "No matching FC content was returned. Try describing how you feel in a little more detail.",
-        send: "Find support"
+        send: "Find support",
+        retryMic: "Try microphone again",
+        openDirect: "Open in a new tab"
       },
       zh: {
         ready: "准备聆听",
@@ -717,7 +797,21 @@
         transcribing: "正在将语音转换为文字…",
         recommending: "正在寻找适合的 FC 支持内容…",
         complete: "推荐内容已准备好",
-        permission: "无法使用麦克风。你也可以在下方输入文字。",
+        permission: "麦克风权限被拒绝。请按照下方步骤开启权限。",
+        permissionTitle: "允许使用麦克风",
+        permissionHelp: "打开浏览器的网站控制（锁形或设置图标），将麦克风设为允许，然后点击“再次尝试麦克风”。手机用户也需要在系统设置中允许浏览器使用麦克风。",
+        iframePermission: "嵌入此助手的页面阻止了麦克风权限。",
+        iframeTitle: "请在安全的新页面中打开 FC",
+        iframeHelp: "请在新标签页打开此助手，或在 LearnWorlds 的 iframe 中加入 allow=\"microphone\"。父页面允许后，浏览器才能显示设备权限请求。",
+        insecure: "麦克风需要通过安全的 HTTPS 页面使用。",
+        insecureTitle: "需要安全连接",
+        insecureHelp: "请直接打开已部署的 HTTPS 地址；普通 HTTP 页面无法使用麦克风。",
+        noDevice: "此设备未找到可用的麦克风。",
+        noDeviceTitle: "没有可用的麦克风",
+        noDeviceHelp: "请连接或启用麦克风，检查设备隐私设置，然后重试。",
+        deviceBusy: "麦克风暂时无法使用，或正被其他应用占用。",
+        deviceBusyTitle: "麦克风正被占用",
+        deviceBusyHelp: "请关闭正在使用麦克风的其他应用，检查设备输入设置，然后重试。",
         unsupported: "此浏览器不支持语音录制。你也可以在下方输入文字。",
         recordingError: "无法完成录音，请重试或在下方输入文字。",
         transcriptionError: "无法识别这段录音，请重试或在下方输入文字。",
@@ -729,7 +823,9 @@
         listen: "立即聆听",
         unavailable: "聆听链接即将提供",
         empty: "暂时没有找到合适的 FC 内容，请更详细地描述你的感受。",
-        send: "寻找支持"
+        send: "寻找支持",
+        retryMic: "再次尝试麦克风",
+        openDirect: "在新标签页打开"
       }
     };
 
@@ -746,7 +842,8 @@
       activeRecording: 0,
       processedRecordings: new Set(),
       discardRecording: false,
-      abortController: null
+      abortController: null,
+      permissionIssue: null
     };
 
     function detectLanguage(text) {
@@ -763,6 +860,53 @@
     function setStatus(key, state = "idle", detail = "") {
       elements.status.dataset.state = state;
       elements.statusText.textContent = detail || translated(key);
+    }
+
+    function isEmbedded() {
+      try {
+        return window.self !== window.top;
+      } catch (_error) {
+        return true;
+      }
+    }
+
+    function microphoneAllowedByPolicy() {
+      const policy = document.permissionsPolicy || document.featurePolicy;
+      if (!policy || typeof policy.allowsFeature !== "function") return true;
+
+      try {
+        return policy.allowsFeature("microphone");
+      } catch (_error) {
+        return true;
+      }
+    }
+
+    function showMicrophoneHelp(reason) {
+      const issueCopy = {
+        permission: ["permission", "permissionTitle", "permissionHelp"],
+        iframe: ["iframePermission", "iframeTitle", "iframeHelp"],
+        insecure: ["insecure", "insecureTitle", "insecureHelp"],
+        noDevice: ["noDevice", "noDeviceTitle", "noDeviceHelp"],
+        deviceBusy: ["deviceBusy", "deviceBusyTitle", "deviceBusyHelp"]
+      };
+      const [statusKey, titleKey, helpKey] = issueCopy[reason] || issueCopy.permission;
+
+      appState.permissionIssue = reason;
+      setStatus(statusKey, "error");
+      elements.permissionTitle.textContent = translated(titleKey);
+      elements.permissionMessage.textContent = translated(helpKey);
+      elements.retryPermissionButton.textContent = translated("retryMic");
+      elements.openDirectLink.textContent = translated("openDirect");
+      elements.openDirectLink.href = window.location.href;
+      elements.openDirectLink.hidden = !isEmbedded();
+      elements.permissionHelp.hidden = false;
+    }
+
+    function hideMicrophoneHelp() {
+      appState.permissionIssue = null;
+      elements.permissionHelp.hidden = true;
+      elements.permissionTitle.textContent = "";
+      elements.permissionMessage.textContent = "";
     }
 
     function updateControls() {
@@ -784,6 +928,7 @@
       appState.language = language === "zh" ? "zh" : "en";
       document.documentElement.lang = appState.language === "zh" ? "zh-CN" : "en";
       updateControls();
+      if (appState.permissionIssue) showMicrophoneHelp(appState.permissionIssue);
     }
 
     function showTranscript(text) {
@@ -1033,6 +1178,18 @@
     }
 
     async function startRecording() {
+      hideMicrophoneHelp();
+
+      if (!window.isSecureContext) {
+        showMicrophoneHelp("insecure");
+        return;
+      }
+
+      if (!microphoneAllowedByPolicy()) {
+        showMicrophoneHelp("iframe");
+        return;
+      }
+
       if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
         setStatus("unsupported", "error");
         return;
@@ -1060,6 +1217,7 @@
         appState.seconds = 0;
         appState.recording = true;
         appState.processing = false;
+        hideMicrophoneHelp();
 
         recorder.addEventListener("dataavailable", (event) => {
           if (event.data?.size > 0) appState.chunks.push(event.data);
@@ -1099,8 +1257,15 @@
         appState.recording = false;
         appState.processing = false;
         updateControls();
-        const permissionDenied = error.name === "NotAllowedError" || error.name === "SecurityError";
-        setStatus(permissionDenied ? "permission" : "recordingError", "error");
+        if (error.name === "NotAllowedError" || error.name === "SecurityError") {
+          showMicrophoneHelp(microphoneAllowedByPolicy() ? "permission" : "iframe");
+        } else if (error.name === "NotFoundError" || error.name === "DevicesNotFoundError") {
+          showMicrophoneHelp("noDevice");
+        } else if (error.name === "NotReadableError" || error.name === "TrackStartError") {
+          showMicrophoneHelp("deviceBusy");
+        } else {
+          setStatus("recordingError", "error");
+        }
       }
     }
 
@@ -1123,6 +1288,7 @@
       elements.transcript.hidden = true;
       elements.transcriptText.textContent = "";
       clearResults();
+      hideMicrophoneHelp();
       updateControls();
       elements.status.dataset.state = "idle";
       elements.statusText.textContent = "Ready to listen · 准备聆听";
@@ -1132,6 +1298,10 @@
     elements.micButton.addEventListener("click", () => {
       if (appState.recording) stopRecording();
       else if (!appState.processing) void startRecording();
+    });
+
+    elements.retryPermissionButton.addEventListener("click", () => {
+      if (!appState.processing && !appState.recording) void startRecording();
     });
 
     elements.form.addEventListener("submit", (event) => {

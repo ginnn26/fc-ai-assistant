@@ -9,6 +9,11 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use((req, res, next) => {
+  // A cross-origin iframe must also delegate this feature with allow="microphone".
+  res.setHeader("Permissions-Policy", "microphone=(self)");
+  next();
+});
 app.use(express.static("public"));
 
 app.get("/health", (req, res) => {
