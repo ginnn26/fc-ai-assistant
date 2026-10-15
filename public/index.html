@@ -1,408 +1,1160 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>FC AI Assistant</title>
-
+  <meta name="theme-color" content="#f5f0e6">
+  <title>FC AI Wellness Support</title>
   <style>
-    #micButton {
-      border: none;
-      border-radius: 10px;
-      padding: 0 16px;
-      background: #eee;
-      cursor: pointer;
-      font-size: 18px;
-    }
-
-    #micButton.recording {
-      background: #333;
-      color: white;
+    :root {
+      color-scheme: light;
+      --cream: #f5f0e6;
+      --cream-light: #fbf8f2;
+      --paper: #fffefd;
+      --ink: #25302a;
+      --muted: #69736d;
+      --sage: #607b6c;
+      --sage-dark: #3f5f4f;
+      --sage-soft: #e8efe9;
+      --sage-pale: #f3f7f3;
+      --line: #dfe6df;
+      --warm-line: #e8e0d2;
+      --error: #9a4b42;
+      --error-soft: #fbefed;
+      --shadow: 0 22px 60px rgba(55, 66, 57, 0.11);
+      --radius-lg: 28px;
+      --radius-md: 18px;
+      --radius-sm: 12px;
     }
 
     * {
       box-sizing: border-box;
     }
 
+    html {
+      background: var(--cream);
+    }
+
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f7f5ef;
-      color: #333;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      min-width: 280px;
       min-height: 100vh;
-      padding: 20px;
-    }
-
-    .assistant-container {
-      width: 100%;
-      max-width: 600px;
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-      overflow: hidden;
-    }
-
-    .header {
-      padding: 20px;
-      border-bottom: 1px solid #eee;
-    }
-
-    .header h2 {
-      margin: 0 0 5px;
-      font-size: 20px;
-    }
-
-    .header p {
       margin: 0;
-      font-size: 14px;
-      color: #777;
-    }
-
-    #chatBox {
-      height: 400px;
-      padding: 20px;
-      overflow-y: auto;
-      background: #fff;
-    }
-
-    .message {
-      margin-bottom: 16px;
+      background:
+        radial-gradient(circle at 12% 7%, rgba(255, 255, 255, 0.9), transparent 34rem),
+        radial-gradient(circle at 92% 82%, rgba(193, 209, 195, 0.32), transparent 32rem),
+        var(--cream);
+      color: var(--ink);
+      font-family: Inter, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       line-height: 1.5;
-      word-wrap: break-word;
+      -webkit-font-smoothing: antialiased;
     }
 
-    .user-message {
+    button,
+    textarea {
+      font: inherit;
+    }
+
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button:focus-visible,
+    textarea:focus-visible,
+    a:focus-visible {
+      outline: 3px solid rgba(96, 123, 108, 0.28);
+      outline-offset: 3px;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    .page {
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: clamp(18px, 4vw, 44px);
+    }
+
+    .app-shell {
+      overflow: hidden;
+      background: rgba(255, 254, 253, 0.96);
+      border: 1px solid rgba(223, 230, 223, 0.92);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+    }
+
+    .topbar {
       display: flex;
-      justify-content: flex-end;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 22px clamp(20px, 4vw, 38px);
+      border-bottom: 1px solid var(--line);
     }
 
-    .user-message .bubble {
-      background: #333;
-      color: white;
-      padding: 10px 14px;
-      border-radius: 14px 14px 4px 14px;
-      max-width: 80%;
-    }
-
-    .assistant-message {
+    .brand {
       display: flex;
-      justify-content: flex-start;
+      align-items: center;
+      min-width: 0;
+      gap: 12px;
     }
 
-    .assistant-message .bubble {
-      background: #f1f0ec;
-      color: #333;
-      padding: 10px 14px;
-      border-radius: 14px 14px 14px 4px;
-      max-width: 80%;
+    .brand-mark {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+      place-items: center;
+      border-radius: 14px;
+      background: var(--sage-dark);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 750;
+      letter-spacing: 0.08em;
     }
 
-    .input-area {
+    .brand-copy {
+      min-width: 0;
+    }
+
+    .brand-copy strong,
+    .brand-copy span {
+      display: block;
+    }
+
+    .brand-copy strong {
+      font-size: 15px;
+      letter-spacing: 0.01em;
+    }
+
+    .brand-copy span {
+      overflow: hidden;
+      color: var(--muted);
+      font-size: 12px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .ghost-button {
+      flex: 0 0 auto;
+      min-height: 40px;
+      padding: 8px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--sage-dark);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .ghost-button:hover {
+      background: var(--sage-pale);
+    }
+
+    .content {
+      padding: clamp(30px, 6vw, 64px) clamp(20px, 7vw, 72px) 38px;
+    }
+
+    .intro {
+      max-width: 680px;
+      margin: 0 auto 30px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--sage);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 620px;
+      margin: 0 auto 16px;
+      font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+      font-size: clamp(30px, 6vw, 50px);
+      font-weight: 500;
+      letter-spacing: -0.035em;
+      line-height: 1.12;
+    }
+
+    .intro-text {
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(14px, 2vw, 16px);
+    }
+
+    .intro-text span {
+      display: block;
+    }
+
+    .consultation-card {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: clamp(22px, 5vw, 38px);
+      border: 1px solid var(--warm-line);
+      border-radius: 24px;
+      background: var(--cream-light);
+    }
+
+    .voice-zone {
       display: flex;
-      gap: 10px;
-      padding: 15px;
-      border-top: 1px solid #eee;
-      background: white;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
     }
 
-    #messageInput {
-      flex: 1;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      padding: 12px;
+    .voice-label {
+      margin: 0 0 18px;
+      color: var(--ink);
       font-size: 14px;
-      outline: none;
+      font-weight: 700;
     }
 
-    #messageInput:focus {
-      border-color: #999;
+    .mic-button {
+      position: relative;
+      display: grid;
+      width: 104px;
+      height: 104px;
+      padding: 0;
+      place-items: center;
+      border: 8px solid var(--sage-soft);
+      border-radius: 50%;
+      background: var(--sage-dark);
+      box-shadow: 0 12px 28px rgba(63, 95, 79, 0.22);
+      color: #fff;
+      cursor: pointer;
+      transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
     }
 
-    #sendButton {
-      border: none;
-      border-radius: 10px;
-      padding: 0 20px;
-      background: #333;
-      color: white;
+    .mic-button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      background: #355443;
+      box-shadow: 0 15px 32px rgba(63, 95, 79, 0.27);
+    }
+
+    .mic-button:disabled {
+      cursor: wait;
+      opacity: 0.55;
+    }
+
+    .mic-button.recording {
+      border-color: #f2d9d4;
+      background: var(--error);
+      box-shadow: 0 0 0 8px rgba(154, 75, 66, 0.08), 0 12px 28px rgba(154, 75, 66, 0.2);
+    }
+
+    .mic-button svg {
+      width: 36px;
+      height: 36px;
+    }
+
+    .mic-button .stop-icon {
+      width: 25px;
+      height: 25px;
+      border-radius: 5px;
+      background: currentColor;
+    }
+
+    .status {
+      display: inline-flex;
+      min-height: 28px;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #9ba69f;
+    }
+
+    .status[data-state="recording"] {
+      color: var(--error);
+    }
+
+    .status[data-state="recording"] .status-dot {
+      background: var(--error);
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+
+    .status[data-state="processing"] .status-dot {
+      background: var(--sage);
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+
+    .status[data-state="error"] {
+      color: var(--error);
+    }
+
+    .status[data-state="error"] .status-dot {
+      background: var(--error);
+    }
+
+    @keyframes pulse {
+      50% { opacity: 0.35; transform: scale(0.72); }
+    }
+
+    .transcript {
+      margin: 24px 0 0;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--paper);
+      text-align: left;
+    }
+
+    .transcript-label {
+      margin: 0 0 5px;
+      color: var(--sage);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .transcript-text {
+      margin: 0;
+      overflow-wrap: anywhere;
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      margin: 26px 0 20px;
+      color: #879089;
+      font-size: 12px;
+    }
+
+    .divider::before,
+    .divider::after {
+      height: 1px;
+      flex: 1;
+      background: var(--line);
+      content: "";
+    }
+
+    .message-form {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+    }
+
+    .message-input {
+      width: 100%;
+      min-height: 52px;
+      max-height: 150px;
+      resize: vertical;
+      padding: 14px 16px;
+      border: 1px solid #ccd7cf;
+      border-radius: 14px;
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.45;
+    }
+
+    .message-input::placeholder {
+      color: #929a95;
+    }
+
+    .message-input:focus {
+      border-color: var(--sage);
+    }
+
+    .send-button {
+      min-width: 108px;
+      padding: 12px 20px;
+      border: 0;
+      border-radius: 14px;
+      background: var(--sage-dark);
+      color: #fff;
       cursor: pointer;
       font-size: 14px;
+      font-weight: 750;
     }
 
-    #sendButton:hover {
-      opacity: 0.85;
+    .send-button:hover:not(:disabled) {
+      background: #355443;
     }
 
-    #sendButton:disabled {
-      opacity: 0.5;
+    .send-button:disabled,
+    .message-input:disabled {
       cursor: not-allowed;
+      opacity: 0.56;
     }
 
-    .loading {
-      color: #777;
+    .form-note {
+      grid-column: 1 / -1;
+      margin: 0 2px;
+      color: #7b847f;
+      font-size: 11px;
+    }
+
+    .results {
+      max-width: 760px;
+      margin: 36px auto 0;
+      scroll-margin-top: 20px;
+    }
+
+    .results-header {
+      margin-bottom: 18px;
+    }
+
+    .results-title {
+      margin: 0 0 7px;
+      font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+      font-size: clamp(23px, 4vw, 31px);
+      font-weight: 500;
+      letter-spacing: -0.02em;
+    }
+
+    .results-message {
+      margin: 0;
+      color: var(--muted);
       font-size: 14px;
-      font-style: italic;
     }
 
-    @media (max-width: 600px) {
-      body {
+    .recommendation-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .recommendation-card {
+      display: grid;
+      grid-template-columns: 40px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 14px;
+      min-height: 98px;
+      padding: 17px 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--paper);
+      box-shadow: 0 8px 24px rgba(55, 66, 57, 0.05);
+    }
+
+    .recommendation-number {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--sage-soft);
+      color: var(--sage-dark);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .recommendation-copy {
+      min-width: 0;
+    }
+
+    .recommendation-name {
+      margin: 0;
+      overflow-wrap: anywhere;
+      font-size: 15px;
+      font-weight: 750;
+      line-height: 1.35;
+    }
+
+    .recommendation-translation {
+      margin: 3px 0 0;
+      overflow-wrap: anywhere;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .listen-button {
+      display: inline-flex;
+      min-height: 40px;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 14px;
+      border-radius: 999px;
+      background: var(--sage-dark);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 750;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .listen-button:hover {
+      background: #355443;
+    }
+
+    .unavailable {
+      color: #8a938d;
+      font-size: 11px;
+      text-align: right;
+    }
+
+    .empty-state {
+      padding: 22px;
+      border: 1px dashed #cbd5cd;
+      border-radius: var(--radius-md);
+      background: var(--sage-pale);
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .wellness-note {
+      max-width: 760px;
+      margin: 30px auto 0;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      color: #78817b;
+      font-size: 11px;
+      text-align: center;
+    }
+
+    @media (max-width: 620px) {
+      .page {
         padding: 0;
       }
 
-      .assistant-container {
+      .app-shell {
         min-height: 100vh;
+        border-width: 0;
         border-radius: 0;
       }
 
-      #chatBox {
-        height: calc(100vh - 150px);
+      .topbar {
+        padding: 17px 18px;
+      }
+
+      .brand-copy span {
+        max-width: 150px;
+      }
+
+      .ghost-button {
+        width: 40px;
+        padding: 0;
+        overflow: hidden;
+        color: transparent;
+      }
+
+      .ghost-button::after {
+        color: var(--sage-dark);
+        content: "↻";
+        font-size: 19px;
+      }
+
+      .content {
+        padding: 38px 17px 28px;
+      }
+
+      .consultation-card {
+        padding: 24px 16px;
+      }
+
+      .message-form {
+        grid-template-columns: 1fr;
+      }
+
+      .send-button {
+        min-height: 48px;
+      }
+
+      .recommendation-card {
+        grid-template-columns: 38px minmax(0, 1fr);
+      }
+
+      .recommendation-card .listen-button,
+      .recommendation-card .unavailable {
+        grid-column: 2;
+        justify-self: start;
+        text-align: left;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
       }
     }
   </style>
 </head>
-
 <body>
+  <main class="page">
+    <section class="app-shell" aria-labelledby="pageTitle">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">FC</div>
+          <div class="brand-copy">
+            <strong>FC AI Wellness Support</strong>
+            <span>身心健康支持助手</span>
+          </div>
+        </div>
+        <button class="ghost-button" id="resetButton" type="button">New consultation</button>
+      </header>
 
-<div class="assistant-container">
+      <div class="content">
+        <div class="intro">
+          <p class="eyebrow">A calmer moment starts here</p>
+          <h1 id="pageTitle">How are you feeling today?</h1>
+          <p class="intro-text">
+            <span>Share what you need, and we’ll suggest FC content for gentle wellness support.</span>
+            <span lang="zh-CN">告诉我们你的近况，我们会为你推荐适合的 FC 身心支持内容。</span>
+          </p>
+        </div>
 
-  <div class="header">
-    <h2>✨ FC AI Assistant</h2>
-    <p>Your wellness support assistant</p>
-  </div>
+        <section class="consultation-card" aria-label="Share how you feel">
+          <div class="voice-zone">
+            <p class="voice-label">Tap to speak · 点击开始说话</p>
+            <button class="mic-button" id="micButton" type="button" aria-label="Start voice recording" aria-pressed="false">
+              <svg id="micIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="8" y="2.75" width="8" height="12.5" rx="4"></rect>
+                <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3M8.5 21h7"></path>
+              </svg>
+              <span class="stop-icon" id="stopIcon" hidden aria-hidden="true"></span>
+            </button>
+            <div class="status" id="status" data-state="idle" role="status" aria-live="polite">
+              <span class="status-dot" aria-hidden="true"></span>
+              <span id="statusText">Ready to listen · 准备聆听</span>
+            </div>
+          </div>
 
-  <div id="chatBox">
-    <div class="message assistant-message">
-      <div class="bubble">
-        Hello! I'm the FC AI Assistant. How can I help you today?
+          <div class="transcript" id="transcript" hidden>
+            <p class="transcript-label" id="transcriptLabel">What you shared</p>
+            <p class="transcript-text" id="transcriptText"></p>
+          </div>
+
+          <div class="divider"><span>or type below · 或输入文字</span></div>
+
+          <form class="message-form" id="messageForm">
+            <label for="messageInput" hidden>Describe how you feel</label>
+            <textarea class="message-input" id="messageInput" rows="2" maxlength="2000" placeholder="Tell us how you feel… / 告诉我们你的感受…" required></textarea>
+            <button class="send-button" id="sendButton" type="submit">Find support</button>
+            <p class="form-note">Voice is transcribed securely for this request. Please do not share sensitive personal details.</p>
+          </form>
+        </section>
+
+        <section class="results" id="results" aria-labelledby="resultsTitle" hidden>
+          <header class="results-header">
+            <p class="eyebrow" id="resultsEyebrow">Selected for you</p>
+            <h2 class="results-title" id="resultsTitle">Your FC recommendations</h2>
+            <p class="results-message" id="resultsMessage"></p>
+          </header>
+          <div class="recommendation-list" id="recommendationList"></div>
+        </section>
+
+        <p class="wellness-note">
+          FC content supports relaxation and general wellbeing. It does not diagnose, cure, prevent, or replace professional medical care.<br>
+          <span lang="zh-CN">FC 内容仅用于放松与日常身心支持，不能用于诊断、治疗、预防疾病或替代专业医疗服务。</span>
+        </p>
       </div>
-    </div>
-  </div>
+    </section>
+  </main>
 
-  <div class="input-area">
+  <script>
+    "use strict";
 
-    <input
-            type="text"
-            id="messageInput"
-            placeholder="Ask FC AI Assistant..."
-    >
+    const elements = {
+      micButton: document.getElementById("micButton"),
+      micIcon: document.getElementById("micIcon"),
+      stopIcon: document.getElementById("stopIcon"),
+      status: document.getElementById("status"),
+      statusText: document.getElementById("statusText"),
+      transcript: document.getElementById("transcript"),
+      transcriptLabel: document.getElementById("transcriptLabel"),
+      transcriptText: document.getElementById("transcriptText"),
+      form: document.getElementById("messageForm"),
+      input: document.getElementById("messageInput"),
+      sendButton: document.getElementById("sendButton"),
+      resetButton: document.getElementById("resetButton"),
+      results: document.getElementById("results"),
+      resultsEyebrow: document.getElementById("resultsEyebrow"),
+      resultsTitle: document.getElementById("resultsTitle"),
+      resultsMessage: document.getElementById("resultsMessage"),
+      recommendationList: document.getElementById("recommendationList")
+    };
 
-    <button id="micButton" type="button">
-      🎙️
-    </button>
+    const copy = {
+      en: {
+        ready: "Ready to listen",
+        requesting: "Requesting microphone access…",
+        recording: (seconds) => `Listening… ${seconds}s · tap to stop`,
+        transcribing: "Turning your voice into text…",
+        recommending: "Finding supportive FC content…",
+        complete: "Recommendations are ready",
+        permission: "Microphone access was denied. You can type below instead.",
+        unsupported: "Voice recording is not supported here. You can type below instead.",
+        recordingError: "The recording could not be completed. Please try again or type below.",
+        transcriptionError: "We couldn't transcribe that recording. Please try again or type below.",
+        requestError: "We couldn't retrieve recommendations. Please try again.",
+        emptyTranscript: "We couldn't hear any speech. Please try again or type below.",
+        whatShared: "What you shared",
+        selected: "Selected for you",
+        resultsTitle: "Your FC recommendations",
+        listen: "Listen now",
+        unavailable: "Listening link coming soon",
+        empty: "No matching FC content was returned. Try describing how you feel in a little more detail.",
+        send: "Find support"
+      },
+      zh: {
+        ready: "准备聆听",
+        requesting: "正在请求麦克风权限…",
+        recording: (seconds) => `正在聆听… ${seconds}秒 · 点击停止`,
+        transcribing: "正在将语音转换为文字…",
+        recommending: "正在寻找适合的 FC 支持内容…",
+        complete: "推荐内容已准备好",
+        permission: "无法使用麦克风。你也可以在下方输入文字。",
+        unsupported: "此浏览器不支持语音录制。你也可以在下方输入文字。",
+        recordingError: "无法完成录音，请重试或在下方输入文字。",
+        transcriptionError: "无法识别这段录音，请重试或在下方输入文字。",
+        requestError: "暂时无法获取推荐，请稍后重试。",
+        emptyTranscript: "没有听到清楚的语音，请重试或在下方输入文字。",
+        whatShared: "你分享的内容",
+        selected: "为你精选",
+        resultsTitle: "你的 FC 推荐",
+        listen: "立即聆听",
+        unavailable: "聆听链接即将提供",
+        empty: "暂时没有找到合适的 FC 内容，请更详细地描述你的感受。",
+        send: "寻找支持"
+      }
+    };
 
-    <button id="sendButton" type="button">
-      Send
-    </button>
+    const appState = {
+      language: "en",
+      processing: false,
+      recording: false,
+      recorder: null,
+      stream: null,
+      chunks: [],
+      seconds: 0,
+      timer: null,
+      sequence: 0,
+      activeRecording: 0,
+      processedRecordings: new Set(),
+      discardRecording: false,
+      abortController: null
+    };
 
-  </div>
+    function detectLanguage(text) {
+      const chineseCharacters = (text.match(/[\u3400-\u9fff]/g) || []).length;
+      const latinWords = (text.match(/[a-z]+/gi) || []).length;
+      return chineseCharacters > latinWords * 2 ? "zh" : "en";
+    }
 
-</div>
+    function translated(key, ...args) {
+      const value = copy[appState.language][key];
+      return typeof value === "function" ? value(...args) : value;
+    }
 
-<script>
+    function setStatus(key, state = "idle", detail = "") {
+      elements.status.dataset.state = state;
+      elements.statusText.textContent = detail || translated(key);
+    }
 
-  const chatBox = document.getElementById("chatBox");
-  const messageInput = document.getElementById("messageInput");
-  const sendButton = document.getElementById("sendButton");
-  const micButton = document.getElementById("micButton");
+    function updateControls() {
+      elements.micButton.disabled = appState.processing;
+      elements.input.disabled = appState.processing || appState.recording;
+      elements.sendButton.disabled = appState.processing || appState.recording;
+      elements.micButton.classList.toggle("recording", appState.recording);
+      elements.micButton.setAttribute("aria-pressed", String(appState.recording));
+      elements.micButton.setAttribute(
+        "aria-label",
+        appState.recording ? "Stop voice recording" : "Start voice recording"
+      );
+      elements.micIcon.hidden = appState.recording;
+      elements.stopIcon.hidden = !appState.recording;
+      elements.sendButton.textContent = translated("send");
+    }
 
-  let mediaRecorder;
-  let audioChunks = [];
-  micButton.addEventListener("click", async function () {
+    function setLanguage(language) {
+      appState.language = language === "zh" ? "zh" : "en";
+      document.documentElement.lang = appState.language === "zh" ? "zh-CN" : "en";
+      updateControls();
+    }
 
-    if (!mediaRecorder || mediaRecorder.state === "inactive") {
+    function showTranscript(text) {
+      elements.transcriptLabel.textContent = translated("whatShared");
+      elements.transcriptText.textContent = text;
+      elements.transcript.hidden = false;
+    }
 
-      try {
+    function clearResults() {
+      elements.results.hidden = true;
+      elements.resultsMessage.textContent = "";
+      elements.recommendationList.replaceChildren();
+    }
 
-        const stream = await navigator.mediaDevices.getUserMedia({
-          audio: true
-        });
+    async function readJsonResponse(response) {
+      const text = await response.text();
+      let data = {};
 
-        audioChunks = [];
-
-        mediaRecorder = new MediaRecorder(stream);
-
-        mediaRecorder.ondataavailable = function (event) {
-          audioChunks.push(event.data);
-        };
-
-        mediaRecorder.onstop = async function () {
-
-          const audioBlob = new Blob(audioChunks, {
-            type: "audio/webm"
-          });
-
-          console.log("Recording completed.");
-          console.log("Audio size:", audioBlob.size, "bytes");
-
-          // Stop microphone
-          stream.getTracks().forEach(track => track.stop());
-
-          try {
-
-            const formData = new FormData();
-
-            formData.append(
-                    "audio",
-                    audioBlob,
-                    "recording.webm"
-            );
-
-            console.log("Uploading audio for transcription...");
-
-            const response = await fetch("/chat/transcribe", {
-              method: "POST",
-              body: formData
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-              throw new Error(data.error || "Transcription failed");
-            }
-
-            console.log("Transcript:", data.transcript);
-
-// Put transcript into input
-            messageInput.value = data.transcript;
-
-// Automatically send transcript to AI
-            await sendMessage();
-
-// Automatically send transcript to AI
-            await sendMessage();
-
-          } catch (error) {
-
-            console.error("Transcription error:", error);
-
-            alert("Failed to transcribe audio.");
-
-          }
-
-        };
-
-        mediaRecorder.start();
-
-        micButton.textContent = "⏹️";
-        micButton.classList.add("recording");
-
-        console.log("Recording started.");
-
-      } catch (error) {
-
-        console.error("Microphone error:", error);
-
-        alert("Microphone permission is required to record audio.");
+      if (text) {
+        try {
+          data = JSON.parse(text);
+        } catch (_error) {
+          if (response.ok) throw new Error("The server returned an invalid response.");
+        }
       }
 
-    } else {
+      if (!response.ok) {
+        throw new Error(data.error || `Request failed (${response.status})`);
+      }
 
-      mediaRecorder.stop();
-
-      micButton.textContent = "🎙️";
-      micButton.classList.remove("recording");
-
-      console.log("Recording stopped.");
+      return data;
     }
 
-  });
-
-  async function sendMessage() {
-
-    const message = messageInput.value.trim();
-
-    if (!message) {
-      return;
+    function validHttpUrl(value) {
+      if (typeof value !== "string") return null;
+      try {
+        const parsed = new URL(value);
+        return parsed.protocol === "http:" || parsed.protocol === "https:" ? parsed.href : null;
+      } catch (_error) {
+        return null;
+      }
     }
 
-    // Show user message
-    chatBox.innerHTML += `
-        <div class="message user-message">
-          <div class="bubble">
-            ${message}
-          </div>
-        </div>
-      `;
+    function renderRecommendations(data) {
+      const recommendations = Array.isArray(data.recommendations)
+        ? data.recommendations.slice(0, 3)
+        : [];
 
-    messageInput.value = "";
-    sendButton.disabled = true;
+      elements.resultsEyebrow.textContent = translated("selected");
+      elements.resultsTitle.textContent = translated("resultsTitle");
+      elements.resultsMessage.textContent = typeof data.message === "string" ? data.message : "";
+      elements.recommendationList.replaceChildren();
 
-    // Show loading message
-    const loadingMessage = document.createElement("div");
+      if (recommendations.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent = translated("empty");
+        elements.recommendationList.appendChild(empty);
+      } else {
+        recommendations.forEach((item, index) => {
+          const card = document.createElement("article");
+          card.className = "recommendation-card";
 
-    loadingMessage.className = "message assistant-message";
-    loadingMessage.innerHTML = `
-        <div class="bubble loading">
-          FC AI is thinking...
-        </div>
-      `;
+          const number = document.createElement("span");
+          number.className = "recommendation-number";
+          number.textContent = String(index + 1).padStart(2, "0");
+          number.setAttribute("aria-hidden", "true");
 
-    chatBox.appendChild(loadingMessage);
+          const content = document.createElement("div");
+          content.className = "recommendation-copy";
+          const primaryName = appState.language === "zh"
+            ? (item.name_zh || item.name_en)
+            : (item.name_en || item.name_zh);
+          const secondaryName = appState.language === "zh" ? item.name_en : item.name_zh;
 
-    chatBox.scrollTop = chatBox.scrollHeight;
+          const title = document.createElement("h3");
+          title.className = "recommendation-name";
+          title.textContent = primaryName || "FC wellness session";
+          content.appendChild(title);
 
-    try {
+          if (secondaryName && secondaryName !== primaryName) {
+            const translation = document.createElement("p");
+            translation.className = "recommendation-translation";
+            translation.textContent = secondaryName;
+            content.appendChild(translation);
+          }
 
-      const response = await fetch("/chat", {
-        method: "POST",
+          card.append(number, content);
 
-        headers: {
-          "Content-Type": "application/json"
-        },
+          const url = validHttpUrl(item.url);
+          if (url) {
+            const link = document.createElement("a");
+            link.className = "listen-button";
+            link.href = url;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            link.textContent = translated("listen");
+            card.appendChild(link);
+          } else {
+            const unavailable = document.createElement("span");
+            unavailable.className = "unavailable";
+            unavailable.textContent = translated("unavailable");
+            card.appendChild(unavailable);
+          }
 
-        body: JSON.stringify({
-          message: message
-        })
-      });
+          elements.recommendationList.appendChild(card);
+        });
+      }
 
-      const data = await response.json();
-
-      loadingMessage.remove();
-
-      chatBox.innerHTML += `
-          <div class="message assistant-message">
-            <div class="bubble">
-              ${data.reply || "Sorry, I couldn't generate a response."}
-            </div>
-          </div>
-        `;
-
-    } catch (error) {
-
-      console.error(error);
-
-      loadingMessage.remove();
-
-      chatBox.innerHTML += `
-          <div class="message assistant-message">
-            <div class="bubble">
-              Sorry, there was an error connecting to FC AI.
-            </div>
-          </div>
-        `;
+      elements.results.hidden = false;
+      elements.results.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
-    sendButton.disabled = false;
+    async function requestRecommendations(message) {
+      const cleanMessage = String(message || "").trim();
+      if (!cleanMessage || appState.processing) return;
 
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }
+      const requestSequence = ++appState.sequence;
+      setLanguage(detectLanguage(cleanMessage));
+      showTranscript(cleanMessage);
+      clearResults();
+      appState.processing = true;
+      appState.abortController = new AbortController();
+      updateControls();
+      setStatus("recommending", "processing");
 
-  sendButton.addEventListener("click", sendMessage);
+      try {
+        const response = await fetch("/chat/recommend", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: cleanMessage }),
+          signal: appState.abortController.signal
+        });
+        const data = await readJsonResponse(response);
 
-  messageInput.addEventListener("keydown", function(event) {
-
-    if (event.key === "Enter") {
-      sendMessage();
+        if (requestSequence !== appState.sequence) return;
+        if (data.language === "en" || data.language === "zh") setLanguage(data.language);
+        renderRecommendations(data);
+        setStatus("complete", "idle");
+      } catch (error) {
+        if (error.name !== "AbortError" && requestSequence === appState.sequence) {
+          console.error("Recommendation request failed:", error);
+          setStatus("requestError", "error");
+        }
+      } finally {
+        if (requestSequence === appState.sequence) {
+          appState.processing = false;
+          appState.abortController = null;
+          updateControls();
+        }
+      }
     }
 
-  });
+    function stopTracks() {
+      if (appState.stream) {
+        appState.stream.getTracks().forEach((track) => track.stop());
+        appState.stream = null;
+      }
+    }
 
-</script>
+    function stopTimer() {
+      if (appState.timer) {
+        window.clearInterval(appState.timer);
+        appState.timer = null;
+      }
+    }
 
+    function recordingOptions() {
+      const preferredTypes = [
+        "audio/webm;codecs=opus",
+        "audio/webm",
+        "audio/mp4",
+        "audio/ogg;codecs=opus",
+        "audio/ogg"
+      ];
+      const mimeType = preferredTypes.find(
+        (type) => typeof MediaRecorder.isTypeSupported !== "function" || MediaRecorder.isTypeSupported(type)
+      );
+      return mimeType ? { mimeType } : undefined;
+    }
+
+    function audioFilename(mimeType) {
+      if (mimeType.includes("mp4")) return "recording.m4a";
+      if (mimeType.includes("ogg")) return "recording.ogg";
+      if (mimeType.includes("wav")) return "recording.wav";
+      if (mimeType.includes("mpeg")) return "recording.mp3";
+      return "recording.webm";
+    }
+
+    async function processRecording(recordingId, mimeType) {
+      if (appState.discardRecording || appState.processedRecordings.has(recordingId)) return;
+      appState.processedRecordings.add(recordingId);
+
+      const blob = new Blob(appState.chunks, { type: mimeType || "audio/webm" });
+      appState.chunks = [];
+      if (blob.size === 0) {
+        setStatus("emptyTranscript", "error");
+        return;
+      }
+
+      const requestSequence = ++appState.sequence;
+      appState.processing = true;
+      appState.abortController = new AbortController();
+      updateControls();
+      setStatus("transcribing", "processing");
+
+      try {
+        const formData = new FormData();
+        formData.append("audio", blob, audioFilename(blob.type));
+        const response = await fetch("/chat/transcribe", {
+          method: "POST",
+          body: formData,
+          signal: appState.abortController.signal
+        });
+        const data = await readJsonResponse(response);
+        const transcript = typeof data.transcript === "string" ? data.transcript.trim() : "";
+
+        if (requestSequence !== appState.sequence) return;
+        if (!transcript) {
+          setStatus("emptyTranscript", "error");
+          return;
+        }
+
+        setLanguage(detectLanguage(transcript));
+        showTranscript(transcript);
+        appState.processing = false;
+        appState.abortController = null;
+        updateControls();
+        await requestRecommendations(transcript);
+      } catch (error) {
+        if (error.name !== "AbortError" && requestSequence === appState.sequence) {
+          console.error("Transcription request failed:", error);
+          setStatus("transcriptionError", "error");
+        }
+      } finally {
+        if (requestSequence === appState.sequence && appState.processing) {
+          appState.processing = false;
+          appState.abortController = null;
+          updateControls();
+        }
+      }
+    }
+
+    function stopRecording() {
+      if (!appState.recorder || appState.recorder.state === "inactive") return;
+      appState.recorder.stop();
+    }
+
+    async function startRecording() {
+      if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
+        setStatus("unsupported", "error");
+        return;
+      }
+
+      appState.discardRecording = false;
+      const permissionSequence = ++appState.sequence;
+      appState.processing = true;
+      updateControls();
+      setStatus("requesting", "processing");
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        if (permissionSequence !== appState.sequence) {
+          stream.getTracks().forEach((track) => track.stop());
+          return;
+        }
+        const recordingId = permissionSequence;
+        const options = recordingOptions();
+        const recorder = new MediaRecorder(stream, options);
+
+        appState.stream = stream;
+        appState.recorder = recorder;
+        appState.activeRecording = recordingId;
+        appState.chunks = [];
+        appState.seconds = 0;
+        appState.recording = true;
+        appState.processing = false;
+
+        recorder.addEventListener("dataavailable", (event) => {
+          if (event.data?.size > 0) appState.chunks.push(event.data);
+        });
+
+        recorder.addEventListener("error", (event) => {
+          console.error("Recording failed:", event.error || event);
+          appState.discardRecording = true;
+          appState.recording = false;
+          stopTimer();
+          stopTracks();
+          updateControls();
+          setStatus("recordingError", "error");
+        });
+
+        recorder.addEventListener("stop", () => {
+          const mimeType = recorder.mimeType || options?.mimeType || "audio/webm";
+          appState.recording = false;
+          stopTimer();
+          stopTracks();
+          updateControls();
+          void processRecording(recordingId, mimeType);
+        }, { once: true });
+
+        recorder.start();
+        updateControls();
+        setStatus("recording", "recording", translated("recording", 0));
+        appState.timer = window.setInterval(() => {
+          appState.seconds += 1;
+          setStatus("recording", "recording", translated("recording", appState.seconds));
+          if (appState.seconds >= 60) stopRecording();
+        }, 1000);
+      } catch (error) {
+        if (permissionSequence !== appState.sequence) return;
+        console.error("Microphone access failed:", error);
+        stopTracks();
+        appState.recording = false;
+        appState.processing = false;
+        updateControls();
+        const permissionDenied = error.name === "NotAllowedError" || error.name === "SecurityError";
+        setStatus(permissionDenied ? "permission" : "recordingError", "error");
+      }
+    }
+
+    function resetConsultation() {
+      appState.sequence += 1;
+      appState.abortController?.abort();
+      appState.abortController = null;
+      appState.discardRecording = true;
+      if (appState.recorder && appState.recorder.state !== "inactive") {
+        appState.recorder.stop();
+      }
+      stopTimer();
+      stopTracks();
+      appState.recording = false;
+      appState.processing = false;
+      appState.chunks = [];
+      appState.language = "en";
+      document.documentElement.lang = "en";
+      elements.input.value = "";
+      elements.transcript.hidden = true;
+      elements.transcriptText.textContent = "";
+      clearResults();
+      updateControls();
+      elements.status.dataset.state = "idle";
+      elements.statusText.textContent = "Ready to listen · 准备聆听";
+      elements.input.focus();
+    }
+
+    elements.micButton.addEventListener("click", () => {
+      if (appState.recording) stopRecording();
+      else if (!appState.processing) void startRecording();
+    });
+
+    elements.form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const message = elements.input.value.trim();
+      if (!message) {
+        elements.input.focus();
+        return;
+      }
+      elements.input.value = "";
+      void requestRecommendations(message);
+    });
+
+    elements.input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+        event.preventDefault();
+        elements.form.requestSubmit();
+      }
+    });
+
+    elements.resetButton.addEventListener("click", resetConsultation);
+    window.addEventListener("pagehide", stopTracks);
+    updateControls();
+  </script>
 </body>
 </html>
-```

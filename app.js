@@ -11,6 +11,13 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
+app.get("/health", (req, res) => {
+  res.json({
+    status: "ok",
+    service: "FC AI Wellness Support"
+  });
+});
+
 app.get("/", (req, res) => {
   res.json({
     status: "FC AI Assistant backend is running",
@@ -18,6 +25,19 @@ app.get("/", (req, res) => {
 });
 
 app.use("/chat", chatRoute);
+
+app.use((error, req, res, next) => {
+  if (error instanceof SyntaxError && error.status === 400 && "body" in error) {
+    return res.status(400).json({ error: "Invalid JSON body" });
+  }
+
+  if (error?.code === "LIMIT_FILE_SIZE") {
+    return res.status(413).json({ error: "Audio file must be 20 MB or smaller" });
+  }
+
+  console.error("Unhandled request error:", error);
+  return res.status(500).json({ error: "Unexpected server error" });
+});
 
 const PORT = process.env.PORT || 3000;
 
