@@ -328,30 +328,6 @@
       line-height: 1.55;
     }
 
-    .permission-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 9px;
-      margin-top: 13px;
-    }
-
-    .permission-action {
-      min-height: 38px;
-      padding: 8px 13px;
-      border: 1px solid rgba(111, 57, 51, 0.28);
-      border-radius: 999px;
-      background: #fff;
-      color: #6f3933;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 750;
-      text-decoration: none;
-    }
-
-    .permission-action:hover {
-      background: #fff9f8;
-    }
-
     @keyframes pulse {
       50% { opacity: 0.35; transform: scale(0.72); }
     }
@@ -695,10 +671,6 @@
             <div class="permission-help" id="permissionHelp" role="alert" hidden>
               <strong id="permissionTitle"></strong>
               <p id="permissionMessage"></p>
-              <div class="permission-actions">
-                <button class="permission-action" id="retryPermissionButton" type="button">Try microphone again</button>
-                <a class="permission-action" id="openDirectLink" href="/" target="_blank" rel="noopener noreferrer" hidden>Open microphone in a new tab</a>
-              </div>
             </div>
           </div>
 
@@ -746,8 +718,6 @@
       permissionHelp: document.getElementById("permissionHelp"),
       permissionTitle: document.getElementById("permissionTitle"),
       permissionMessage: document.getElementById("permissionMessage"),
-      retryPermissionButton: document.getElementById("retryPermissionButton"),
-      openDirectLink: document.getElementById("openDirectLink"),
       transcript: document.getElementById("transcript"),
       transcriptLabel: document.getElementById("transcriptLabel"),
       transcriptText: document.getElementById("transcriptText"),
@@ -772,10 +742,8 @@
         complete: "Recommendations are ready",
         permission: "Microphone access was denied. Follow the steps below to enable it.",
         permissionTitle: "Allow microphone access",
-        permissionHelp: "Open your browser's site controls (lock or settings icon), set Microphone to Allow, then tap Try microphone again. On a phone, also allow microphone access for the browser in device Settings.",
-        iframePermission: "Microphone access is blocked by the page containing this assistant.",
-        iframeTitle: "Open the microphone securely",
-        iframeHelp: "This embedded page cannot request microphone permission. Open FC in a new tab below; the new tab will immediately request access from your browser.",
+        permissionHelp: "Open your browser's site controls (lock or settings icon), set Microphone to Allow, then tap the microphone button again. On a phone, also allow microphone access for the browser in device Settings.",
+        popupBlocked: "Please allow pop-ups for this page, then tap the microphone again.",
         insecure: "Microphone access requires a secure HTTPS page.",
         insecureTitle: "A secure connection is required",
         insecureHelp: "Open the deployed HTTPS address directly. Microphone access is unavailable on ordinary HTTP pages.",
@@ -796,9 +764,7 @@
         listen: "Listen now",
         unavailable: "Listening link coming soon",
         empty: "No matching FC content was returned. Try describing how you feel in a little more detail.",
-        send: "Find support",
-        retryMic: "Try microphone again",
-        openDirect: "Open microphone in a new tab"
+        send: "Find support"
       },
       zh: {
         ready: "准备聆听",
@@ -809,10 +775,8 @@
         complete: "推荐内容已准备好",
         permission: "麦克风权限被拒绝。请按照下方步骤开启权限。",
         permissionTitle: "允许使用麦克风",
-        permissionHelp: "打开浏览器的网站控制（锁形或设置图标），将麦克风设为允许，然后点击“再次尝试麦克风”。手机用户也需要在系统设置中允许浏览器使用麦克风。",
-        iframePermission: "嵌入此助手的页面阻止了麦克风权限。",
-        iframeTitle: "安全开启麦克风",
-        iframeHelp: "此嵌入页面无法请求麦克风权限。请点击下方按钮在新标签页打开 FC；新页面会立即向浏览器请求权限。",
+        permissionHelp: "打开浏览器的网站控制（锁形或设置图标），将麦克风设为允许，然后再次点击麦克风按钮。手机用户也需要在系统设置中允许浏览器使用麦克风。",
+        popupBlocked: "请允许此页面打开弹出式窗口，然后再次点击麦克风。",
         insecure: "麦克风需要通过安全的 HTTPS 页面使用。",
         insecureTitle: "需要安全连接",
         insecureHelp: "请直接打开已部署的 HTTPS 地址；普通 HTTP 页面无法使用麦克风。",
@@ -833,9 +797,7 @@
         listen: "立即聆听",
         unavailable: "聆听链接即将提供",
         empty: "暂时没有找到合适的 FC 内容，请更详细地描述你的感受。",
-        send: "寻找支持",
-        retryMic: "再次尝试麦克风",
-        openDirect: "在新标签页开启麦克风"
+        send: "寻找支持"
       }
     };
 
@@ -886,6 +848,16 @@
       return url.href;
     }
 
+    function openDirectMicrophoneTab() {
+      const directTab = window.open(directMicrophoneUrl(), "_blank");
+      if (directTab) {
+        directTab.opener = null;
+        return;
+      }
+
+      setStatus("popupBlocked", "error");
+    }
+
     function microphoneAllowedByPolicy() {
       const policy = document.permissionsPolicy || document.featurePolicy;
       if (!policy || typeof policy.allowsFeature !== "function") return true;
@@ -900,7 +872,6 @@
     function showMicrophoneHelp(reason) {
       const issueCopy = {
         permission: ["permission", "permissionTitle", "permissionHelp"],
-        iframe: ["iframePermission", "iframeTitle", "iframeHelp"],
         insecure: ["insecure", "insecureTitle", "insecureHelp"],
         noDevice: ["noDevice", "noDeviceTitle", "noDeviceHelp"],
         deviceBusy: ["deviceBusy", "deviceBusyTitle", "deviceBusyHelp"]
@@ -911,10 +882,6 @@
       setStatus(statusKey, "error");
       elements.permissionTitle.textContent = translated(titleKey);
       elements.permissionMessage.textContent = translated(helpKey);
-      elements.retryPermissionButton.textContent = translated("retryMic");
-      elements.openDirectLink.textContent = translated("openDirect");
-      elements.openDirectLink.href = directMicrophoneUrl();
-      elements.openDirectLink.hidden = !isEmbedded();
       elements.permissionHelp.hidden = false;
     }
 
@@ -1220,7 +1187,7 @@
       }
 
       if (!microphoneAllowedByPolicy()) {
-        showMicrophoneHelp("iframe");
+        openDirectMicrophoneTab();
         return;
       }
 
@@ -1292,7 +1259,8 @@
         appState.processing = false;
         updateControls();
         if (error.name === "NotAllowedError" || error.name === "SecurityError") {
-          showMicrophoneHelp(microphoneAllowedByPolicy() ? "permission" : "iframe");
+          if (isEmbedded() && !microphoneAllowedByPolicy()) openDirectMicrophoneTab();
+          else showMicrophoneHelp("permission");
         } else if (error.name === "NotFoundError" || error.name === "DevicesNotFoundError") {
           showMicrophoneHelp("noDevice");
         } else if (error.name === "NotReadableError" || error.name === "TrackStartError") {
@@ -1332,10 +1300,6 @@
     elements.micButton.addEventListener("click", () => {
       if (appState.recording) stopRecording();
       else if (!appState.processing) void startRecording();
-    });
-
-    elements.retryPermissionButton.addEventListener("click", () => {
-      if (!appState.processing && !appState.recording) void startRecording();
     });
 
     elements.form.addEventListener("submit", (event) => {
