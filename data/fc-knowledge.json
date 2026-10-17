@@ -165,14 +165,14 @@
       },
       {
         "id": "healing_sleep_stress_relief",
-        "name_en": "Healing Sleep / Stress Relief",
-        "name_zh": "改善睡眠 / 舒缓压力",
+        "name_en": "Healing Sleep/Stress Relief",
+        "name_zh": "改善睡眠/舒缓压力",
         "url": null
       },
       {
         "id": "sleep_immune_system",
         "name_en": "Sleep + Immune System",
-        "name_zh": "睡眠治疗 / 提升免疫力",
+        "name_zh": "睡眠治疗 提升免疫力",
         "url": null
       },
       {
@@ -349,7 +349,7 @@
   },
   {
     "id": "eyes_and_hearing",
-    "name_en": "Eyes and hearing",
+    "name_en": "Eyes and Hearing",
     "name_zh": "眼部与听力",
     "items": [
       {
@@ -422,7 +422,7 @@
   },
   {
     "id": "repair_and_immunity",
-    "name_en": "Repair and immunity",
+    "name_en": "Repair and Immunity",
     "name_zh": "修复与免疫",
     "items": [
       {
@@ -465,7 +465,7 @@
   },
   {
     "id": "neurology_and_chronic_diseases",
-    "name_en": "Neurology and chronic diseases",
+    "name_en": "Neurology and Chronic Diseases",
     "name_zh": "神经与慢性病",
     "items": [
       {
@@ -659,7 +659,7 @@
   },
   {
     "id": "digestion_and_metabolism",
-    "name_en": "Digestion and metabolism",
+    "name_en": "Digestion and Metabolism",
     "name_zh": "消化与代谢",
     "items": [
       {
@@ -682,7 +682,7 @@
       },
       {
         "id": "urinary_tract_infection",
-        "name_en": "Urinary Tract Infection",
+        "name_en": "urinary Tract Infection",
         "name_zh": "尿道发炎",
         "url": null
       },
