@@ -697,6 +697,7 @@
               <p id="permissionMessage"></p>
               <div class="permission-actions">
                 <button class="permission-action" id="retryPermissionButton" type="button">Try microphone again</button>
+                <a class="permission-action" id="openDirectLink" href="/" target="_blank" rel="noopener noreferrer" hidden>Open microphone in a new tab</a>
               </div>
             </div>
           </div>
@@ -746,6 +747,7 @@
       permissionTitle: document.getElementById("permissionTitle"),
       permissionMessage: document.getElementById("permissionMessage"),
       retryPermissionButton: document.getElementById("retryPermissionButton"),
+      openDirectLink: document.getElementById("openDirectLink"),
       transcript: document.getElementById("transcript"),
       transcriptLabel: document.getElementById("transcriptLabel"),
       transcriptText: document.getElementById("transcriptText"),
@@ -772,8 +774,8 @@
         permissionTitle: "Allow microphone access",
         permissionHelp: "Open your browser's site controls (lock or settings icon), set Microphone to Allow, then tap Try microphone again. On a phone, also allow microphone access for the browser in device Settings.",
         iframePermission: "Microphone access is blocked by the page containing this assistant.",
-        iframeTitle: "LearnWorlds must allow the microphone",
-        iframeHelp: "Keep this page open and update its LearnWorlds iframe to include allow=\"microphone\". Then refresh this page and tap Try microphone again. The browser cannot display the device permission request until the parent iframe allows it.",
+        iframeTitle: "Open the microphone securely",
+        iframeHelp: "This embedded page cannot request microphone permission. Open FC in a new tab below; the new tab will immediately request access from your browser.",
         insecure: "Microphone access requires a secure HTTPS page.",
         insecureTitle: "A secure connection is required",
         insecureHelp: "Open the deployed HTTPS address directly. Microphone access is unavailable on ordinary HTTP pages.",
@@ -795,7 +797,8 @@
         unavailable: "Listening link coming soon",
         empty: "No matching FC content was returned. Try describing how you feel in a little more detail.",
         send: "Find support",
-        retryMic: "Try microphone again"
+        retryMic: "Try microphone again",
+        openDirect: "Open microphone in a new tab"
       },
       zh: {
         ready: "准备聆听",
@@ -808,8 +811,8 @@
         permissionTitle: "允许使用麦克风",
         permissionHelp: "打开浏览器的网站控制（锁形或设置图标），将麦克风设为允许，然后点击“再次尝试麦克风”。手机用户也需要在系统设置中允许浏览器使用麦克风。",
         iframePermission: "嵌入此助手的页面阻止了麦克风权限。",
-        iframeTitle: "LearnWorlds 必须允许麦克风",
-        iframeHelp: "请保持此页面开启，并在 LearnWorlds 的 iframe 中加入 allow=\"microphone\"。然后刷新本页面并点击“再次尝试麦克风”。父 iframe 允许后，浏览器才能在当前页面显示设备权限请求。",
+        iframeTitle: "安全开启麦克风",
+        iframeHelp: "此嵌入页面无法请求麦克风权限。请点击下方按钮在新标签页打开 FC；新页面会立即向浏览器请求权限。",
         insecure: "麦克风需要通过安全的 HTTPS 页面使用。",
         insecureTitle: "需要安全连接",
         insecureHelp: "请直接打开已部署的 HTTPS 地址；普通 HTTP 页面无法使用麦克风。",
@@ -831,7 +834,8 @@
         unavailable: "聆听链接即将提供",
         empty: "暂时没有找到合适的 FC 内容，请更详细地描述你的感受。",
         send: "寻找支持",
-        retryMic: "再次尝试麦克风"
+        retryMic: "再次尝试麦克风",
+        openDirect: "在新标签页开启麦克风"
       }
     };
 
@@ -868,6 +872,20 @@
       elements.statusText.textContent = detail || translated(key);
     }
 
+    function isEmbedded() {
+      try {
+        return window.self !== window.top;
+      } catch (_error) {
+        return true;
+      }
+    }
+
+    function directMicrophoneUrl() {
+      const url = new URL(window.location.href);
+      url.searchParams.set("requestMicrophone", "1");
+      return url.href;
+    }
+
     function microphoneAllowedByPolicy() {
       const policy = document.permissionsPolicy || document.featurePolicy;
       if (!policy || typeof policy.allowsFeature !== "function") return true;
@@ -894,6 +912,9 @@
       elements.permissionTitle.textContent = translated(titleKey);
       elements.permissionMessage.textContent = translated(helpKey);
       elements.retryPermissionButton.textContent = translated("retryMic");
+      elements.openDirectLink.textContent = translated("openDirect");
+      elements.openDirectLink.href = directMicrophoneUrl();
+      elements.openDirectLink.hidden = !isEmbedded();
       elements.permissionHelp.hidden = false;
     }
 
@@ -902,6 +923,15 @@
       elements.permissionHelp.hidden = true;
       elements.permissionTitle.textContent = "";
       elements.permissionMessage.textContent = "";
+    }
+
+    function requestMicrophoneFromDirectTab() {
+      const url = new URL(window.location.href);
+      if (url.searchParams.get("requestMicrophone") !== "1" || isEmbedded()) return;
+
+      url.searchParams.delete("requestMicrophone");
+      window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+      void startRecording();
     }
 
     function updateControls() {
@@ -1329,6 +1359,7 @@
     elements.resetButton.addEventListener("click", resetConsultation);
     window.addEventListener("pagehide", stopTracks);
     updateControls();
+    requestMicrophoneFromDirectTab();
   </script>
 </body>
 </html>
