@@ -59,6 +59,8 @@ test("sleep BGM preference returns only actual BGM recordings and catalog links"
     /detail-deep-relaxing-sleep$/,
   );
 });
+test('negative music preferences do not select BGM',async()=>{const r=await generateRecommendations('I want sleep support without music',{ask:async()=>({ids:[]})});assert.ok(r.recommendations.length);assert.ok(r.recommendations.every(i=>i.recordings.every(x=>x.version!=='bgm')));});
+test('disliking Intensive is not interpreted as requesting it',async()=>{const r=await generateRecommendations('想睡好一点，不喜欢 Intensive',{ask:async()=>({ids:[]})});assert.ok(r.recommendations.length);assert.ok(r.recommendations.every(i=>i.recordings.every(x=>x.version!=='intensive')));});
 test("model cannot invent tracks, playback links, versions or duplicate results", () => {
   const c = selectCandidates("sleep");
   const r = validSelection({ ids: ["fake", c[0].id, c[0].id] }, c);
