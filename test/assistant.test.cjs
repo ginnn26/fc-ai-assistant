@@ -9,10 +9,17 @@ const {
 } = require("../services/assistant-recommendation");
 const { createChatRouter } = require("../routes/chat");
 const catalog = require("../data/assistant-catalog.json");
+const { wav: makeWav } = require("./voice-fixture.cjs");
 async function run(fn, opts = {}) {
   const app = express();
   app.use(express.json({ limit: "12kb" }));
-  app.use("/chat", createChatRouter(opts));
+  app.use(
+    "/chat",
+    createChatRouter({
+      usage: { reserve: () => ({}), session: async () => ({}) },
+      ...opts,
+    }),
+  );
   const s = app.listen(0, "127.0.0.1");
   await new Promise((r) => s.once("listening", r));
   const base = `http://127.0.0.1:${s.address().port}`;
@@ -41,7 +48,9 @@ test("catalog uses distinct themes, real units and only protected FC playback ro
       assert.equal(u.origin, "https://frequencies-clinic.learnworlds.com");
       assert.equal(u.searchParams.get("unit"), r.unit);
       assert.match(r.unit, /^[a-f0-9]{24}$/);
-      assert.ok(["bgm", "smooth", "intensive"].includes(r.version));
+      assert.ok(
+        ["bgm", "smooth", "intensive", "unconfirmed"].includes(r.version),
+      );
     }
   }
 });
@@ -59,8 +68,29 @@ test("sleep BGM preference returns only actual BGM recordings and catalog links"
     /detail-deep-relaxing-sleep$/,
   );
 });
-test('negative music preferences do not select BGM',async()=>{const r=await generateRecommendations('I want sleep support without music',{ask:async()=>({ids:[]})});assert.ok(r.recommendations.length);assert.ok(r.recommendations.every(i=>i.recordings.every(x=>x.version!=='bgm')));});
-test('disliking Intensive is not interpreted as requesting it',async()=>{const r=await generateRecommendations('想睡好一点，不喜欢 Intensive',{ask:async()=>({ids:[]})});assert.ok(r.recommendations.length);assert.ok(r.recommendations.every(i=>i.recordings.every(x=>x.version!=='intensive')));});
+test("negative music preferences do not select BGM", async () => {
+  const r = await generateRecommendations(
+    "I want sleep support without music",
+    { ask: async () => ({ ids: [] }) },
+  );
+  assert.ok(r.recommendations.length);
+  assert.ok(
+    r.recommendations.every((i) =>
+      i.recordings.every((x) => x.version !== "bgm"),
+    ),
+  );
+});
+test("disliking Intensive is not interpreted as requesting it", async () => {
+  const r = await generateRecommendations("想睡好一点，不喜欢 Intensive", {
+    ask: async () => ({ ids: [] }),
+  });
+  assert.ok(r.recommendations.length);
+  assert.ok(
+    r.recommendations.every((i) =>
+      i.recordings.every((x) => x.version !== "intensive"),
+    ),
+  );
+});
 test("model cannot invent tracks, playback links, versions or duplicate results", () => {
   const c = selectCandidates("sleep");
   const r = validSelection({ ids: ["fake", c[0].id, c[0].id] }, c);
@@ -162,8 +192,7 @@ test("transcription requires consent and recognizable audio, and returns editabl
           body: f,
         });
       };
-      const wav = Buffer.alloc(64);
-      wav.write("RIFF");
+      const wav = makeWav();
       assert.equal((await submit(wav, false)).status, 422);
       assert.equal((await submit(Buffer.alloc(64), true)).status, 415);
       const res = await submit(wav, true);
@@ -185,8 +214,7 @@ test("empty or failed transcription is recoverable without leaking provider erro
   run(
     async (base) => {
       const f = new FormData(),
-        wav = Buffer.alloc(64);
-      wav.write("RIFF");
+        wav = makeWav();
       f.append("audio", new Blob([wav]), "test.wav");
       f.append("consent", "true");
       const r = await fetch(base + "/chat/transcribe", {
