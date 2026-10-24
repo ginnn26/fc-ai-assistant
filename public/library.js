@@ -28,6 +28,7 @@ function render() {
   const box = $("reading");
   box.replaceChildren();
   box.hidden = false;
+  box.append(window.FCVisuals.illustration(item));
   const full = node("details", "", "full-explanation");
   full.append(
     node(
@@ -39,37 +40,33 @@ function render() {
     const ps = item.passages.filter((p) => p.kind === kind);
     if (!ps.length) continue;
     const section = node("section", "");
-    section.append(
-      node(
-        "h2",
-        (en
-          ? {
-              purpose: "Why choose this theme?",
-              usage: "How to listen",
-              caution: "Care & cautions",
-            }
-          : { purpose: "为什么选这首", usage: "怎么听", caution: "注意事项" })[
-          kind
-        ],
-      ),
-    );
+    const label = (
+      en
+        ? {
+            purpose: "Why choose this theme?",
+            usage: "How to listen",
+            caution: "Care & cautions",
+          }
+        : { purpose: "为什么选这首", usage: "怎么听", caution: "注意事项" }
+    )[kind];
     const texts = ps
       .map((p) => p[language] || p[en ? "zh" : "en"])
       .filter(Boolean);
     // Care instructions remain visible in full; never hide a warning by shortening it.
     section.append(
-      node(
-        "p",
+      window.FCVisuals.point(
+        { purpose: "why", usage: "listen", caution: "care" }[kind],
+        label,
         kind === "caution"
           ? texts.join("\n\n")
           : brief(texts.join(" "), en ? 240 : 100),
-        "article-text",
+        "h2",
       ),
     );
     box.append(section);
     if (kind !== "caution") {
       const complete = node("section", "");
-      complete.append(node("h3", section.querySelector("h2").textContent));
+      complete.append(node("h3", label));
       for (const text of texts)
         complete.append(node("p", text, "article-text"));
       full.append(complete);
