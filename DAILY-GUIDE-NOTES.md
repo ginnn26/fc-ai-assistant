@@ -12,6 +12,10 @@ The installed stable shell loads the fixed public `release.json` entry and has a
 
 Validation: 62 tests passed on this release, including original assistant/assessment safeguards, date/score validation, sleep separation, native save failure boundaries and actual media counting. A synthetic baseline and a short Grounding playback entry restored on school re-entry. An earlier quick exit lost the latest after-score; this remains a real-member release gate rather than a claimed success. The owner account alone is enrolled in the private pilot without payment records or notification emails.
 
+Owner test on 25 October: score 3 disappeared after the owner used save-and-leave, returned to the member homepage, and re-entered. This is a failed release gate. A separate administrator-context test restored synthetic score 2, so the owner's failure has not yet been reproduced in the available administrator browser session.
+
+Save recovery patch: idle checkpoints no longer replay successful historical payloads, unchanged saves are skipped, failed submissions remain retryable, and suspend-data readback plus the suspend-exit response are checked. This removes a demonstrated stale-page overwrite risk in the application; it does not prove that risk caused the owner's failure or provide cross-device concurrency control. SCORM termination itself is still managed by the LMS. Full local regression: 65 tests pass. Real-member persistence is still unverified after the patch.
+
 Before public launch: owner-member save/exit and rapid closure, second authorized account isolation, real second-device recovery, offline/retry, loop/song changes, update preservation, retention/export/deletion. Do not enable a public navigation link until these pass. Use one record-editing device at a time until concurrent-edit behavior is resolved.
 
 Official platform guidance: https://support.learnworlds.com/support/solutions/articles/12000052986-how-to-upload-scorm-files-and-html5-packages-to-your-courses
