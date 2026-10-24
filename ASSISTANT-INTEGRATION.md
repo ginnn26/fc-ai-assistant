@@ -1,6 +1,6 @@
 # FC guided assistant integration and release gates
 
-This is a staged implementation. Existing production remains PR #2. No new LearnWorlds plan, database, disk, paid service or credential has been provisioned.
+This is a staged implementation. Existing production remains PR #2. No new LearnWorlds plan, database, disk, paid service or production credential has been provisioned. The owner approved a shared content-management workflow, public text explanations, and a Google Drive pilot. A local editorial manager/public reader and an unconnected Apps Script gateway are now implemented; see [Google Drive pilot](integrations/google-drive/README.md) for exact setup and outstanding release gates. Preparing an Apps Script project does not authorize it or deploy the integration.
 
 ## What can be reviewed now
 
@@ -18,7 +18,7 @@ OpenAI does not automatically read LearnWorlds, and embedding the app in FC does
 
 Without an existing source interface, alternatives require a deliberate workflow choice: an approved shared content-management source used by both FC descriptions and the assistant, or browser-assisted snapshot refreshes. The latter is manual and must not be advertised as automatic. A shared source must also handle access to protected descriptions rather than publishing paid content in a public repository. No authenticated browser cookies may be copied to Render as a shortcut.
 
-The actual FC Developers > API screen was checked read-only: it explicitly requires a higher plan and disables the credential fields. Therefore this is not just a missing key on an available current-plan feature. No plan change was made. The owner has been asked whether to adopt a new FC-contained shared content-management workflow while preserving existing pages, or retain snapshot testing for now. That decision, a durable store and access controls are separate from the adapters already implemented here.
+The actual FC Developers > API screen was checked read-only: it explicitly requires a higher plan and disables the credential fields. Therefore this is not just a missing key on an available current-plan feature. No plan change was made. The owner accepted a shared content-management workflow while preserving existing pages. Public text is allowed; audio retains FC membership checks. The Google Drive content connection, long-form migration, durable usage storage and trusted member verification are still separate, incomplete release gates.
 
 Membership choices in the UI select playback routes only. Browser attributes, a posted user ID, course labels, `postMessage` from an iframe or a client-selected plan are not sufficient proof of paid membership. Anonymous device identifiers are resettable and cannot enforce a human-level quota; they are a convenience plus abuse guard, not a verified identity.
 
@@ -73,7 +73,11 @@ Testimonials require `approved:true`, a stable case/post `id`, a short neutral `
 The assistant backend sends `{ "ticket": "opaque-single-use-ticket" }` to the identity endpoint. It must atomically redeem the ticket and return:
 
 ```json
-{ "subject": "stable-opaque-school-user-id", "tier": "member", "expiresAt": 1792887000000 }
+{
+  "subject": "stable-opaque-school-user-id",
+  "tier": "member",
+  "expiresAt": 1792887000000
+}
 ```
 
 `expiresAt` is an epoch millisecond timestamp in the next fifteen minutes; the value above is illustrative. `tier` is `member` or `trial`. Raw email, phone, medical information and account credentials must not be returned. Membership changes must invalidate or expire the ticket/session. The assistant hashes the opaque subject with its own secret, verifies expiry and rejects locally replayed tickets. The identity issuer must also prevent replay across service restarts. This contract must be implemented and verified by the actual identity owner before the member allowance is enabled.

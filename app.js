@@ -9,6 +9,8 @@ const app = express();
 
 // Keep assessment headers/body limits separate from the existing voice/chat flow.
 app.use("/assessment", require("./routes/assessment").createAssessmentRouter());
+// Separate authenticated editor and public, reviewed text; assessment remains isolated.
+app.use(require("./routes/content").createContentRouter());
 
 app.use(cors());
 app.use(express.json({ limit: "12kb" }));
@@ -18,7 +20,10 @@ app.use((req, res, next) => {
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("Referrer-Policy", "no-referrer");
-  res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; media-src 'self' blob:; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'self' https://frequencies-clinic.learnworlds.com");
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; media-src 'self' blob:; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'self' https://frequencies-clinic.learnworlds.com",
+  );
   next();
 });
 app.use(express.static(require("node:path").join(__dirname, "public")));
