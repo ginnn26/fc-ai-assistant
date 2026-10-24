@@ -1,7 +1,7 @@
 {
-  "version": "fc-voice-catalog-2026-10-24",
-  "verifiedSourceDate": "2026-10-17",
-  "source": "Owner-authorized FC catalog readback; actual course and unit identifiers, not duration-based inference",
+  "version": "fc-voice-catalog-2026-10-25",
+  "verifiedSourceDate": "2026-10-25",
+  "source": "Owner-authorized current FC browser readback. Unconfirmed versions are retained as metadata and excluded from version recommendations; no duration-based classification.",
   "items": [
     {
       "id": "abdominal_pain",
@@ -1101,6 +1101,30 @@
           "duration": "01:02:00",
           "label": "Cough 1",
           "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=trial-soundhealing&unit=68d5499b13d0cf1c8f03e346"
+        },
+        {
+          "course": "sound-healing",
+          "unit": "68d4f37ab63543247e0a2427",
+          "version": "unconfirmed",
+          "duration": "31:00",
+          "label": "Cough 1",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=sound-healing&unit=68d4f37ab63543247e0a2427"
+        },
+        {
+          "course": "private-soundhealing",
+          "unit": "68d549aed96ead076c0d3ed8",
+          "version": "unconfirmed",
+          "duration": "31:00",
+          "label": "Cough 1",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=private-soundhealing&unit=68d549aed96ead076c0d3ed8"
+        },
+        {
+          "course": "trial-soundhealing",
+          "unit": "68d5499c13d0cf1c8f03e378",
+          "version": "unconfirmed",
+          "duration": "31:00",
+          "label": "Cough 1",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=trial-soundhealing&unit=68d5499c13d0cf1c8f03e378"
         }
       ]
     },
@@ -1177,6 +1201,44 @@
           "duration": "20:00",
           "label": "Cough 3",
           "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=trial-soundhealing&unit=68d5499c13d0cf1c8f03e37a"
+        }
+      ]
+    },
+    {
+      "id": "cough_4",
+      "name_en": "Cough 4",
+      "name_zh": "咳嗽 4",
+      "category_id": "other_body_topics",
+      "category_en": "Other themes",
+      "category_zh": "其他主题",
+      "aliases": [
+        "Cough 4"
+      ],
+      "description_url": "https://frequencies-clinic.learnworlds.com/detail-cough",
+      "recordings": [
+        {
+          "course": "sound-healing",
+          "unit": "68d4f35c725d6c467907cff7",
+          "version": "unconfirmed",
+          "duration": "30:04",
+          "label": "Cough 4",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=sound-healing&unit=68d4f35c725d6c467907cff7"
+        },
+        {
+          "course": "private-soundhealing",
+          "unit": "68d549aed96ead076c0d3edb",
+          "version": "unconfirmed",
+          "duration": "30:04",
+          "label": "Cough 4",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=private-soundhealing&unit=68d549aed96ead076c0d3edb"
+        },
+        {
+          "course": "trial-soundhealing",
+          "unit": "68d5499c13d0cf1c8f03e37b",
+          "version": "unconfirmed",
+          "duration": "30:04",
+          "label": "Cough 4",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=trial-soundhealing&unit=68d5499c13d0cf1c8f03e37b"
         }
       ]
     },
@@ -1772,6 +1834,44 @@
           "duration": "20:35",
           "label": "Edema 2",
           "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=trial-soundhealing&unit=68d5499c13d0cf1c8f03e387"
+        }
+      ]
+    },
+    {
+      "id": "edema_3",
+      "name_en": "Edema 3",
+      "name_zh": "水肿 3",
+      "category_id": "other_body_topics",
+      "category_en": "Other themes",
+      "category_zh": "其他主题",
+      "aliases": [
+        "Edema 3"
+      ],
+      "description_url": "https://frequencies-clinic.learnworlds.com/detail-edema-3",
+      "recordings": [
+        {
+          "course": "sound-healing",
+          "unit": "68d5086e35cfbdbda20b36f7",
+          "version": "unconfirmed",
+          "duration": "01:00:00",
+          "label": "Edema 3",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=sound-healing&unit=68d5086e35cfbdbda20b36f7"
+        },
+        {
+          "course": "private-soundhealing",
+          "unit": "68d549aed96ead076c0d3ee8",
+          "version": "unconfirmed",
+          "duration": "01:00:00",
+          "label": "Edema 3",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=private-soundhealing&unit=68d549aed96ead076c0d3ee8"
+        },
+        {
+          "course": "trial-soundhealing",
+          "unit": "68d5499c13d0cf1c8f03e388",
+          "version": "unconfirmed",
+          "duration": "01:00:00",
+          "label": "Edema 3",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=trial-soundhealing&unit=68d5499c13d0cf1c8f03e388"
         }
       ]
     },
@@ -2815,6 +2915,44 @@
       ]
     },
     {
+      "id": "heal_your_inner_child",
+      "name_en": "Heal Your Inner Child",
+      "name_zh": "治愈你的内在小孩",
+      "category_id": "other_body_topics",
+      "category_en": "Other themes",
+      "category_zh": "其他主题",
+      "aliases": [
+        "Heal you inner child"
+      ],
+      "description_url": null,
+      "recordings": [
+        {
+          "course": "sound-healing",
+          "unit": "68fa23e2bff2e513910b4b07",
+          "version": "unconfirmed",
+          "duration": "01:00:00",
+          "label": "Heal Your Inner Child",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=sound-healing&unit=68fa23e2bff2e513910b4b07"
+        },
+        {
+          "course": "private-soundhealing",
+          "unit": "68fa2cd6146464fa550f9a66",
+          "version": "unconfirmed",
+          "duration": "01:00:00",
+          "label": "Heal Your Inner Child",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=private-soundhealing&unit=68fa2cd6146464fa550f9a66"
+        },
+        {
+          "course": "trial-soundhealing",
+          "unit": "68fa2c2887105bcd400bbc94",
+          "version": "unconfirmed",
+          "duration": "01:00:00",
+          "label": "Heal Your Inner Child",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=trial-soundhealing&unit=68fa2c2887105bcd400bbc94"
+        }
+      ]
+    },
+    {
       "id": "healing_sleep",
       "name_en": "Healing Sleep",
       "name_zh": "治愈睡眠",
@@ -3081,6 +3219,44 @@
       ]
     },
     {
+      "id": "herpes",
+      "name_en": "Herpes",
+      "name_zh": "疱疹",
+      "category_id": "other_body_topics",
+      "category_en": "Other themes",
+      "category_zh": "其他主题",
+      "aliases": [
+        "Herpes"
+      ],
+      "description_url": null,
+      "recordings": [
+        {
+          "course": "sound-healing",
+          "unit": "68d2631f3623a545c108ac17",
+          "version": "unconfirmed",
+          "duration": "31:20",
+          "label": "Herpes",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=sound-healing&unit=68d2631f3623a545c108ac17"
+        },
+        {
+          "course": "private-soundhealing",
+          "unit": "68d549aed96ead076c0d3ecd",
+          "version": "unconfirmed",
+          "duration": "31:20",
+          "label": "Herpes",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=private-soundhealing&unit=68d549aed96ead076c0d3ecd"
+        },
+        {
+          "course": "trial-soundhealing",
+          "unit": "68d5499b13d0cf1c8f03e36d",
+          "version": "unconfirmed",
+          "duration": "31:20",
+          "label": "Herpes",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=trial-soundhealing&unit=68d5499b13d0cf1c8f03e36d"
+        }
+      ]
+    },
+    {
       "id": "hot_flashes",
       "name_en": "Hot Flashes",
       "name_zh": "潮热",
@@ -3229,6 +3405,82 @@
           "duration": "15:24",
           "label": "Hypertension (1)",
           "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=trial-soundhealing&unit=68d5499c13d0cf1c8f03e3a4"
+        }
+      ]
+    },
+    {
+      "id": "immune_system_support_im3",
+      "name_en": "Immune System Support (IM3)",
+      "name_zh": "免疫系统支持（IM3）",
+      "category_id": "other_body_topics",
+      "category_en": "Other themes",
+      "category_zh": "其他主题",
+      "aliases": [
+        "IM3"
+      ],
+      "description_url": null,
+      "recordings": [
+        {
+          "course": "sound-healing",
+          "unit": "68d524e04509b4c91c016f57",
+          "version": "unconfirmed",
+          "duration": "01:00:00",
+          "label": "Immune System Support (IM3)",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=sound-healing&unit=68d524e04509b4c91c016f57"
+        },
+        {
+          "course": "private-soundhealing",
+          "unit": "68d549aed96ead076c0d3f06",
+          "version": "unconfirmed",
+          "duration": "01:00:00",
+          "label": "Immune System Support (IM3)",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=private-soundhealing&unit=68d549aed96ead076c0d3f06"
+        },
+        {
+          "course": "trial-soundhealing",
+          "unit": "68d5499c13d0cf1c8f03e3a6",
+          "version": "unconfirmed",
+          "duration": "01:00:00",
+          "label": "Immune System Support (IM3)",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=trial-soundhealing&unit=68d5499c13d0cf1c8f03e3a6"
+        }
+      ]
+    },
+    {
+      "id": "immune_system_support_im4",
+      "name_en": "Immune System Support (IM4)",
+      "name_zh": "免疫系统支持（IM4）",
+      "category_id": "other_body_topics",
+      "category_en": "Other themes",
+      "category_zh": "其他主题",
+      "aliases": [
+        "IM4"
+      ],
+      "description_url": null,
+      "recordings": [
+        {
+          "course": "sound-healing",
+          "unit": "68d5241f638034ba35067737",
+          "version": "unconfirmed",
+          "duration": "30:00",
+          "label": "Immune System Support (IM4)",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=sound-healing&unit=68d5241f638034ba35067737"
+        },
+        {
+          "course": "private-soundhealing",
+          "unit": "68d549aed96ead076c0d3f07",
+          "version": "unconfirmed",
+          "duration": "30:00",
+          "label": "Immune System Support (IM4)",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=private-soundhealing&unit=68d549aed96ead076c0d3f07"
+        },
+        {
+          "course": "trial-soundhealing",
+          "unit": "68d5499c13d0cf1c8f03e3a7",
+          "version": "unconfirmed",
+          "duration": "30:00",
+          "label": "Immune System Support (IM4)",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=trial-soundhealing&unit=68d5499c13d0cf1c8f03e3a7"
         }
       ]
     },
@@ -3596,6 +3848,30 @@
           "duration": "01:06:40",
           "label": "Kidney Disease",
           "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=trial-soundhealing&unit=68d5499b13d0cf1c8f03e31d"
+        },
+        {
+          "course": "sound-healing",
+          "unit": "68d5245d6eca6b341b0ccaa7",
+          "version": "unconfirmed",
+          "duration": "33:20",
+          "label": "Kidney Disease",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=sound-healing&unit=68d5245d6eca6b341b0ccaa7"
+        },
+        {
+          "course": "private-soundhealing",
+          "unit": "68d549aed96ead076c0d3f0d",
+          "version": "unconfirmed",
+          "duration": "33:20",
+          "label": "Kidney Disease",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=private-soundhealing&unit=68d549aed96ead076c0d3f0d"
+        },
+        {
+          "course": "trial-soundhealing",
+          "unit": "68d5499c13d0cf1c8f03e3ad",
+          "version": "unconfirmed",
+          "duration": "33:20",
+          "label": "Kidney Disease",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=trial-soundhealing&unit=68d5499c13d0cf1c8f03e3ad"
         }
       ]
     },
@@ -5145,6 +5421,44 @@
       ]
     },
     {
+      "id": "sleep_peacefully",
+      "name_en": "Sleep Peacefully",
+      "name_zh": "平静的睡眠",
+      "category_id": "other_body_topics",
+      "category_en": "Other themes",
+      "category_zh": "其他主题",
+      "aliases": [
+        "Sleep Peacefully"
+      ],
+      "description_url": null,
+      "recordings": [
+        {
+          "course": "sound-healing",
+          "unit": "68d184ba9e6dd22850013527",
+          "version": "unconfirmed",
+          "duration": "30:00",
+          "label": "Sleep Peacefully",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=sound-healing&unit=68d184ba9e6dd22850013527"
+        },
+        {
+          "course": "private-soundhealing",
+          "unit": "68d549add96ead076c0d3ebe",
+          "version": "unconfirmed",
+          "duration": "30:00",
+          "label": "Sleep Peacefully",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=private-soundhealing&unit=68d549add96ead076c0d3ebe"
+        },
+        {
+          "course": "trial-soundhealing",
+          "unit": "68d5499b13d0cf1c8f03e35e",
+          "version": "unconfirmed",
+          "duration": "30:00",
+          "label": "Sleep Peacefully",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=trial-soundhealing&unit=68d5499b13d0cf1c8f03e35e"
+        }
+      ]
+    },
+    {
       "id": "sleep_immune_system",
       "name_en": "Sleep-Immune System",
       "name_zh": "睡眠治疗 提升免疫力",
@@ -5255,6 +5569,44 @@
           "duration": "15:00",
           "label": "Sore Throat 2",
           "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=trial-soundhealing&unit=68d5499b13d0cf1c8f03e360"
+        }
+      ]
+    },
+    {
+      "id": "spleen_healthy",
+      "name_en": "Spleen Healthy",
+      "name_zh": "脾脏健康",
+      "category_id": "other_body_topics",
+      "category_en": "Other themes",
+      "category_zh": "其他主题",
+      "aliases": [
+        "Spleen Healthy"
+      ],
+      "description_url": null,
+      "recordings": [
+        {
+          "course": "sound-healing",
+          "unit": "68fa2838c08242aab60473a7",
+          "version": "unconfirmed",
+          "duration": "47:00",
+          "label": "Spleen Healthy",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=sound-healing&unit=68fa2838c08242aab60473a7"
+        },
+        {
+          "course": "private-soundhealing",
+          "unit": "68fa2cd6146464fa550f9a5e",
+          "version": "unconfirmed",
+          "duration": "47:00",
+          "label": "Spleen Healthy",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=private-soundhealing&unit=68fa2cd6146464fa550f9a5e"
+        },
+        {
+          "course": "trial-soundhealing",
+          "unit": "68fa2c2887105bcd400bbc9a",
+          "version": "unconfirmed",
+          "duration": "47:00",
+          "label": "Spleen Healthy",
+          "url": "https://frequencies-clinic.learnworlds.com/path-player?courseid=trial-soundhealing&unit=68fa2c2887105bcd400bbc9a"
         }
       ]
     },
