@@ -45,7 +45,7 @@ function createContentRouter({
     });
     next();
   });
-  r.use("/content-api", express.json({ limit: "80kb" }));
+  r.use("/content-api", express.json({ limit: "240kb" }));
   const page = (name) => (req, res) =>
     res.sendFile(path.join(__dirname, "../public", name));
   r.get("/content-manager", page("content-manager.html"));
