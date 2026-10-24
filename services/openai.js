@@ -12,10 +12,10 @@ const client = new OpenAI({
 
 async function askOpenAI(message, options = {}) {
   const response = await client.responses.create({
-    model: "gpt-5.4-nano",
+    model: options.model || "gpt-5.4-nano",
     input: message,
     store: false,
-    max_output_tokens: 1000,
+    max_output_tokens: options.model === "gpt-5.4-mini" ? 1800 : 1000,
     ...(options.schema
       ? {
           text: {
