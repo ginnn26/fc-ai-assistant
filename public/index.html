@@ -391,18 +391,20 @@
       }
     </style>
     <link rel="stylesheet" href="/listening-visuals.css" />
+    <link rel="stylesheet" href="/voice-ui.css" />
     <script src="/theme-media.js" defer></script>
     <script src="/listening-visuals.js" defer></script>
+    <script src="/voice-ui.js" defer></script>
     <script src="/assistant.js" defer></script>
   </head>
   <body>
     <main class="shell">
       <header>
         <a
-          class="brand"
+          class="home-link"
           href="https://frequencies-clinic.learnworlds.com/pages/home"
           target="_top"
-          ><span class="mark">fc∿</span><span>FREQUENCIES<br />CLINIC</span></a
+          >← 首页 / Home</a
         ><button id="language" class="quiet" type="button">English</button>
       </header>
       <section class="hero">
@@ -422,19 +424,28 @@
           ><input id="consent" type="checkbox" /><span id="consent-copy"></span
         ></label>
         <div class="record-row">
+          <div class="voice-stage">
+            <span class="voice-halo one" aria-hidden="true"></span>
+            <span class="voice-halo two" aria-hidden="true"></span>
+            <span class="voice-halo three" aria-hidden="true"></span>
+            <span class="voice-spark a" aria-hidden="true"></span>
+            <span class="voice-spark b" aria-hidden="true"></span>
+            <span class="voice-spark c" aria-hidden="true"></span>
           <button
             id="micButton"
             class="primary"
             type="button"
             aria-pressed="false"
-          ></button
-          ><button
+          ><svg class="voice-microphone" viewBox="0 0 32 32" fill="none" aria-hidden="true" focusable="false"><rect x="11" y="3" width="10" height="17" rx="5" stroke="currentColor" stroke-width="1.8"/><path d="M7 15v2a9 9 0 0 0 18 0v-2M16 26v4M11 30h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><svg class="voice-stop" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect x="7" y="7" width="18" height="18" rx="5" fill="currentColor"/></svg><span data-mic-label>开始说话</span></button>
+          </div>
+          <div class="voice-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <span id="record-note" class="small"></span>
+          <button
             id="cancel-recording"
             class="secondary"
             type="button"
             hidden
-          ></button
-          ><span id="record-note" class="small"></span>
+          >取消录音</button>
         </div>
         <div id="status" class="status" role="status" aria-live="polite"></div>
         <div id="mic-help" class="help" hidden>

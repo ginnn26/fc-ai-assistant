@@ -136,9 +136,7 @@
   }
   function controls() {
     $("language").disabled = busy || recording;
-    $("micButton").textContent = recording
-      ? t("■ 停止录音", "■ Stop recording")
-      : t("● 开始录音", "● Record my voice");
+    window.FCVoiceUI.paint($("micButton"), { recording, busy, language: lang });
     $("micButton").classList.toggle("recording", recording);
     $("micButton").setAttribute("aria-pressed", String(recording));
     $("micButton").disabled = busy;
