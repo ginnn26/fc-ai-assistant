@@ -390,6 +390,170 @@
         }
       }
     </style>
+    <style>
+      .voice-studio {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(210px, 0.75fr);
+        gap: 28px;
+        margin: 24px 0;
+        background: linear-gradient(125deg, #eef1e7, #fbf6e9);
+        border: 1px solid #d6dfce;
+        border-radius: 24px;
+        padding: 28px;
+      }
+      .voice-controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 15px;
+        min-width: 0;
+      }
+      #micButton {
+        width: 136px;
+        height: 136px;
+        border-radius: 50%;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 7px;
+        background: radial-gradient(circle at 35% 25%, #52745c, #244b3e 70%);
+        box-shadow:
+          0 0 0 10px #c7d3ba55,
+          0 0 0 22px #dbe1d044,
+          0 14px 28px #244b3e22;
+        position: relative;
+      }
+      #micButton svg {
+        width: 37px;
+        height: 37px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.6;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      #mic-label {
+        font-size: 14px;
+        letter-spacing: 0.05em;
+      }
+      #micButton.recording {
+        box-shadow:
+          0 0 0 10px #b7786655,
+          0 0 0 22px #ddbaaa44;
+        background: #8d4f44;
+      }
+      #waveform {
+        height: 44px;
+        width: 100%;
+        max-width: 280px;
+        display: block;
+      }
+      .voice-guide h3 {
+        font:
+          normal 24px Georgia,
+          "Songti SC",
+          serif;
+        margin: 0 0 12px;
+      }
+      .voice-guide ol {
+        padding-left: 22px;
+        margin: 0;
+        color: #536859;
+        font-size: 14px;
+        line-height: 1.7;
+      }
+      .voice-guide li {
+        margin: 9px 0;
+      }
+      .voice-guide .small {
+        margin-bottom: 0;
+      }
+      .intake-fields {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 20px;
+        margin: 18px 0;
+        background: #f8f8f0;
+      }
+      .intake-fields label {
+        display: block;
+        margin-bottom: 16px;
+        font-size: 15px;
+      }
+      .intake-fields textarea {
+        min-height: 85px;
+        margin-top: 8px;
+      }
+      .context-note {
+        padding: 12px 16px;
+        border-radius: 12px;
+        background: #f2f0e6;
+        font-size: 13px;
+        color: #596c5e;
+      }
+      .source-quote {
+        border-left: 3px solid #b99b66;
+        margin: 14px 0;
+        padding: 10px 16px;
+        background: #f4f5ee;
+        color: #4b6253;
+        font-size: 14px;
+      }
+      .source-quote p {
+        margin: 0 0 7px;
+      }
+      .source-status {
+        font-size: 12px;
+        color: #617064;
+        margin-top: 18px;
+      }
+      .result-card details {
+        border-top: 1px solid var(--line);
+        padding-top: 12px;
+        margin-top: 14px;
+      }
+      .result-card summary {
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .result-card .testimonial {
+        display: block;
+        font-size: 14px;
+        margin: 8px 0;
+      }
+      .safety-result {
+        border-color: #b58d68;
+        background: #fff9ee;
+      }
+      @media (max-width: 680px) {
+        .voice-studio {
+          grid-template-columns: 1fr;
+          padding: 25px 20px;
+          gap: 25px;
+        }
+        .voice-guide {
+          order: 2;
+        }
+        .voice-controls {
+          padding-top: 12px;
+        }
+        .voice-guide h3 {
+          font-size: 22px;
+        }
+        #micButton {
+          width: 120px;
+          height: 120px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+      }
+    </style>
     <script src="/assistant.js" defer></script>
   </head>
   <body>
@@ -415,23 +579,43 @@
       <div id="steps" class="steps"></div>
       <section class="panel" aria-labelledby="share-title">
         <h2 id="share-title"></h2>
+        <div id="usage-note" class="context-note" role="status"></div>
         <label class="consent"
           ><input id="consent" type="checkbox" /><span id="consent-copy"></span
         ></label>
-        <div class="record-row">
-          <button
-            id="micButton"
-            class="primary"
-            type="button"
-            aria-pressed="false"
-          ></button
-          ><button
-            id="cancel-recording"
-            class="secondary"
-            type="button"
-            hidden
-          ></button
-          ><span id="record-note" class="small"></span>
+        <div class="voice-studio">
+          <div class="voice-guide">
+            <h3 id="guide-title"></h3>
+            <ol id="guide-list"></ol>
+            <p class="small" id="guide-note"></p>
+          </div>
+          <div class="voice-controls">
+            <button
+              id="micButton"
+              class="primary"
+              type="button"
+              aria-pressed="false"
+            >
+              <svg viewBox="0 0 32 32" aria-hidden="true">
+                <rect x="11" y="3" width="10" height="17" rx="5"></rect>
+                <path
+                  d="M7 14v2a9 9 0 0 0 18 0v-2M16 25v5M11 30h10"
+                ></path></svg
+              ><span id="mic-label"></span></button
+            ><button
+              id="cancel-recording"
+              class="secondary"
+              type="button"
+              hidden
+            ></button
+            ><canvas
+              id="waveform"
+              width="560"
+              height="88"
+              aria-hidden="true"
+            ></canvas
+            ><span id="record-note" class="small"></span>
+          </div>
         </div>
         <div id="status" class="status" role="status" aria-live="polite"></div>
         <div id="mic-help" class="help" hidden>
@@ -473,6 +657,10 @@
           <button id="reset" class="quiet" type="button"></button>
         </div>
         <p id="results-message" class="notice"></p>
+        <form id="intakeForm" class="intake-fields" hidden>
+          <div id="intake-fields"></div>
+          <button id="followupButton" class="primary" type="submit"></button>
+        </form>
         <div id="membership-row">
           <label for="membership" id="membership-label"></label
           ><select id="membership"></select>
@@ -480,6 +668,7 @@
         </div>
         <div id="recommendations"></div>
         <p id="results-boundary" class="small"></p>
+        <p id="source-status" class="source-status"></p>
       </section>
       <footer id="footer"></footer>
     </main>

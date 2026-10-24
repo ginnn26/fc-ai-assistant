@@ -14,25 +14,36 @@
     recordToken = 0,
     discard = false;
   const t = (zh, en) => (lang === "zh" ? zh : en);
+  let intake = {},
+    sessionInfo = null,
+    sessionToken = "",
+    consultationToken = "",
+    bootstrapPromise = null,
+    audioContext = null,
+    analyser = null,
+    waveFrame = null;
+  try {
+    sessionToken = localStorage.getItem("fc-assistant-session-v2") || "";
+  } catch {}
   const copy = {
     title: ["说说此刻的你。", "Tell us how you feel."],
     intro: [
-      "大约 30 秒，说说你想关注的睡眠、情绪、专注或日常感受。先核对识别文字，再探索适合自己的 FC 聆听主题。",
-      "In about 30 seconds, share what you would like support with: sleep, mood, focus or everyday wellbeing. Review your words, then explore FC listening themes.",
+      "跟着下面的提示，说说你的近况。我们会先了解需要，必要时追问，再从 FC 已收录的资料中寻找聆听主题。",
+      "Use the prompts below to share how you feel. We will understand your needs, ask for context when needed, and explore themes in the available FC catalog.",
     ],
     "share-title": ["从你的声音开始。", "Begin with your voice."],
     "consent-copy": [
-      "我同意将本次录音及确认后的文字发送给 OpenAI，用于语音识别和音疗主题推荐。FC 不保存本次录音或咨询记录；OpenAI 可能按其服务政策处理资料。请不要说出姓名、电话或其他身份信息。",
-      "I agree to send this recording and my confirmed text to OpenAI for transcription and listening-theme recommendations. FC does not retain this audio or consultation history; OpenAI may process data under its service policies. Please omit names, contact details and other identifying information.",
+      "我同意将本次录音及确认后的文字发送给 OpenAI，用于识别和聆听主题推荐。FC 不保存录音或咨询内容；只记录匿名用量编号与次数。OpenAI 可能按其服务政策处理资料。请不要提供姓名、电话或其他身份资料。",
+      "I agree to send this audio and confirmed text to OpenAI for transcription and listening-theme suggestions. FC does not retain audio or consultation content; only pseudonymous usage identifiers and counts. OpenAI may process data under its service policies. Please omit names, contact details and other identifying information.",
     ],
     "record-note": [
-      "建议约 30 秒，最多 60 秒。",
-      "About 30 seconds is enough; maximum 60 seconds.",
+      "建议 30–60 秒，说清楚即可，不用讲满。",
+      "Aim for 30–60 seconds; there is no minimum.",
     ],
     "upload-label": ["也可以上传录音", "Or upload a recording"],
     "upload-copy": [
-      "选择 60 秒以内、8 MB 以下的录音。识别后可以修改文字。",
-      "Choose a recording up to 60 seconds and 8 MB. You can edit the transcription.",
+      "选择 60 秒以内、8 MB 以下的录音。会先在设备上转换格式，再发送识别；识别后可以修改文字。",
+      "Choose a recording up to 60 seconds and 8 MB. Your device converts it before upload, and you can edit the transcript.",
     ],
     "upload-button": ["识别这段录音", "Transcribe recording"],
     "review-label": [
@@ -57,14 +68,71 @@
       "Subscription includes monthly, half-year and annual plans. Only catalogued versions are shown. FC still checks your login and membership access.",
     ],
     "results-boundary": [
-      "请按舒适度选择，音量保持轻柔。如聆听后不舒服，请停止。不要据此停药、改药或延后就医。",
-      "Choose a comfortable version and gentle volume. Stop if listening feels uncomfortable. Do not stop medication, change treatment or delay care based on these suggestions.",
+      "选择舒服的版本，保持轻柔音量；如有不适，请停止。",
+      "Choose a comfortable version and gentle volume; stop if listening feels uncomfortable.",
     ],
     footer: [
       "FREQUENCIES CLINIC · 声音相伴，照顾日常",
       "FREQUENCIES CLINIC · SOUND FOR EVERYDAY WELLBEING",
     ],
+    "guide-title": ["不知道怎样开始说？", "Not sure where to start?"],
+    "guide-note": [
+      "可以只说你知道的，不确定就说明；身体不适时请加上就医、受伤和用药情况。",
+      "Share what you know; ‘not sure’ is fine. For physical symptoms, include any injury, medical assessment and current medication.",
+    ],
+    followupButton: ["补充好了，继续 ↗", "Continue with this context ↗"],
   };
+  function usageNote() {
+    if (!sessionInfo) {
+      $("usage-note").textContent = t(
+        "测试体验 · 正在准备本次咨询。",
+        "Test experience · Preparing your consultation.",
+      );
+      return;
+    }
+    const count = sessionInfo.remaining;
+    $("usage-note").textContent =
+      sessionInfo.quotaMode === "test"
+        ? t(
+            `测试额度：本次设备会话还可开启 ${count} 次咨询。正式会员每日额度尚未启用。`,
+            `Test allowance: ${count} consultations remain for this device session. Formal member daily allowances are not enabled.`,
+          )
+        : t(
+            `今日剩余 ${count} 次咨询 · 同次必要补充不另扣次数 · 马来西亚时间每日重置。`,
+            `${count} consultations remain today. Necessary context in the same consultation does not use another allowance. Resets daily in Malaysia time.`,
+          );
+  }
+  async function bootstrap(force = false) {
+    if (force) bootstrapPromise = null;
+    if (bootstrapPromise) return bootstrapPromise;
+    bootstrapPromise = (async () => {
+      const fragment = new URLSearchParams(location.hash.slice(1)),
+        ticket = fragment.get("fc_ticket");
+      if (ticket)
+        history.replaceState(null, "", location.pathname + location.search);
+      const data = await json(
+        await fetch("/chat/session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionToken, ...(ticket ? { ticket } : {}) }),
+          signal: AbortSignal.timeout(10000),
+        }),
+      );
+      sessionToken = data.token;
+      sessionInfo = data;
+      try {
+        localStorage.setItem("fc-assistant-session-v2", sessionToken);
+      } catch {}
+      usageNote();
+      return data;
+    })();
+    try {
+      return await bootstrapPromise;
+    } catch (e) {
+      bootstrapPromise = null;
+      throw e;
+    }
+  }
   function status(zh, en, error = false) {
     $("status").textContent = t(zh, en);
     $("status").classList.toggle("error", error);
@@ -79,6 +147,27 @@
     document.documentElement.lang = lang === "zh" ? "zh-Hans" : "en";
     for (const [id, c] of Object.entries(copy)) $(id).textContent = t(...c);
     $("language").textContent = t("English", "中文");
+    $("guide-list").replaceChildren(
+      ...[
+        t(
+          "现在最想改善什么？有什么具体感觉？",
+          "What would you like support with? What does it feel like?",
+        ),
+        t(
+          "什么时候开始？持续多久、多久出现一次？",
+          "When did it start, how long has it lasted, and how often?",
+        ),
+        t(
+          "怎样影响你的睡眠、工作或日常活动？",
+          "How does it affect sleep, work or daily activities?",
+        ),
+        t(
+          "喜欢平稳频率、背景音乐，还是没有偏好？",
+          "Do you prefer steady frequencies, background music, or either?",
+        ),
+      ].map((x) => make("li", x)),
+    );
+    usageNote();
     $("steps").replaceChildren(
       ...[
         t("说说近况", "Share"),
@@ -136,9 +225,9 @@
   }
   function controls() {
     $("language").disabled = busy || recording;
-    $("micButton").textContent = recording
-      ? t("■ 停止录音", "■ Stop recording")
-      : t("● 开始录音", "● Record my voice");
+    $("mic-label").textContent = recording
+      ? t("停止录音", "Stop recording")
+      : t("点击，说说近况", "Tap to speak");
     $("micButton").classList.toggle("recording", recording);
     $("micButton").setAttribute("aria-pressed", String(recording));
     $("micButton").disabled = busy;
@@ -149,6 +238,10 @@
     $("audio-file").disabled = busy || recording;
     $("preference").disabled = busy || recording;
     $("consent").disabled = busy || recording;
+    $("followupButton").disabled = busy || recording;
+    $("intake-fields")
+      .querySelectorAll("textarea")
+      .forEach((e) => (e.disabled = busy || recording));
     $("count").textContent = $("messageInput").value.length + " / 2000";
   }
   function consent() {
@@ -168,10 +261,68 @@
     } catch {
       throw Error("temporarily_unavailable");
     }
+    if (data.consultationToken) consultationToken = data.consultationToken;
+    if (sessionInfo && Number.isInteger(data.remaining)) {
+      sessionInfo.remaining = data.remaining;
+      usageNote();
+    }
     if (!response.ok) throw Error(data.error || "temporarily_unavailable");
     return data;
   }
+  async function recommendationRequest(payload, signal) {
+    const send = () =>
+      fetch("/chat/recommend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        signal,
+      }).then(json);
+    try {
+      return await send();
+    } catch (e) {
+      if (e.message !== "session_required") throw e;
+      await bootstrap(true);
+      payload.sessionToken = sessionToken;
+      return send();
+    }
+  }
   const errors = {
+    daily_limit: [
+      "今日咨询额度已用完，请明天再来。紧急不适仍请立即求医。",
+      "Today's consultation allowance is used. Please return tomorrow; seek immediate care for urgent symptoms.",
+    ],
+    daily_budget: [
+      "今天的 AI 服务用量已达上限，请稍后再来。紧急求助提示仍可使用。",
+      "Today's AI service capacity has been reached. Urgent-help guidance remains available.",
+    ],
+    consultation_limit: [
+      "本次咨询已达到重试上限。可以重新开始一次咨询。",
+      "This consultation has reached its retry limit. You can start a new consultation.",
+    ],
+    session_required: [
+      "请刷新页面后重试，以重新核对本次用量。",
+      "Refresh this page to prepare a new usage session.",
+    ],
+    consultation_expired: [
+      "本次咨询已过期，请重新开始。",
+      "This consultation has expired. Please start again.",
+    ],
+    membership_not_connected: [
+      "会员验证暂未接通，请使用测试入口或稍后再试。",
+      "Membership verification is not connected yet. Use the test entry or try again later.",
+    ],
+    usage_not_configured: [
+      "正式服务的用量设置尚未完成，目前不能开始咨询。",
+      "Usage controls for the formal service are not ready yet.",
+    ],
+    invalid_audio_duration: [
+      "请使用 0.5–60 秒的录音。",
+      "Please use a recording between 0.5 and 60 seconds.",
+    ],
+    audio_needs_conversion: [
+      "此录音无法转换，请重录或直接输入文字。",
+      "This audio could not be converted. Record again or type instead.",
+    ],
     speech_not_clear: [
       "没有识别到清楚的话语，可以重录或直接输入。",
       "No clear speech was detected. Record again or type instead.",
@@ -197,6 +348,48 @@
       "Please accept data processing for this request.",
     ],
   };
+  async function boundedWav(blob) {
+    const Offline =
+      window.OfflineAudioContext || window.webkitOfflineAudioContext;
+    if (!Offline) throw Error("audio_needs_conversion");
+    const decoder = new Offline(1, 1, 16000),
+      decoded = await decoder.decodeAudioData(await blob.arrayBuffer());
+    if (decoded.duration < 0.5 || decoded.duration > 60.1)
+      throw Error("invalid_audio_duration");
+    const frames = Math.floor(Math.min(decoded.duration, 60) * 16000),
+      render = new Offline(1, frames, 16000),
+      src = render.createBufferSource();
+    src.buffer = decoded;
+    src.connect(render.destination);
+    src.start();
+    const mono = (await render.startRendering()).getChannelData(0),
+      buffer = new ArrayBuffer(44 + mono.length * 2),
+      view = new DataView(buffer);
+    const word = (o, s) => {
+      for (let i = 0; i < s.length; i++) view.setUint8(o + i, s.charCodeAt(i));
+    };
+    word(0, "RIFF");
+    view.setUint32(4, buffer.byteLength - 8, true);
+    word(8, "WAVE");
+    word(12, "fmt ");
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, 1, true);
+    view.setUint32(24, 16000, true);
+    view.setUint32(28, 32000, true);
+    view.setUint16(32, 2, true);
+    view.setUint16(34, 16, true);
+    word(36, "data");
+    view.setUint32(40, mono.length * 2, true);
+    mono.forEach((v, i) =>
+      view.setInt16(
+        44 + i * 2,
+        Math.round(Math.max(-1, Math.min(1, v)) * (v < 0 ? 32768 : 32767)),
+        true,
+      ),
+    );
+    return new Blob([buffer], { type: "audio/wav" });
+  }
   function failure(error) {
     const c = errors[error.message] || [
       "暂时无法完成，请稍后重试。你可以保留或修改文字后再提交。",
@@ -210,12 +403,17 @@
     busy = true;
     controls();
     controller = new AbortController();
-    const timeout = setTimeout(() => controller?.abort(), 40000);
+    const timeout = setTimeout(() => controller?.abort(), 50000);
     status("正在识别录音，请稍候…", "Transcribing your recording…");
     try {
+      await bootstrap();
+      const wav = await boundedWav(blob);
       const form = new FormData();
-      form.append("audio", blob, name);
+      form.append("audio", wav, "recording.wav");
       form.append("consent", "true");
+      form.append("sessionToken", sessionToken);
+      if (consultationToken)
+        form.append("consultationToken", consultationToken);
       const data = await json(
         await fetch("/chat/transcribe", {
           method: "POST",
@@ -248,6 +446,34 @@
     timer = null;
     stream?.getTracks().forEach((s) => s.stop());
     stream = null;
+    if (waveFrame) cancelAnimationFrame(waveFrame);
+    waveFrame = null;
+    audioContext?.close().catch(() => {});
+    audioContext = null;
+    analyser = null;
+    drawWave();
+  }
+  function drawWave() {
+    const canvas = $("waveform"),
+      ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = "#53755c";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    if (analyser) {
+      const values = new Uint8Array(analyser.fftSize);
+      analyser.getByteTimeDomainData(values);
+      values.forEach((v, i) => {
+        const x = (i / (values.length - 1)) * canvas.width,
+          y = ((v / 128) * canvas.height) / 2;
+        i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+      });
+    } else {
+      ctx.moveTo(0, canvas.height / 2);
+      ctx.lineTo(canvas.width, canvas.height / 2);
+    }
+    ctx.stroke();
+    if (recording) waveFrame = requestAnimationFrame(drawWave);
   }
   async function record() {
     if (recording) {
@@ -280,6 +506,18 @@
         return;
       }
       stream = media;
+      const Audio = window.AudioContext || window.webkitAudioContext;
+      if (Audio) {
+        try {
+          audioContext = new Audio();
+          analyser = audioContext.createAnalyser();
+          analyser.fftSize = 256;
+          audioContext.createMediaStreamSource(media).connect(analyser);
+          void audioContext.resume();
+        } catch {
+          analyser = null;
+        }
+      }
       const type = [
         "audio/webm;codecs=opus",
         "audio/mp4",
@@ -342,6 +580,7 @@
       recorder.start(1000);
       busy = false;
       recording = true;
+      drawWave();
       seconds = 0;
       controls();
       status(
@@ -401,8 +640,50 @@
       return;
     }
     $("results").hidden = false;
-    $("results-message").textContent = result.translations?.[result.message]?.[lang] || result.message;
+    $("results-title").textContent =
+      result.status === "safety"
+        ? t("先照顾你的安全。", "Your safety comes first.")
+        : result.status === "clarify"
+          ? t("再了解你一点。", "A little more context.")
+          : result.status === "medical"
+            ? t("先了解身体的需要。", "Put your health first.")
+            : t("你的聆听起点。", "Your listening starting point.");
+    $("results").classList.toggle(
+      "safety-result",
+      ["safety", "medical"].includes(result.status),
+    );
+    $("results-message").textContent =
+      result.translations?.[result.message]?.[lang] || result.message;
     $("membership-row").hidden = !result.recommendations?.length;
+    $("results-boundary").hidden = !result.recommendations?.length;
+    $("intakeForm").hidden = !result.questions?.length;
+    $("intake-fields").replaceChildren();
+    for (const question of result.questions || []) {
+      const label = make("label", question[lang] || question.label),
+        input = make("textarea");
+      input.id = "intake-" + question.id;
+      input.name = question.id;
+      input.maxLength = 400;
+      input.rows = 2;
+      input.value = intake[question.id] || "";
+      input.oninput = () => {
+        intake[question.id] = input.value.trim();
+      };
+      label.htmlFor = input.id;
+      label.append(input);
+      $("intake-fields").append(label);
+    }
+    const knowledge = result.knowledge || sessionInfo?.knowledge;
+    $("source-status").hidden = !result.recommendations?.length;
+    $("source-status").textContent = knowledge?.fullKnowledge
+      ? t(
+          `资料来源：FC 已审核说明 · ${knowledge.describedThemes} / ${knowledge.themes} 个主题已收录说明 · 发布于 ${knowledge.publishedAt.slice(0, 10)}${knowledge.state !== "synced" ? " · 暂未取得更新，当前使用此版本" : ""}`,
+          `Source: reviewed FC information · ${knowledge.describedThemes} / ${knowledge.themes} themes have descriptions · Published ${knowledge.publishedAt.slice(0, 10)}${knowledge.state !== "synced" ? " · Refresh unavailable; using this version" : ""}`,
+        )
+      : t(
+          "目前使用已核对的目录快照；完整说明与自动同步尚未接通。没有资料的内容不会编写成功效或见证。",
+          "Currently using a verified catalog snapshot. Full descriptions and automatic synchronization are not connected yet. Missing benefits or testimonials will not be invented.",
+        );
     $("recommendations").replaceChildren();
     for (const item of result.recommendations || []) {
       const card = make("article", null, "result-card");
@@ -411,6 +692,76 @@
         make("div", lang === "zh" ? item.name_en : item.name_zh, "subtitle"),
         make("p", result.translations?.[item.reason]?.[lang] || item.reason),
       );
+      if (item.evidence && safeLink(item.evidence.url)) {
+        const quote = make("blockquote", null, "source-quote");
+        quote.append(
+          make("p", item.evidence[lang] || item.evidence.quote),
+          link(
+            item.evidence.url,
+            t("查看 FC 原说明 ↗", "Read the FC source ↗"),
+          ),
+        );
+        card.append(quote);
+      } else
+        card.append(
+          make(
+            "p",
+            t(
+              "这项选择按目录主题匹配；暂未提供已核实的说明摘录。",
+              "This is a catalog-theme match; no verified description excerpt is provided yet.",
+            ),
+            "small",
+          ),
+        );
+      if (item.usage?.length) {
+        const details = make("details");
+        details.append(make("summary", t("怎样使用", "How to listen")));
+        for (const p of item.usage) {
+          if (safeLink(p.url))
+            details.append(
+              make("p", p[lang]),
+              link(p.url, t("查看使用说明 ↗", "Read usage guidance ↗")),
+            );
+        }
+        card.append(details);
+      }
+      if (item.testimonials?.length) {
+        const details = make("details");
+        details.append(
+          make(
+            "summary",
+            t(
+              `${item.testimonials.length} 条已收录的顾客分享`,
+              `${item.testimonials.length} catalogued customer shares`,
+            ),
+          ),
+          make(
+            "p",
+            t(
+              "个人经历不代表每个人都会有相同体验，也不是临床疗效证明。",
+              "Individual experiences do not predict everyone's results or establish clinical efficacy.",
+            ),
+            "small",
+          ),
+        );
+        for (const p of item.testimonials) {
+          try {
+            const u = new URL(p.url);
+            if (
+              u.protocol === "https:" &&
+              ["www.facebook.com", "facebook.com"].includes(u.hostname) &&
+              /\/(posts|videos|reel|photo|permalink)/.test(u.pathname)
+            ) {
+              const a = make("a", p.title, "testimonial");
+              a.href = u.href;
+              a.target = "_blank";
+              a.rel = "noopener noreferrer";
+              details.append(a);
+            }
+          } catch {}
+        }
+        card.append(details);
+      }
       const paths = make("div", null, "links");
       if (safeLink(item.description_url))
         paths.append(
@@ -543,31 +894,35 @@
     busy = true;
     const token = ++sequence;
     controller = new AbortController();
-    const timeout = setTimeout(() => controller?.abort(), 35000);
+    const timeout = setTimeout(() => controller?.abort(), 50000);
     controls();
     status(
       "正在寻找适合探索的音疗主题…",
       "Finding listening themes to explore…",
     );
     try {
-      result = await json(
-        await fetch("/chat/recommend", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            message,
-            consent: true,
-            language: lang,
-            preference: $("preference").value,
-          }),
-          signal: controller.signal,
-        }),
+      result = await recommendationRequest(
+        {
+          message,
+          consent: true,
+          language: lang,
+          preference: $("preference").value,
+          intake,
+          sessionToken,
+          ...(consultationToken ? { consultationToken } : {}),
+        },
+        controller.signal,
       );
       if (token !== sequence) return;
       renderResults();
       $("results-title").focus();
       $("results").scrollIntoView({ behavior: "smooth", block: "start" });
-      status("已整理完成。", "Your suggestions are ready.");
+      status(
+        result.status === "clarify" ? "请补充下方的问题。" : "已整理完成。",
+        result.status === "clarify"
+          ? "Please answer the questions below."
+          : "Your response is ready.",
+      );
     } catch (e) {
       if (token === sequence) failure(e);
     } finally {
@@ -579,6 +934,16 @@
       }
     }
   };
+  $("intakeForm").onsubmit = (e) => {
+    e.preventDefault();
+    if (busy || recording) return;
+    $("intake-fields")
+      .querySelectorAll("textarea")
+      .forEach((input) => {
+        intake[input.name] = input.value.trim();
+      });
+    $("messageForm").requestSubmit();
+  };
   $("reset").onclick = () => {
     sequence++;
     controller?.abort();
@@ -589,6 +954,8 @@
     busy = false;
     recording = false;
     result = null;
+    intake = {};
+    consultationToken = "";
     $("messageInput").value = "";
     $("audio-file").value = "";
     $("consent").checked = false;
@@ -605,5 +972,12 @@
     release();
   });
   paint();
+  drawWave();
+  void bootstrap().catch(() => {
+    $("usage-note").textContent = t(
+      "测试服务暂未准备好；紧急不适请先求医。",
+      "The test service is not ready. Seek care first for urgent symptoms.",
+    );
+  });
   status("可以录音，也可以直接输入。", "Record your voice or type instead.");
 })();
