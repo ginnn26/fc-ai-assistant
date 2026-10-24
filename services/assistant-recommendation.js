@@ -167,15 +167,19 @@ async function generateRecommendations(
   { ask = askOpenAI, language, preference = "any" } = {},
 ) {
   message = String(message || "").trim();
+  const excluded = new Set();
+  if (/(不要|不想|不喜欢|不喜歡|没有|沒有|无|無).{0,6}(音乐|音樂|bgm)|(no|without|don't want|do not want).{0,12}(music|bgm)/i.test(message)) excluded.add('bgm');
+  if (/(不要|不想|不喜欢|不喜歡).{0,8}intensive|(avoid|no|without|don't want|do not want).{0,12}intensive/i.test(message)) excluded.add('intensive');
+  if (/(不要|不想|不喜欢|不喜歡).{0,8}smooth|(avoid|no|without|don't want|do not want).{0,12}smooth/i.test(message)) excluded.add('smooth');
   if (preference === "any") {
     if (
       /bgm|with music|background music|有音乐|背景音乐|有音樂|背景音樂/i.test(
         message,
-      )
+      ) && !excluded.has('bgm')
     )
       preference = "bgm";
-    else if (/smooth|平稳|平穩|柔和/i.test(message)) preference = "smooth";
-    else if (/intensive/i.test(message)) preference = "intensive";
+    else if (/smooth|平稳|平穩|柔和/i.test(message) && !excluded.has('smooth')) preference = "smooth";
+    else if (/intensive/i.test(message) && !excluded.has('intensive')) preference = "intensive";
   }
   const translations = {};
   const lang = ["zh", "en"].includes(language)
@@ -213,10 +217,7 @@ async function generateRecommendations(
       ),
     };
   let candidates = selectCandidates(message);
-  if (preference !== "any")
-    candidates = candidates.filter((i) =>
-      i.recordings.some((r) => r.version === preference),
-    );
+  candidates = candidates.filter((i) => i.recordings.some((r) => !excluded.has(r.version) && (preference === 'any' || r.version === preference)));
   if (!candidates.length)
     return {
       ...base,
@@ -281,7 +282,7 @@ async function generateRecommendations(
               "A catalog theme close to your words, which you can explore if interested.",
             ),
         recordings: i.recordings.filter(
-          (r) => preference === "any" || r.version === preference,
+          (r) => !excluded.has(r.version) && (preference === "any" || r.version === preference),
         ),
       };
     }),
