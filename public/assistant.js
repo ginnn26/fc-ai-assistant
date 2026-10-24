@@ -713,8 +713,8 @@
         make(
           "p",
           t(
-          "先选最符合当前聆听需要的一首，再按需选择其他主题，不必全部听。选项排列不代表医疗治疗顺序。",
-          "Start with one theme that fits your listening goal; add another only if useful. You do not need every option. This is not a medical treatment sequence.",
+            "先选最符合当前聆听需要的一首，再按需选择其他主题，不必全部听。选项排列不代表医疗治疗顺序。",
+            "Start with one theme that fits your listening goal; add another only if useful. You do not need every option. This is not a medical treatment sequence.",
           ),
           "listening-plan",
         ),
@@ -723,6 +723,7 @@
     let option = 0;
     for (const item of result.recommendations || []) {
       const card = make("article", null, "result-card");
+      card.append(window.FCVisuals.illustration(item));
       card.append(
         make(
           "span",
@@ -734,10 +735,10 @@
       card.append(
         make("h3", lang === "zh" ? item.name_zh : item.name_en),
         make("div", lang === "zh" ? item.name_en : item.name_zh, "subtitle"),
-        make(
-          "p",
-          t("为什么推荐：", "Why this theme: ") + brief(reason),
-          "quick-point",
+        window.FCVisuals.point(
+          "why",
+          t("为什么推荐", "Why this theme"),
+          brief(reason),
         ),
       );
       const usage = (item.usage || [])
@@ -745,16 +746,15 @@
         .map((p) => p[lang] || p[lang === "zh" ? "en" : "zh"])
         .filter(Boolean);
       card.append(
-        make(
-          "p",
-          t("怎么听：", "How to listen: ") +
-            (usage.length
-              ? brief(usage.join(" "))
-              : t(
-                  "这首的具体用法尚待核实，请先查看完整说明。",
-                  "Specific usage is not verified yet; check the full explanation first.",
-                )),
-          "quick-point",
+        window.FCVisuals.point(
+          "listen",
+          t("怎么听", "How to listen"),
+          usage.length
+            ? brief(usage.join(" "))
+            : t(
+                "这首的具体用法尚待核实，请先查看完整说明。",
+                "Specific usage is not verified yet; check the full explanation first.",
+              ),
         ),
       );
       const more = make("details", null, "recommendation-details");
@@ -896,7 +896,10 @@
         (p) => p.kind === "caution",
       )) {
         const warning = p[lang] || p[lang === "zh" ? "en" : "zh"];
-        if (warning) card.append(make("p", warning, "small care-note"));
+        if (warning)
+          card.append(
+            window.FCVisuals.point("care", t("留意一下", "Take care"), warning),
+          );
       }
       card.append(more);
       $("recommendations").append(card);
