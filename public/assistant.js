@@ -395,6 +395,21 @@
     a.rel = "noopener noreferrer";
     return a;
   }
+  function brief(text, max = lang === "zh" ? 85 : 210) {
+    const chars = Array.from(
+      String(text || "")
+        .trim()
+        .replace(/\s+/g, " "),
+    );
+    if (chars.length <= max) return chars.join("");
+    const part = chars.slice(0, max).join("");
+    const end = Math.max(
+      part.lastIndexOf("。"),
+      part.lastIndexOf(". "),
+      part.lastIndexOf("；"),
+    );
+    return (end >= max / 2 ? part.slice(0, end + 1) : part.trim()) + "…";
+  }
   function renderResults() {
     if (!result) {
       $("results").hidden = true;
@@ -404,18 +419,143 @@
     $("results-message").textContent = result.translations?.[result.message]?.[lang] || result.message;
     $("membership-row").hidden = !result.recommendations?.length;
     $("recommendations").replaceChildren();
+    $("recommendations").dataset.count = String(
+      result.recommendations?.length || 0,
+    );
+    if (result.recommendations?.length > 1) {
+      $("recommendations").append(
+        make(
+          "p",
+          t(
+            "先选最符合当前聆听需要的一首，再按需选择其他主题，不必全部听。选项排列不代表医疗治疗顺序。",
+            "Start with one theme that fits your listening goal; add another only if useful. You do not need every option. This is not a medical treatment sequence.",
+          ),
+          "listening-plan",
+        ),
+      );
+    }
+    let option = 0;
     for (const item of result.recommendations || []) {
       const card = make("article", null, "result-card");
+      card.append(window.FCVisuals.illustration(item));
+      card.append(
+        make(
+          "span",
+          t(`聆听选项 ${++option}`, `Listening option ${option}`),
+          "option-label",
+        ),
+      );
+      const reason = result.translations?.[item.reason]?.[lang] || item.reason;
       card.append(
         make("h3", lang === "zh" ? item.name_zh : item.name_en),
         make("div", lang === "zh" ? item.name_en : item.name_zh, "subtitle"),
-        make("p", result.translations?.[item.reason]?.[lang] || item.reason),
+        window.FCVisuals.point(
+          "why",
+          t("为什么推荐", "Why this theme"),
+          brief(reason),
+        ),
       );
-      const paths = make("div", null, "links");
-      if (safeLink(item.description_url))
-        paths.append(
-          link(item.description_url, t("了解这首音疗 ↗", "About this theme ↗")),
+      const usage = (item.usage || [])
+        .filter((p) => safeLink(p.url))
+        .map((p) => p[lang] || p[lang === "zh" ? "en" : "zh"])
+        .filter(Boolean);
+      card.append(
+        window.FCVisuals.point(
+          "listen",
+          t("怎么听", "How to listen"),
+          usage.length
+            ? brief(usage.join(" "))
+            : t(
+                "这首的具体用法尚待核实，请先查看完整说明。",
+                "Specific usage is not verified yet; check the full explanation first.",
+              ),
+        ),
+      );
+      const more = make("details", null, "recommendation-details");
+      more.append(
+        make("summary", t("详细讲解与资料来源", "Explanation & sources")),
+      );
+      more.append(make("p", reason));
+      if (item.evidence && safeLink(item.evidence.url)) {
+        const quote = make("blockquote", null, "source-quote");
+        quote.append(
+          make("p", item.evidence[lang] || item.evidence.quote),
+          link(
+            item.evidence.url,
+            t("查看 FC 原说明 ↗", "Read the FC source ↗"),
+          ),
         );
+        more.append(quote);
+      } else
+        more.append(
+          make(
+            "p",
+            t(
+              "这项选择按目录主题匹配；暂未提供已核实的说明摘录。",
+              "This is a catalog-theme match; no verified description excerpt is provided yet.",
+            ),
+            "small",
+          ),
+        );
+      if (item.usage?.length) {
+        const details = make("section");
+        details.append(
+          make("h4", t("完整使用说明", "Full listening guidance")),
+        );
+        for (const p of item.usage) {
+          if (safeLink(p.url))
+            details.append(
+              make("p", p[lang] || p[lang === "zh" ? "en" : "zh"]),
+              link(p.url, t("查看使用说明 ↗", "Read usage guidance ↗")),
+            );
+        }
+        more.append(details);
+      }
+      if (item.testimonials?.length) {
+        const details = make("details");
+        details.append(
+          make(
+            "summary",
+            t(
+              `${item.testimonials.length} 条已收录的顾客分享`,
+              `${item.testimonials.length} catalogued customer shares`,
+            ),
+          ),
+          make(
+            "p",
+            t(
+              "个人经历不代表每个人都会有相同体验，也不是临床疗效证明。",
+              "Individual experiences do not predict everyone's results or establish clinical efficacy.",
+            ),
+            "small",
+          ),
+        );
+        for (const p of item.testimonials) {
+          try {
+            const u = new URL(p.url);
+            if (
+              u.protocol === "https:" &&
+              ["www.facebook.com", "facebook.com"].includes(u.hostname) &&
+              /\/(posts|videos|reel|photo|permalink)/.test(u.pathname)
+            ) {
+              const a = make("a", p.title, "testimonial");
+              a.href = u.href;
+              a.target = "_blank";
+              a.rel = "noopener noreferrer";
+              details.append(a);
+            }
+          } catch {}
+        }
+        more.append(details);
+      }
+      if (safeLink(item.description_url))
+        more.append(
+          link(
+            item.description_url,
+            t("查看完整主题说明 ↗", "Read the full theme explanation ↗"),
+          ),
+        );
+      const paths = make("div", null, "links");
       paths.append(
         link(
           "https://frequencies-clinic.learnworlds.com/start",
@@ -459,12 +599,23 @@
           make(
             "p",
             t(
-              "在上方选择会员入口，即可查看实际可用的播放版本。",
-              "Choose your membership route above to see catalogued playback versions.",
+              "播放版本：请先选择上方会员入口。",
+              "Playback versions: choose your route above.",
             ),
             "small",
           ),
         );
+      // Critical care instructions stay outside the collapsed explanation.
+      for (const p of (item.passages || []).filter(
+        (p) => p.kind === "caution",
+      )) {
+        const warning = p[lang] || p[lang === "zh" ? "en" : "zh"];
+        if (warning)
+          card.append(
+            window.FCVisuals.point("care", t("留意一下", "Take care"), warning),
+          );
+      }
+      card.append(more);
       $("recommendations").append(card);
     }
   }
