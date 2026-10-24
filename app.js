@@ -11,18 +11,22 @@ const app = express();
 app.use("/assessment", require("./routes/assessment").createAssessmentRouter());
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "12kb" }));
 app.use((req, res, next) => {
   // A cross-origin iframe must also delegate this feature with allow="microphone".
   res.setHeader("Permissions-Policy", "microphone=(self)");
+  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("Referrer-Policy", "no-referrer");
+  res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; media-src 'self' blob:; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'self' https://frequencies-clinic.learnworlds.com");
   next();
 });
-app.use(express.static("public"));
+app.use(express.static(require("node:path").join(__dirname, "public")));
 
 app.get("/health", (req, res) => {
   res.json({
     status: "ok",
-    service: "FC AI Wellness Support"
+    service: "FC AI Wellness Support",
   });
 });
 
@@ -40,10 +44,14 @@ app.use((error, req, res, next) => {
   }
 
   if (error?.code === "LIMIT_FILE_SIZE") {
-    return res.status(413).json({ error: "Audio file must be 20 MB or smaller" });
+    return res
+      .status(413)
+      .json({ error: "Audio file must be 20 MB or smaller" });
   }
 
-  console.error("Unhandled request error:", error);
+  // Never log health text, audio payloads or provider error objects.
+  if (error?.type === "entity.too.large")
+    return res.status(413).json({ error: "request_too_large" });
   return res.status(500).json({ error: "Unexpected server error" });
 });
 
