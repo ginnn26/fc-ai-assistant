@@ -297,6 +297,10 @@ footer {
 [hidden] {
   display: none !important;
 }
+.article-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
 @media (max-width: 760px) {
   header {
     padding: 18px 6vw;

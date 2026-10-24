@@ -147,6 +147,29 @@ function recordingRow(rec = {}) {
   row.append(remove);
   $("recordings").append(row);
 }
+function referenceRow(ref = {}) {
+  const row = el("div", "", "source");
+  for (const [key, label] of [
+    ["title", "参考资料标题 / Reference title"],
+    ["url", "公开 HTTPS 链接 / Public HTTPS URL"],
+  ]) {
+    const l = el("label", label),
+      input = el("input");
+    input.dataset.field = key;
+    input.value = ref[key] || "";
+    input.maxLength = key === "title" ? 240 : 1800;
+    l.append(input);
+    row.append(l);
+  }
+  const remove = el("button", "移除参考资料 / Remove reference");
+  remove.type = "button";
+  remove.onclick = () => {
+    row.remove();
+    $("reviewed").checked = false;
+  };
+  row.append(remove);
+  $("references").append(row);
+}
 async function loadItem(id) {
   try {
     const d = await api("items/" + id);
@@ -178,6 +201,10 @@ async function loadItem(id) {
     $("testimonials").replaceChildren();
     for (const t of selected.testimonials || []) sourceRow(t);
     $("recordings").replaceChildren();
+    $("articleZh").value = selected.article?.zh || "";
+    $("articleEn").value = selected.article?.en || "";
+    $("references").replaceChildren();
+    for (const ref of selected.article?.references || []) referenceRow(ref);
     for (const rec of selected.recordings) recordingRow(rec);
     $("withdraw").disabled = !d.published;
     $("restore").disabled = !d.canRestore;
@@ -195,6 +222,14 @@ function draft() {
     name_en: $("nameEn").value.trim(),
     category_zh: $("categoryZh").value.trim(),
     category_en: $("categoryEn").value.trim(),
+    article: {
+      zh: $("articleZh").value,
+      en: $("articleEn").value,
+      references: [...$("references").children].map((row) => ({
+        title: row.querySelector('[data-field="title"]').value.trim(),
+        url: row.querySelector('[data-field="url"]').value.trim(),
+      })),
+    },
     passages: ["purpose", "usage", "caution"]
       .map((kind) => ({
         id: kind + "_1",
@@ -294,6 +329,9 @@ $("initialize").onclick = async () => {
 $("addTestimonial").onclick = () => {
   if ($("testimonials").children.length < 20) sourceRow();
 };
+$("addReference").onclick = () => {
+  if ($("references").children.length < 30) referenceRow();
+};
 $("editor").oninput = () => {
   $("reviewed").checked = false;
 };
@@ -330,6 +368,14 @@ $("preview").onclick = () => {
         el("p", p.en),
       );
     }
+    const article = draft().article;
+    box.append(
+      el("h3", "完整讲解 / Full explanation"),
+      el("p", article.zh, "article-text"),
+      el("p", article.en, "article-text"),
+    );
+    for (const ref of article.references)
+      box.append(el("p", ref.title + " · " + ref.url));
     box.hidden = false;
   } catch (e) {
     notice(e.message, true);

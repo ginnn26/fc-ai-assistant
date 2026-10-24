@@ -140,6 +140,32 @@
                   ＋ 添加见证链接 / Add source
                 </button>
               </fieldset>
+              <fieldset>
+                <legend>05 · 完整讲解 / Full explanation</legend>
+                <p class="muted">
+                  保留完整讲解。上方简要介绍、使用方式及注意事项另供 AI
+                  引用；长文不会自动作为疗效证据。 / Keep the full article here
+                  and prepare the reviewed AI summaries above.
+                </p>
+                <label
+                  >中文<textarea
+                    id="articleZh"
+                    maxlength="24000"
+                    rows="12"
+                  ></textarea>
+                </label>
+                <label
+                  >English<textarea
+                    id="articleEn"
+                    maxlength="24000"
+                    rows="12"
+                  ></textarea>
+                </label>
+                <div id="references"></div>
+                <button type="button" id="addReference">
+                  ＋ 添加参考资料 / Add reference
+                </button>
+              </fieldset>
               <details>
                 <summary>管理音轨版本 / Recording versions</summary>
                 <div id="recordings"></div>

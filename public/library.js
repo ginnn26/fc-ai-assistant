@@ -38,6 +38,39 @@ function render() {
       section.append(node("p", p[language] || p[en ? "zh" : "en"]));
     box.append(section);
   }
+  const article = item.article;
+  if (article && (article.zh || article.en)) {
+    const section = node("section", "");
+    section.append(node("h2", en ? "Full explanation" : "完整讲解"));
+    section.append(
+      node("p", article[language] || article[en ? "zh" : "en"], "article-text"),
+    );
+    box.append(section);
+  }
+  if (article?.references?.length) {
+    const section = node("section", "");
+    section.append(
+      node("h2", en ? "References & further reading" : "参考资料与延伸阅读"),
+    );
+    section.append(
+      node(
+        "p",
+        en
+          ? "General research does not establish the effectiveness of this FC recording."
+          : "一般研究资料不代表已验证这首 FC 音轨的效果。",
+      ),
+    );
+    for (const ref of article.references) {
+      const p = node("p", ""),
+        a = node("a", ref.title + " ↗");
+      a.href = ref.url;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      p.append(a);
+      section.append(p);
+    }
+    box.append(section);
+  }
   if (item.testimonials.length) {
     const section = node("section", "");
     section.append(
