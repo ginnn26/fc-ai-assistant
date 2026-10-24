@@ -19,6 +19,117 @@ const { createGoogleDriveStore } = require("../services/google-drive-store");
 const { createContentRouter, passwordHash } = require("../routes/content");
 const express = require("express");
 const stamp = Date.parse("2026-10-25T04:00:00Z");
+test("full articles and references survive publish, withdrawal and restore without entering AI summary evidence", async (t) => {
+  const store = fixture(t),
+    item = theme();
+  item.article = {
+    zh: "完整讲解，保留原文与换行。\n".repeat(160),
+    en: "Full explanation with paragraphs preserved.\n".repeat(120),
+    references: [
+      {
+        title: "Research source",
+        url: "https://pubmed.ncbi.nlm.nih.gov/12345678/",
+      },
+    ],
+  };
+  await editContent(
+    store,
+    { revision: 0, action: "save", id: item.id, item },
+    stamp,
+  );
+  assert.deepEqual(
+    (await store.read()).drafts[item.id].item.article,
+    item.article,
+  );
+  await editContent(
+    store,
+    { revision: 1, action: "publish", id: item.id, reviewed: true },
+    stamp,
+  );
+  let state = await store.read();
+  assert.deepEqual(state.published[item.id].item.article, item.article);
+  assert.equal(state.catalog.find((i) => i.id === item.id).article, undefined);
+  const feed = validateFeed(await publishedFeed(store, stamp), stamp);
+  assert.equal(feed.items.find((i) => i.id === item.id).article, undefined);
+  assert.equal(feed.items.find((i) => i.id === item.id).passages.length, 1);
+  await editContent(
+    store,
+    { revision: 2, action: "withdraw", id: item.id },
+    stamp,
+  );
+  assert.deepEqual(
+    (await store.read()).drafts[item.id].item.article,
+    item.article,
+  );
+  await editContent(
+    store,
+    { revision: 3, action: "restore", id: item.id },
+    stamp,
+  );
+  state = await store.read();
+  assert.deepEqual(state.drafts[item.id].item.article, item.article);
+  assert.equal(state.published[item.id], undefined);
+});
+test("oversized articles, excessive passages and unsafe reference links reject rather than truncate or replace published content", async (t) => {
+  const store = fixture(t),
+    item = theme();
+  await editContent(
+    store,
+    { revision: 0, action: "publish", id: item.id, item, reviewed: true },
+    stamp,
+  );
+  for (const article of [
+    { zh: "x".repeat(24001) },
+    { zh: "<script>bad</script>" },
+    { references: [{ title: "bad", url: "javascript:alert(1)" }] },
+    {
+      references: [{ title: "bad", url: "https://user:password@example.com" }],
+    },
+    { references: [{ title: "bad", url: "https://127.0.0.1/a" }] },
+    {
+      references: Array.from({ length: 31 }, () => ({
+        title: "source",
+        url: "https://example.com",
+      })),
+    },
+  ]) {
+    await assert.rejects(
+      editContent(
+        store,
+        {
+          revision: 1,
+          action: "publish",
+          id: item.id,
+          item: { ...item, article },
+          reviewed: true,
+        },
+        stamp,
+      ),
+      /invalid_article/,
+    );
+    assert.equal((await store.read()).revision, 1);
+  }
+  const tooMany = structuredClone(item);
+  tooMany.passages = Array.from({ length: 13 }, (_, i) => ({
+    ...item.passages[0],
+    id: "purpose_" + i,
+  }));
+  await assert.rejects(
+    editContent(
+      store,
+      {
+        revision: 1,
+        action: "publish",
+        id: item.id,
+        item: tooMany,
+        reviewed: true,
+      },
+      stamp,
+    ),
+    /invalid_passage_limit/,
+  );
+  assert.equal((await store.read()).revision, 1);
+});
 test("new themes stay private until reviewed and duplicate FC units cannot appear in two themes", async (t) => {
   const store = fixture(t),
     item = theme();
