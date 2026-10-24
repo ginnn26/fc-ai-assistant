@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>FC · 音疗资料管理</title>
+    <link rel="stylesheet" href="/content.css" />
+    <script defer src="/content-manager.js"></script>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="https://frequencies-clinic.learnworlds.com"
+        >FREQUENCIES CLINIC <span>CONTENT STUDIO</span></a
+      ><button id="logout" hidden>退出 / Sign out</button>
+    </header>
+    <main>
+      <p class="eyebrow">ONE SOURCE · CAREFULLY SHARED</p>
+      <h1>让每一份说明，<br />清楚而一致。</h1>
+      <p class="intro">
+        音疗文字说明与 AI 推荐共用同一份已审核资料。音轨播放继续由 FC
+        管理会员权限。
+      </p>
+      <p id="notice" class="notice" role="status">正在检查资料库连接…</p>
+      <form id="login">
+        <label
+          >管理密码 / Editor password<input
+            type="password"
+            id="password"
+            autocomplete="current-password"
+            maxlength="256"
+            required /></label
+        ><button class="primary">进入资料管理 / Open studio</button>
+        <p class="muted">
+          仅供获授权的工作人员使用。请在独立页面打开此管理入口。
+        </p>
+      </form>
+      <section id="workspace" hidden>
+        <div class="actions">
+          <button id="initialize" hidden>
+            导入现有目录（说明仍待审核） / Initialize catalog</button
+          ><button id="newTheme">＋ 新增音疗主题 / New theme</button>
+          <a href="/content-api/admin/export" download
+            >下载资料备份 / Export backup</a
+          >
+        </div>
+        <div class="studio">
+          <aside>
+            <label
+              >寻找音疗 / Find a theme<input
+                id="search"
+                type="search"
+                placeholder="中文名称 / English name"
+            /></label>
+            <p id="counts" class="muted"></p>
+            <nav id="items" aria-label="音疗资料"></nav>
+          </aside>
+          <article>
+            <div id="empty">
+              <h2>从左边选择一首音疗</h2>
+              <p>
+                三个声音版本共用一份主题说明。保存草稿后，审核发布才会更新公开文字和
+                AI 资料。
+              </p>
+            </div>
+            <form id="editor" hidden>
+              <p class="eyebrow" id="itemState"></p>
+              <h2 id="itemTitle"></h2>
+              <div class="two">
+                <label
+                  >中文名称<input id="nameZh" maxlength="180" required /></label
+                ><label
+                  >English name<input id="nameEn" maxlength="180" required
+                /></label>
+              </div>
+              <div class="two">
+                <label>中文分类<input id="categoryZh" maxlength="80" /></label
+                ><label
+                  >English category<input id="categoryEn" maxlength="80"
+                /></label>
+              </div>
+              <p class="muted">
+                请使用清楚的日常聆听说明。个人体验须标明来源；不要将见证写成保证疗效。
+              </p>
+              <fieldset>
+                <legend>01 · 介绍 / About this theme</legend>
+                <label
+                  >中文<textarea
+                    id="purposeZh"
+                    maxlength="1400"
+                    rows="6"
+                  ></textarea></label
+                ><label
+                  >English<textarea
+                    id="purposeEn"
+                    maxlength="1400"
+                    rows="6"
+                  ></textarea>
+                </label>
+              </fieldset>
+              <fieldset>
+                <legend>02 · 使用方式 / Listening guidance</legend>
+                <label
+                  >中文<textarea
+                    id="usageZh"
+                    maxlength="1400"
+                    rows="5"
+                  ></textarea></label
+                ><label
+                  >English<textarea
+                    id="usageEn"
+                    maxlength="1400"
+                    rows="5"
+                  ></textarea>
+                </label>
+              </fieldset>
+              <fieldset>
+                <legend>03 · 注意事项 / Care & cautions</legend>
+                <label
+                  >中文<textarea
+                    id="cautionZh"
+                    maxlength="1400"
+                    rows="4"
+                  ></textarea></label
+                ><label
+                  >English<textarea
+                    id="cautionEn"
+                    maxlength="1400"
+                    rows="4"
+                  ></textarea>
+                </label>
+              </fieldset>
+              <fieldset>
+                <legend>04 · 已核实来源 / Testimonial sources</legend>
+                <p class="muted">
+                  只加入已确认对应这首音疗、获准公开的 Facebook
+                  原帖。不要加入私人对话或顾客健康档案。
+                </p>
+                <div id="testimonials"></div>
+                <button type="button" id="addTestimonial">
+                  ＋ 添加见证链接 / Add source
+                </button>
+              </fieldset>
+              <details>
+                <summary>管理音轨版本 / Recording versions</summary>
+                <div id="recordings"></div>
+                <button type="button" id="addRecording">
+                  ＋ 登记 FC 音轨 / Register recording
+                </button>
+                <p class="muted">
+                  粘贴 FC 播放器的音轨链接，并核对实际声音版本。不要只按时长判断
+                  Intensive、Smooth 或
+                  BGM。这里只登记资料，不会上传、删除音频或改变会员权限。
+                </p>
+              </details>
+              <div class="actions">
+                <button class="primary" id="save">保存草稿 / Save draft</button
+                ><button type="button" id="preview">预览 / Preview</button>
+              </div>
+              <div id="previewBox" hidden class="preview"></div>
+              <div class="review">
+                <label class="check"
+                  ><input
+                    type="checkbox"
+                    id="reviewed"
+                  />我已核对本次完整说明、使用方法、音轨对应和见证来源，同意公开文字并供
+                  AI 引用。 / I have reviewed this revision for public reading
+                  and AI use.</label
+                >
+                <div class="actions">
+                  <button type="button" id="publish" class="primary">
+                    审核发布 / Publish reviewed draft</button
+                  ><button type="button" id="withdraw">
+                    撤回为草稿 / Withdraw to draft</button
+                  ><button type="button" id="restore">
+                    恢复上一版为草稿 / Restore previous draft</button
+                  ><a id="publicLink" target="_blank" rel="noopener" hidden
+                    >查看公开说明 ↗</a
+                  >
+                </div>
+              </div>
+            </form>
+          </article>
+        </div>
+      </section>
+    </main>
+    <footer>FREQUENCIES CLINIC · EDITORIAL CARE</footer>
+  </body>
+</html>
