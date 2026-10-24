@@ -1,0 +1,14 @@
+{
+  "timeZone": "Asia/Kuala_Lumpur",
+  "runtimeVersion": "V8",
+  "dependencies": {
+    "enabledAdvancedServices": [
+      { "userSymbol": "Drive", "version": "v3", "serviceId": "drive" }
+    ]
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/drive.file",
+    "https://www.googleapis.com/auth/script.external_request"
+  ]
+}
