@@ -202,6 +202,21 @@ async function loadItem(id) {
     for (const t of selected.testimonials || []) sourceRow(t);
     $("recordings").replaceChildren();
     $("articleZh").value = selected.article?.zh || "";
+    $("themeMediaStatus").textContent = window.FCThemeMedia?.[selected.id]
+      ? "专属主题封面已配置；三个声音版本共用。 / A dedicated theme cover is configured for all three sound versions."
+      : "尚未配置专属主题封面，请安排配图；系统不会套用其他主题的照片。 / A dedicated cover is still needed; no unrelated theme photo will be substituted.";
+    const media = window.FCThemeMedia?.[selected.id];
+    $("themeMediaPreview").replaceChildren();
+    $("themeMediaPreview").hidden = !media;
+    if (media && /^\/assets\/themes-v1\/[a-z0-9_-]+\.webp$/.test(media.src)) {
+      const image = el("img", "", "theme-media-preview");
+      image.src = media.src;
+      image.alt =
+        "主题封面 / Cover: " + selected.name_zh + " / " + selected.name_en;
+      image.width = 768;
+      image.height = 512;
+      $("themeMediaPreview").append(image);
+    }
     $("articleEn").value = selected.article?.en || "";
     $("references").replaceChildren();
     for (const ref of selected.article?.references || []) referenceRow(ref);

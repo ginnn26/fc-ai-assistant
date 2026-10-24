@@ -8,16 +8,9 @@
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 3 / 2;
   object-fit: cover;
   object-position: center;
-}
-.fc-scene-focus img {
-  object-position: 50% 35%;
-}
-.fc-scene-eyes img,
-.fc-scene-comfort img {
-  object-position: 50% 38%;
 }
 .fc-visual-point {
   display: flex;
@@ -93,6 +86,11 @@ header .language button {
 #recommendations > .listening-plan {
   grid-column: 1/-1;
   margin-bottom: 0;
+}
+@media (min-width: 1150px) {
+  #recommendations[data-count="3"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 #recommendations > .result-card {
   padding: 22px;

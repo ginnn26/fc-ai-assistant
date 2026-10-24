@@ -708,6 +708,9 @@
           "Currently using a verified catalog snapshot. Full descriptions and automatic synchronization are not connected yet. Missing benefits or testimonials will not be invented.",
         );
     $("recommendations").replaceChildren();
+    $("recommendations").dataset.count = String(
+      result.recommendations?.length || 0,
+    );
     if (result.recommendations?.length > 1) {
       $("recommendations").append(
         make(

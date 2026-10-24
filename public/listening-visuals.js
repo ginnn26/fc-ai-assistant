@@ -1,4 +1,4 @@
-// Reuse FC homepage photography; headings and guidance remain selectable text.
+// Exact theme covers; headings and guidance remain selectable text.
 (() => {
   const ns = "http://www.w3.org/2000/svg";
   function shape(tag, attrs) {
@@ -38,37 +38,20 @@
       );
     return s;
   }
-  function theme(item) {
-    const text = (item.name_en + " " + item.name_zh).toLowerCase();
-    if (/sleep.*stress|睡眠.*压力/.test(text)) return "balance";
-    if (/sleep|睡眠/.test(text)) return "rest";
-    if (/eye|vision|眼|视力/.test(text)) return "eyes";
-    if (/brain|focus|memory|mental clarity|大脑|专注/.test(text))
-      return "focus";
-    if (/energy|chakra|aura|ground|能量|脉轮|接地/.test(text)) return "energy";
-    if (/stress|anxi|conflict|positive|confiden|情绪|自信/.test(text))
-      return "balance";
-    return "comfort";
-  }
   function illustration(item) {
-    const type = theme(item),
-      wrap = document.createElement("div");
-    wrap.className = "fc-scene fc-scene-" + type;
+    const wrap = document.createElement("div");
+    wrap.className = "fc-scene";
+    const entry = window.FCThemeMedia?.[item.id];
+    // Unknown and newly added themes do not inherit an unrelated photograph.
+    if (!entry || !/^\/assets\/themes-v1\/[a-z0-9_-]+\.webp$/.test(entry.src)) {
+      wrap.hidden = true;
+      return wrap;
+    }
     const image = document.createElement("img");
-    const files = {
-      rest: "rest",
-      eyes: "daily",
-      focus: "focus",
-      energy: "energy",
-      balance: "balance",
-      comfort: "daily",
-    };
-    image.src = "/assets/fc-home-" + files[type] + "-v1.webp";
+    image.src = entry.src;
     image.alt = "";
-    image.width =
-      type === "focus" || type === "eyes" || type === "comfort" ? 840 : 768;
-    image.height =
-      type === "focus" || type === "eyes" || type === "comfort" ? 1050 : 512;
+    image.width = 768;
+    image.height = 512;
     image.decoding = "async";
     image.loading = "lazy";
     wrap.append(image);

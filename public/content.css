@@ -301,6 +301,13 @@ footer {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+.theme-media-preview {
+  display: block;
+  width: min(100%, 320px);
+  height: auto;
+  border-radius: 14px;
+  margin: 12px 0;
+}
 .full-explanation {
   margin: 24px 0;
   border: 1px solid #dce1d2;
