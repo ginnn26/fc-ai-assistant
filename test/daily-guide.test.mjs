@@ -19,3 +19,18 @@ test('protected native playback never mistakes login, another song, or an extern
 test('native observer detaches when access or selected activity changes and stops every timer',()=>{const frame=new EventTarget();let inspect,disposed=0,attached=0,cleared=0;const url=protectedTrackUrl(track),media={};Object.assign(frame,{contentWindow:{location:{href:url}},contentDocument:{querySelector:()=>({contentDocument:{querySelector:()=>media}})}});const watch=watchNativePlayer({frame,track,onProgress:()=>{},setTimer:f=>{inspect=f;return 1;},clearTimer:()=>cleared++,collector:()=>{attached++;return{flush(){},dispose(){disposed++;}};}});assert.equal(attached,1);frame.contentWindow.location.href='https://frequencies-clinic.learnworlds.com/login';inspect();assert.equal(disposed,1);watch.stop();watch.stop();assert.equal(cleared,1);});
 test('loading a long history does not silently truncate earlier calendar records',()=>{const checkins=Array.from({length:1501},(_,i)=>makeCheckin({id:'history-'+i,day:'2026-10-25',phase:'before',scores:{tension:i%11},now:date}));const parsed=parseState(JSON.stringify({version:1,checkins,sessions:[],storageConsent:true}),[]);assert.equal(parsed.checkins.length,1501);assert.equal(parsed.checkins[0].id,'history-0');});
 test('a rejected native session termination remains retryable rather than falsely ending',async()=>{let attempts=0;const api={Initialize:()=> 'true',SetValue:()=> 'true',Commit:()=> 'true',Terminate:()=>++attempts===1?'false':'true'};const s=await createScormStore({api});await s.save({version:1,checkins:[],sessions:[]});assert.throws(()=>s.finish(),/尚未结束保存/);assert.equal(s.finish(),true);assert.equal(attempts,2);});
+test('an idle older page never resubmits its committed score over a newer page',async()=>{
+ let server='',writes=0;const makeApi=()=>{let local='';return{Initialize:()=> 'true',GetValue:()=>local,SetValue:(key,value)=>{if(key==='cmi.suspend_data')local=value;return'true';},Commit:()=>{server=local;writes++;return'true';},Terminate:()=> 'true'};};
+ const old=await createScormStore({api:makeApi()}),newer=await createScormStore({api:makeApi()});
+ const a={version:1,checkins:[{scores:{tension:6}}],sessions:[]},b={...a,checkins:[{scores:{tension:3}}]};
+ await old.save(a);await newer.save(b);assert.equal(writes,2);
+ old.checkpoint();await old.save(a);old.finish();assert.equal(writes,2);assert.deepEqual(await decodeState(server),b);
+});
+test('a failed submission is retried once, then idle checkpoints stop replaying it',async()=>{
+ let payload='',accept=false,commits=0;const api={Initialize:()=> 'true',GetValue:()=>payload,SetValue:(k,v)=>{if(k==='cmi.suspend_data')payload=v;return'true';},Commit:()=>{commits++;return String(accept);},Terminate:()=> 'true'};
+ const store=await createScormStore({api});await assert.rejects(store.save({version:1}),/尚未确认提交/);accept=true;assert.equal(store.checkpoint(),true);assert.equal(store.checkpoint(),false);assert.equal(commits,2);
+});
+test('readback mismatch and rejected suspend exit do not report a successful submission',async()=>{
+ let payload='',exit=true;const api={Initialize:()=> 'true',GetValue:()=>payload,SetValue:(k,v)=>{if(k==='cmi.suspend_data')payload=v;if(k==='cmi.exit')return String(exit);return'true';},Commit:()=> 'true',Terminate:()=> 'true'};
+ const store=await createScormStore({api});exit=false;await assert.rejects(store.save({version:1}),/退出设置/);exit=true;api.GetValue=()=>'';assert.throws(()=>store.checkpoint(),/读回/);
+});
