@@ -1,5 +1,17 @@
 # FC voice assistant completion
 
+## Guided upgrade — staged, not deployed
+
+The next revision adds guided intake, a microphone with live local waveform, device-side PCM WAV conversion, server-side duration validation, and a configurable GPT-5.4 mini selection workload. The assessment workload and its model remain unchanged. See `ASSISTANT-INTEGRATION.md` for the required connections and release gates. This revision must not be described as live or as complete automatic access to LearnWorlds.
+
+The owner confirmed on 2026-10-25 that only the OpenAI API is connected: there is no current LearnWorlds data or identity API. An unauthenticated read of the library did not expose the protected catalog script, and an explanation page returned 404; the same explanation was visible in the owner's authenticated browser. No session cookies or credentials were copied. A bridge URL alone does not solve this missing source connection.
+
+Read-only verification in FC Settings > Developers > API also showed the explicit higher-plan feature/Upgrade now gate and disabled credential fields. No upgrade was selected and no credentials were read. The owner accepted a shared content-management workflow and public text explanations while retaining protected audio. A Google Drive pilot, local editor and public reader are implemented; actual owner authorization, backend connection, long-form migration and production release remain incomplete. See `integrations/google-drive/README.md`.
+
+The refreshed owner-authorized browser snapshot contains 164 title families and 531 course-specific recordings. Thirty recordings across three course routes have an explicitly unconfirmed version (ten titles). They are retained as metadata and excluded from listening-version recommendations; no version was inferred from duration. The owner-confirmed duplicate Energy Blockage Removal (1) remains excluded.
+
+The code for a trusted, reviewed knowledge feed and server-verified identity is ready for integration, not connected. The default on Render is fail-closed production usage: persistent state and a configured session secret are required before provider calls. A deliberate `ASSISTANT_ACCESS_MODE=test` opt-in permits a clearly labelled, ephemeral device test allowance. It does not provide a real per-member daily quota. Do not deploy this revision over the existing test service without completing these choices first.
+
 The existing root voice application now supports a roughly 30-second recording (60-second browser stop), optional file upload, editable transcription, and a separate confirmation before recommendations. Text-only input remains available. Chinese and English interface controls, versions and membership routing are supported.
 
 ## Catalog and links
