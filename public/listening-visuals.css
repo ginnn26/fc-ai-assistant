@@ -1,47 +1,23 @@
 .fc-scene {
-  background: var(--scene-bg);
-  --scene-bg: #ede9f4;
-  --scene-glow: #ddd5ec;
-  --scene-ink: #66658a;
-  --scene-line: #9189aa;
+  background: #e7eee5;
   margin: 0 0 18px;
   overflow: hidden;
   border-radius: 18px;
 }
-.fc-scene-eyes {
-  --scene-bg: #e1eeef;
-  --scene-glow: #c2dfde;
-  --scene-ink: #357b80;
-  --scene-line: #73aaaa;
-}
-.fc-scene-focus {
-  --scene-bg: #e8edf7;
-  --scene-glow: #d0daf0;
-  --scene-ink: #596b98;
-  --scene-line: #8b9cbd;
-}
-.fc-scene-energy {
-  --scene-bg: #f5ebdc;
-  --scene-glow: #e9d7b6;
-  --scene-ink: #967849;
-  --scene-line: #c1a779;
-}
-.fc-scene-balance {
-  --scene-bg: #f6e8e1;
-  --scene-glow: #edd0be;
-  --scene-ink: #9b6758;
-  --scene-line: #c79e8b;
-}
-.fc-scene-comfort {
-  --scene-bg: #e7eee5;
-  --scene-glow: #cdddc8;
-  --scene-ink: #52735a;
-  --scene-line: #96af91;
-}
-.fc-scene svg {
+.fc-scene img {
   display: block;
   width: 100%;
-  height: 130px;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: center;
+}
+.fc-scene-focus img {
+  object-position: 50% 35%;
+}
+.fc-scene-eyes img,
+.fc-scene-comfort img {
+  object-position: 50% 38%;
 }
 .fc-visual-point {
   display: flex;
@@ -49,12 +25,25 @@
   align-items: flex-start;
   margin: 18px 0;
 }
-.fc-visual-point > div { min-width: 0; overflow-wrap: anywhere; }
-header .language { flex-shrink: 0; }
-header .language button { white-space: nowrap; min-height: 44px; }
-@media(max-width:700px) {
-  header { gap: 12px; }
-  header .language button { padding: 10px 12px; font-size: 14px; }
+.fc-visual-point > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+header .language {
+  flex-shrink: 0;
+}
+header .language button {
+  white-space: nowrap;
+  min-height: 44px;
+}
+@media (max-width: 700px) {
+  header {
+    gap: 12px;
+  }
+  header .language button {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
 }
 .fc-point-icon {
   flex: 0 0 40px;
@@ -96,10 +85,6 @@ header .language button { white-space: nowrap; min-height: 44px; }
 .reading .fc-scene {
   max-width: 560px;
 }
-.reading .fc-scene svg {
-  height: auto;
-  max-height: 200px;
-}
 #recommendations {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -136,8 +121,5 @@ header .language button { white-space: nowrap; min-height: 44px; }
   }
   #recommendations > .result-card {
     padding: 18px;
-  }
-  .fc-scene svg {
-    height: auto;
   }
 }
