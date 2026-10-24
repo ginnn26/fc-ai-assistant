@@ -7,6 +7,9 @@ const chatRoute = require("./routes/chat");
 
 const app = express();
 
+// Keep assessment headers/body limits separate from the existing voice/chat flow.
+app.use("/assessment", require("./routes/assessment").createAssessmentRouter());
+
 app.use(cors());
 app.use(express.json());
 app.use((req, res, next) => {
@@ -46,6 +49,10 @@ app.use((error, req, res, next) => {
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`FC AI Assistant running on port ${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, process.env.HOST || "0.0.0.0", () => {
+    console.log(`FC AI Assistant running on port ${PORT}`);
+  });
+}
+
+module.exports = app;
