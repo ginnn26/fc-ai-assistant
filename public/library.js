@@ -7,6 +7,18 @@ function node(tag, text, cls) {
   if (cls) n.className = cls;
   return n;
 }
+function brief(text, max) {
+  const chars = Array.from(text.trim().replace(/\s+/g, " "));
+  if (chars.length <= max) return chars.join("");
+  const part = chars.slice(0, max).join("");
+  const end = Math.max(
+    part.lastIndexOf("。"),
+    part.lastIndexOf(". "),
+    part.lastIndexOf("！"),
+    part.lastIndexOf("；"),
+  );
+  return (end >= max / 2 ? part.slice(0, end + 1) : part.trim()) + "…";
+}
 function render() {
   const en = language === "en";
   document.documentElement.lang = en ? "en" : "zh-Hans";
@@ -16,6 +28,13 @@ function render() {
   const box = $("reading");
   box.replaceChildren();
   box.hidden = false;
+  const full = node("details", "", "full-explanation");
+  full.append(
+    node(
+      "summary",
+      en ? "Read the full explanation & sources" : "展开完整讲解与参考资料",
+    ),
+  );
   for (const kind of ["purpose", "usage", "caution"]) {
     const ps = item.passages.filter((p) => p.kind === kind);
     if (!ps.length) continue;
@@ -25,18 +44,36 @@ function render() {
         "h2",
         (en
           ? {
-              purpose: "About this theme",
-              usage: "Listening guidance",
+              purpose: "Why choose this theme?",
+              usage: "How to listen",
               caution: "Care & cautions",
             }
-          : { purpose: "音疗介绍", usage: "使用方式", caution: "注意事项" })[
+          : { purpose: "为什么选这首", usage: "怎么听", caution: "注意事项" })[
           kind
         ],
       ),
     );
-    for (const p of ps)
-      section.append(node("p", p[language] || p[en ? "zh" : "en"]));
+    const texts = ps
+      .map((p) => p[language] || p[en ? "zh" : "en"])
+      .filter(Boolean);
+    // Care instructions remain visible in full; never hide a warning by shortening it.
+    section.append(
+      node(
+        "p",
+        kind === "caution"
+          ? texts.join("\n\n")
+          : brief(texts.join(" "), en ? 240 : 100),
+        "article-text",
+      ),
+    );
     box.append(section);
+    if (kind !== "caution") {
+      const complete = node("section", "");
+      complete.append(node("h3", section.querySelector("h2").textContent));
+      for (const text of texts)
+        complete.append(node("p", text, "article-text"));
+      full.append(complete);
+    }
   }
   const article = item.article;
   if (article && (article.zh || article.en)) {
@@ -45,7 +82,7 @@ function render() {
     section.append(
       node("p", article[language] || article[en ? "zh" : "en"], "article-text"),
     );
-    box.append(section);
+    full.append(section);
   }
   if (article?.references?.length) {
     const section = node("section", "");
@@ -69,12 +106,15 @@ function render() {
       p.append(a);
       section.append(p);
     }
-    box.append(section);
+    full.append(section);
   }
   if (item.testimonials.length) {
-    const section = node("section", "");
+    const section = node("details", "", "full-explanation");
     section.append(
-      node("h2", en ? "Shared experiences" : "使用者分享"),
+      node(
+        "summary",
+        en ? "Customer shares (optional)" : "查看顾客分享（选读）",
+      ),
       node(
         "p",
         en
@@ -93,6 +133,7 @@ function render() {
     }
     box.append(section);
   }
+  // Playback comes before optional long-form reading.
   const listening = node("div", "", "listening");
   listening.append(
     node("h2", en ? "Choose your listening version" : "选择适合你的声音版本"),
@@ -132,6 +173,7 @@ function render() {
     if (versions.size) listening.append(group);
   }
   box.append(listening);
+  if (full.children.length > 1) box.append(full);
 }
 $("zh").onclick = () => {
   language = "zh";

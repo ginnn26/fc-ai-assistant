@@ -301,6 +301,21 @@ footer {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+.full-explanation {
+  margin: 24px 0;
+  border: 1px solid #dce1d2;
+  border-radius: 14px;
+  padding: 18px;
+}
+.full-explanation summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #294a3d;
+}
+.full-explanation summary:focus-visible {
+  outline: 2px solid #294a3d;
+  outline-offset: 5px;
+}
 @media (max-width: 760px) {
   header {
     padding: 18px 6vw;

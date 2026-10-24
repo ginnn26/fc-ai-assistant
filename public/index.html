@@ -320,6 +320,33 @@
       .result-card p {
         margin: 8px 0;
       }
+      .option-label {
+        display: inline-block;
+        font-size: 12px;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+      .quick-point {
+        line-height: 1.65;
+      }
+      .listening-plan {
+        padding: 15px 18px;
+        border-radius: 12px;
+        background: #edf1e7;
+        font-size: 14px;
+      }
+      .care-note {
+        border-left: 3px solid #a68b60;
+        padding-left: 12px;
+      }
+      .recommendation-details summary {
+        font-weight: 600;
+      }
+      .recommendation-details summary:focus-visible {
+        outline: 2px solid var(--ink);
+        outline-offset: 5px;
+      }
       .subtitle {
         color: var(--muted);
         font-size: 14px;
@@ -661,11 +688,12 @@
           <div id="intake-fields"></div>
           <button id="followupButton" class="primary" type="submit"></button>
         </form>
-        <div id="membership-row">
+        <details id="membership-row" class="playback-choice">
+          <summary>选择会员入口，查看播放版本 / Choose your playback route</summary>
           <label for="membership" id="membership-label"></label
           ><select id="membership"></select>
           <p id="access-note" class="small"></p>
-        </div>
+        </details>
         <div id="recommendations"></div>
         <p id="results-boundary" class="small"></p>
         <p id="source-status" class="source-status"></p>

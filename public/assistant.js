@@ -617,6 +617,14 @@
   function safeLink(url) {
     try {
       const u = new URL(url);
+      if (u.username || u.password) return null;
+      if (
+        u.origin === "https://fc-ai-assistant.onrender.com" &&
+        /^\/library\/[a-z0-9_-]{1,100}$/.test(u.pathname) &&
+        !u.search &&
+        !u.hash
+      )
+        return u.href;
       return (u.origin === "https://frequencies-clinic.learnworlds.com" &&
         ["/path-player", "/start"].includes(u.pathname)) ||
         (u.origin === "https://frequencies-clinic.learnworlds.com" &&
@@ -633,6 +641,21 @@
     a.target = "_blank";
     a.rel = "noopener noreferrer";
     return a;
+  }
+  function brief(text, max = lang === "zh" ? 85 : 210) {
+    const chars = Array.from(
+      String(text || "")
+        .trim()
+        .replace(/\s+/g, " "),
+    );
+    if (chars.length <= max) return chars.join("");
+    const part = chars.slice(0, max).join("");
+    const end = Math.max(
+      part.lastIndexOf("。"),
+      part.lastIndexOf(". "),
+      part.lastIndexOf("；"),
+    );
+    return (end >= max / 2 ? part.slice(0, end + 1) : part.trim()) + "…";
   }
   function renderResults() {
     if (!result) {
@@ -685,13 +708,60 @@
           "Currently using a verified catalog snapshot. Full descriptions and automatic synchronization are not connected yet. Missing benefits or testimonials will not be invented.",
         );
     $("recommendations").replaceChildren();
+    if (result.recommendations?.length > 1) {
+      $("recommendations").append(
+        make(
+          "p",
+          t(
+          "先选最符合当前聆听需要的一首，再按需选择其他主题，不必全部听。选项排列不代表医疗治疗顺序。",
+          "Start with one theme that fits your listening goal; add another only if useful. You do not need every option. This is not a medical treatment sequence.",
+          ),
+          "listening-plan",
+        ),
+      );
+    }
+    let option = 0;
     for (const item of result.recommendations || []) {
       const card = make("article", null, "result-card");
       card.append(
+        make(
+          "span",
+          t(`聆听选项 ${++option}`, `Listening option ${option}`),
+          "option-label",
+        ),
+      );
+      const reason = result.translations?.[item.reason]?.[lang] || item.reason;
+      card.append(
         make("h3", lang === "zh" ? item.name_zh : item.name_en),
         make("div", lang === "zh" ? item.name_en : item.name_zh, "subtitle"),
-        make("p", result.translations?.[item.reason]?.[lang] || item.reason),
+        make(
+          "p",
+          t("为什么推荐：", "Why this theme: ") + brief(reason),
+          "quick-point",
+        ),
       );
+      const usage = (item.usage || [])
+        .filter((p) => safeLink(p.url))
+        .map((p) => p[lang] || p[lang === "zh" ? "en" : "zh"])
+        .filter(Boolean);
+      card.append(
+        make(
+          "p",
+          t("怎么听：", "How to listen: ") +
+            (usage.length
+              ? brief(usage.join(" "))
+              : t(
+                  "这首的具体用法尚待核实，请先查看完整说明。",
+                  "Specific usage is not verified yet; check the full explanation first.",
+                )),
+          "quick-point",
+        ),
+      );
+      const more = make("details", null, "recommendation-details");
+      more.append(
+        make("summary", t("详细讲解与资料来源", "Explanation & sources")),
+      );
+      more.append(make("p", reason));
       if (item.evidence && safeLink(item.evidence.url)) {
         const quote = make("blockquote", null, "source-quote");
         quote.append(
@@ -701,9 +771,9 @@
             t("查看 FC 原说明 ↗", "Read the FC source ↗"),
           ),
         );
-        card.append(quote);
+        more.append(quote);
       } else
-        card.append(
+        more.append(
           make(
             "p",
             t(
@@ -714,16 +784,18 @@
           ),
         );
       if (item.usage?.length) {
-        const details = make("details");
-        details.append(make("summary", t("怎样使用", "How to listen")));
+        const details = make("section");
+        details.append(
+          make("h4", t("完整使用说明", "Full listening guidance")),
+        );
         for (const p of item.usage) {
           if (safeLink(p.url))
             details.append(
-              make("p", p[lang]),
+              make("p", p[lang] || p[lang === "zh" ? "en" : "zh"]),
               link(p.url, t("查看使用说明 ↗", "Read usage guidance ↗")),
             );
         }
-        card.append(details);
+        more.append(details);
       }
       if (item.testimonials?.length) {
         const details = make("details");
@@ -760,13 +832,16 @@
             }
           } catch {}
         }
-        card.append(details);
+        more.append(details);
       }
-      const paths = make("div", null, "links");
       if (safeLink(item.description_url))
-        paths.append(
-          link(item.description_url, t("了解这首音疗 ↗", "About this theme ↗")),
+        more.append(
+          link(
+            item.description_url,
+            t("查看完整主题说明 ↗", "Read the full theme explanation ↗"),
+          ),
         );
+      const paths = make("div", null, "links");
       paths.append(
         link(
           "https://frequencies-clinic.learnworlds.com/start",
@@ -810,12 +885,20 @@
           make(
             "p",
             t(
-              "在上方选择会员入口，即可查看实际可用的播放版本。",
-              "Choose your membership route above to see catalogued playback versions.",
+              "播放版本：请先选择上方会员入口。",
+              "Playback versions: choose your route above.",
             ),
             "small",
           ),
         );
+      // Critical care instructions stay outside the collapsed explanation.
+      for (const p of (item.passages || []).filter(
+        (p) => p.kind === "caution",
+      )) {
+        const warning = p[lang] || p[lang === "zh" ? "en" : "zh"];
+        if (warning) card.append(make("p", warning, "small care-note"));
+      }
+      card.append(more);
       $("recommendations").append(card);
     }
   }
