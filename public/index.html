@@ -1,1329 +1,487 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#f5f0e6">
-  <title>FC AI Wellness Support</title>
-  <style>
-    :root {
-      color-scheme: light;
-      --cream: #f5f0e6;
-      --cream-light: #fbf8f2;
-      --paper: #fffefd;
-      --ink: #25302a;
-      --muted: #69736d;
-      --sage: #607b6c;
-      --sage-dark: #3f5f4f;
-      --sage-soft: #e8efe9;
-      --sage-pale: #f3f7f3;
-      --line: #dfe6df;
-      --warm-line: #e8e0d2;
-      --error: #9a4b42;
-      --error-soft: #fbefed;
-      --shadow: 0 22px 60px rgba(55, 66, 57, 0.11);
-      --radius-lg: 28px;
-      --radius-md: 18px;
-      --radius-sm: 12px;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      background: var(--cream);
-    }
-
-    body {
-      min-width: 280px;
-      min-height: 100vh;
-      margin: 0;
-      background:
-        radial-gradient(circle at 12% 7%, rgba(255, 255, 255, 0.9), transparent 34rem),
-        radial-gradient(circle at 92% 82%, rgba(193, 209, 195, 0.32), transparent 32rem),
-        var(--cream);
-      color: var(--ink);
-      font-family: Inter, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      line-height: 1.5;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    button,
-    textarea {
-      font: inherit;
-    }
-
-    button,
-    a {
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    button:focus-visible,
-    textarea:focus-visible,
-    a:focus-visible {
-      outline: 3px solid rgba(96, 123, 108, 0.28);
-      outline-offset: 3px;
-    }
-
-    [hidden] {
-      display: none !important;
-    }
-
-    .page {
-      width: min(100%, 1040px);
-      margin: 0 auto;
-      padding: clamp(18px, 4vw, 44px);
-    }
-
-    .app-shell {
-      overflow: hidden;
-      background: rgba(255, 254, 253, 0.96);
-      border: 1px solid rgba(223, 230, 223, 0.92);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow);
-    }
-
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-      padding: 22px clamp(20px, 4vw, 38px);
-      border-bottom: 1px solid var(--line);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      min-width: 0;
-      gap: 12px;
-    }
-
-    .brand-mark {
-      display: grid;
-      width: 42px;
-      height: 42px;
-      flex: 0 0 42px;
-      place-items: center;
-      border-radius: 14px;
-      background: var(--sage-dark);
-      color: #fff;
-      font-size: 13px;
-      font-weight: 750;
-      letter-spacing: 0.08em;
-    }
-
-    .brand-copy {
-      min-width: 0;
-    }
-
-    .brand-copy strong,
-    .brand-copy span {
-      display: block;
-    }
-
-    .brand-copy strong {
-      font-size: 15px;
-      letter-spacing: 0.01em;
-    }
-
-    .brand-copy span {
-      overflow: hidden;
-      color: var(--muted);
-      font-size: 12px;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .ghost-button {
-      flex: 0 0 auto;
-      min-height: 40px;
-      padding: 8px 14px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: transparent;
-      color: var(--sage-dark);
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .ghost-button:hover {
-      background: var(--sage-pale);
-    }
-
-    .content {
-      padding: clamp(30px, 6vw, 64px) clamp(20px, 7vw, 72px) 38px;
-    }
-
-    .intro {
-      max-width: 680px;
-      margin: 0 auto 30px;
-      text-align: center;
-    }
-
-    .eyebrow {
-      margin: 0 0 10px;
-      color: var(--sage);
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-    }
-
-    h1 {
-      max-width: 620px;
-      margin: 0 auto 16px;
-      font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
-      font-size: clamp(30px, 6vw, 50px);
-      font-weight: 500;
-      letter-spacing: -0.035em;
-      line-height: 1.12;
-    }
-
-    .intro-text {
-      margin: 0;
-      color: var(--muted);
-      font-size: clamp(14px, 2vw, 16px);
-    }
-
-    .intro-text span {
-      display: block;
-    }
-
-    .consultation-card {
-      max-width: 760px;
-      margin: 0 auto;
-      padding: clamp(22px, 5vw, 38px);
-      border: 1px solid var(--warm-line);
-      border-radius: 24px;
-      background: var(--cream-light);
-    }
-
-    .voice-zone {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
-
-    .voice-label {
-      margin: 0 0 18px;
-      color: var(--ink);
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .mic-button {
-      position: relative;
-      display: grid;
-      width: 104px;
-      height: 104px;
-      padding: 0;
-      place-items: center;
-      border: 8px solid var(--sage-soft);
-      border-radius: 50%;
-      background: var(--sage-dark);
-      box-shadow: 0 12px 28px rgba(63, 95, 79, 0.22);
-      color: #fff;
-      cursor: pointer;
-      transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
-    }
-
-    .mic-button:hover:not(:disabled) {
-      transform: translateY(-2px);
-      background: #355443;
-      box-shadow: 0 15px 32px rgba(63, 95, 79, 0.27);
-    }
-
-    .mic-button:disabled {
-      cursor: wait;
-      opacity: 0.55;
-    }
-
-    .mic-button.recording {
-      border-color: #f2d9d4;
-      background: var(--error);
-      box-shadow: 0 0 0 8px rgba(154, 75, 66, 0.08), 0 12px 28px rgba(154, 75, 66, 0.2);
-    }
-
-    .mic-button svg {
-      width: 36px;
-      height: 36px;
-    }
-
-    .mic-button .stop-icon {
-      width: 25px;
-      height: 25px;
-      border-radius: 5px;
-      background: currentColor;
-    }
-
-    .status {
-      display: inline-flex;
-      min-height: 28px;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin: 14px 0 0;
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 650;
-    }
-
-    .status-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #9ba69f;
-    }
-
-    .status[data-state="recording"] {
-      color: var(--error);
-    }
-
-    .status[data-state="recording"] .status-dot {
-      background: var(--error);
-      animation: pulse 1.4s ease-in-out infinite;
-    }
-
-    .status[data-state="processing"] .status-dot {
-      background: var(--sage);
-      animation: pulse 1.4s ease-in-out infinite;
-    }
-
-    .status[data-state="error"] {
-      color: var(--error);
-    }
-
-    .status[data-state="error"] .status-dot {
-      background: var(--error);
-    }
-
-    .permission-help {
-      width: 100%;
-      margin: 18px 0 0;
-      padding: 16px 18px;
-      border: 1px solid #e8c9c4;
-      border-radius: var(--radius-sm);
-      background: var(--error-soft);
-      color: #6f3933;
-      text-align: left;
-    }
-
-    .permission-help strong,
-    .permission-help p {
-      display: block;
-      margin: 0;
-    }
-
-    .permission-help strong {
-      font-size: 14px;
-    }
-
-    .permission-help p {
-      margin-top: 5px;
-      font-size: 12px;
-      line-height: 1.55;
-    }
-
-    @keyframes pulse {
-      50% { opacity: 0.35; transform: scale(0.72); }
-    }
-
-    .transcript {
-      margin: 24px 0 0;
-      padding: 16px 18px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-sm);
-      background: var(--paper);
-      text-align: left;
-    }
-
-    .transcript-label {
-      margin: 0 0 5px;
-      color: var(--sage);
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 0.09em;
-      text-transform: uppercase;
-    }
-
-    .transcript-text {
-      margin: 0;
-      overflow-wrap: anywhere;
-      color: var(--ink);
-      font-size: 14px;
-    }
-
-    .divider {
-      display: flex;
-      align-items: center;
-      gap: 13px;
-      margin: 26px 0 20px;
-      color: #879089;
-      font-size: 12px;
-    }
-
-    .divider::before,
-    .divider::after {
-      height: 1px;
-      flex: 1;
-      background: var(--line);
-      content: "";
-    }
-
-    .message-form {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 10px;
-    }
-
-    .message-input {
-      width: 100%;
-      min-height: 52px;
-      max-height: 150px;
-      resize: vertical;
-      padding: 14px 16px;
-      border: 1px solid #ccd7cf;
-      border-radius: 14px;
-      background: var(--paper);
-      color: var(--ink);
-      line-height: 1.45;
-    }
-
-    .message-input::placeholder {
-      color: #929a95;
-    }
-
-    .message-input:focus {
-      border-color: var(--sage);
-    }
-
-    .send-button {
-      min-width: 108px;
-      padding: 12px 20px;
-      border: 0;
-      border-radius: 14px;
-      background: var(--sage-dark);
-      color: #fff;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 750;
-    }
-
-    .send-button:hover:not(:disabled) {
-      background: #355443;
-    }
-
-    .send-button:disabled,
-    .message-input:disabled {
-      cursor: not-allowed;
-      opacity: 0.56;
-    }
-
-    .form-note {
-      grid-column: 1 / -1;
-      margin: 0 2px;
-      color: #7b847f;
-      font-size: 11px;
-    }
-
-    .results {
-      max-width: 760px;
-      margin: 36px auto 0;
-      scroll-margin-top: 20px;
-    }
-
-    .results-header {
-      margin-bottom: 18px;
-    }
-
-    .results-title {
-      margin: 0 0 7px;
-      font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
-      font-size: clamp(23px, 4vw, 31px);
-      font-weight: 500;
-      letter-spacing: -0.02em;
-    }
-
-    .results-message {
-      margin: 0;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .recommendation-list {
-      display: grid;
-      gap: 12px;
-    }
-
-    .recommendation-card {
-      display: grid;
-      grid-template-columns: 40px minmax(0, 1fr) auto;
-      align-items: center;
-      gap: 14px;
-      min-height: 98px;
-      padding: 17px 18px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-md);
-      background: var(--paper);
-      box-shadow: 0 8px 24px rgba(55, 66, 57, 0.05);
-    }
-
-    .recommendation-number {
-      display: grid;
-      width: 38px;
-      height: 38px;
-      place-items: center;
-      border-radius: 50%;
-      background: var(--sage-soft);
-      color: var(--sage-dark);
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .recommendation-copy {
-      min-width: 0;
-    }
-
-    .recommendation-category {
-      margin: 0 0 5px;
-      color: var(--sage);
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      line-height: 1.35;
-      text-transform: uppercase;
-    }
-
-    .recommendation-name {
-      margin: 0;
-      overflow-wrap: anywhere;
-      font-size: 15px;
-      font-weight: 750;
-      line-height: 1.35;
-    }
-
-    .recommendation-translation {
-      margin: 3px 0 0;
-      overflow-wrap: anywhere;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .listen-button {
-      display: inline-flex;
-      min-height: 40px;
-      align-items: center;
-      gap: 7px;
-      padding: 9px 14px;
-      border-radius: 999px;
-      background: var(--sage-dark);
-      color: #fff;
-      font-size: 12px;
-      font-weight: 750;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-
-    .listen-button:hover {
-      background: #355443;
-    }
-
-    .unavailable {
-      color: #8a938d;
-      font-size: 11px;
-      text-align: right;
-    }
-
-    .empty-state {
-      padding: 22px;
-      border: 1px dashed #cbd5cd;
-      border-radius: var(--radius-md);
-      background: var(--sage-pale);
-      color: var(--muted);
-      font-size: 14px;
-      text-align: center;
-    }
-
-    .wellness-note {
-      max-width: 760px;
-      margin: 30px auto 0;
-      padding-top: 20px;
-      border-top: 1px solid var(--line);
-      color: #78817b;
-      font-size: 11px;
-      text-align: center;
-    }
-
-    @media (max-width: 620px) {
-      .page {
-        padding: 0;
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>FC · 说说此刻的你</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #244b3e;
+        --muted: #65756b;
+        --paper: #f7f4ec;
+        --sage: #e4eadf;
+        --line: #d9dfd5;
       }
-
-      .app-shell {
-        min-height: 100vh;
-        border-width: 0;
-        border-radius: 0;
+      * {
+        box-sizing: border-box;
       }
-
-      .topbar {
-        padding: 17px 18px;
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font:
+          16px/1.8 Arial,
+          "Microsoft YaHei",
+          sans-serif;
       }
-
-      .brand-copy span {
-        max-width: 150px;
+      button,
+      textarea,
+      select,
+      input {
+        font: inherit;
       }
-
-      .ghost-button {
-        width: 40px;
-        padding: 0;
+      button,
+      a,
+      select,
+      input {
+        touch-action: manipulation;
+      }
+      button,
+      a {
+        cursor: pointer;
+      }
+      button:disabled {
+        cursor: wait;
+        opacity: 0.6;
+      }
+      button:focus-visible,
+      a:focus-visible,
+      input:focus-visible,
+      select:focus-visible,
+      textarea:focus-visible {
+        outline: 3px solid #b29262;
+        outline-offset: 4px;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      .shell {
+        max-width: 1120px;
+        margin: auto;
+        padding: 24px clamp(18px, 4vw, 56px) 60px;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        padding-bottom: 22px;
+        border-bottom: 1px solid var(--line);
+      }
+      a {
+        color: inherit;
+      }
+      .brand {
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-size: 10px;
+        letter-spacing: 2px;
+        line-height: 1.4;
+      }
+      .mark {
+        font:
+          italic 38px Georgia,
+          serif;
+        letter-spacing: -5px;
+        border: 1px solid #aab8a7;
+        border-radius: 50%;
+        padding: 4px 16px 9px 8px;
+      }
+      .quiet,
+      button.secondary {
+        border: 1px solid var(--line);
+        border-radius: 30px;
+        background: transparent;
+        color: var(--ink);
+        padding: 9px 20px;
+      }
+      .hero {
+        display: grid;
+        grid-template-columns: 1fr 230px;
+        align-items: center;
+        gap: 30px;
+        padding: 50px 0 34px;
+      }
+      .eyebrow {
+        font-size: 11px;
+        letter-spacing: 2.5px;
+        color: var(--muted);
+        margin: 0 0 18px;
+      }
+      h1 {
+        font:
+          normal clamp(36px, 5.5vw, 62px)/1.3 Georgia,
+          "Songti SC",
+          serif;
+        letter-spacing: -1px;
+        margin: 0 0 24px;
+      }
+      h2 {
+        font:
+          normal 30px/1.4 Georgia,
+          "Songti SC",
+          serif;
+        margin: 10px 0 16px;
+      }
+      h3 {
+        font-size: 20px;
+        line-height: 1.5;
+        margin: 0 0 7px;
+      }
+      .lede {
+        max-width: 650px;
+        color: var(--muted);
+        margin: 0;
+      }
+      .sound-art {
+        height: 230px;
+        position: relative;
+        border-radius: 120px 120px 25px 25px;
         overflow: hidden;
-        color: transparent;
+        background: linear-gradient(145deg, #254c3e, #8d9b76);
+        display: grid;
+        place-items: center;
       }
-
-      .ghost-button::after {
-        color: var(--sage-dark);
-        content: "↻";
-        font-size: 19px;
+      .sound-art:before,
+      .sound-art:after {
+        content: "";
+        position: absolute;
+        border: 1px solid #e6e2bd66;
+        width: 190px;
+        height: 190px;
+        border-radius: 50%;
+        transform: translateY(65px);
+        box-shadow:
+          0 0 0 20px #e6e2bd22,
+          0 0 0 40px #e6e2bd22,
+          0 0 0 60px #e6e2bd22;
       }
-
-      .content {
-        padding: 38px 17px 28px;
+      .sound-art span {
+        font: italic 27px Georgia;
+        color: #f7f4ec;
+        z-index: 1;
+        text-align: center;
+        line-height: 1.4;
       }
-
-      .consultation-card {
-        padding: 24px 16px;
+      .steps {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 28px;
       }
-
-      .message-form {
-        grid-template-columns: 1fr;
+      .steps span {
+        display: flex;
+        gap: 9px;
+        align-items: center;
       }
-
-      .send-button {
-        min-height: 48px;
+      .steps b {
+        font-size: 11px;
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        padding: 2px 8px;
       }
-
-      .recommendation-card {
-        grid-template-columns: 38px minmax(0, 1fr);
+      .panel {
+        padding: clamp(20px, 4vw, 36px);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        background: #fffefa;
+        margin-bottom: 20px;
       }
-
-      .recommendation-card .listen-button,
-      .recommendation-card .unavailable {
-        grid-column: 2;
-        justify-self: start;
-        text-align: left;
+      .consent {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        font-size: 14px;
+        color: var(--muted);
       }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        scroll-behavior: auto !important;
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
+      input[type="checkbox"] {
+        margin-top: 7px;
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+        accent-color: var(--ink);
       }
-    }
-  </style>
-</head>
-<body>
-  <main class="page">
-    <section class="app-shell" aria-labelledby="pageTitle">
-      <header class="topbar">
-        <div class="brand">
-          <div class="brand-mark" aria-hidden="true">FC</div>
-          <div class="brand-copy">
-            <strong>FC AI Wellness Support</strong>
-            <span>身心健康支持助手</span>
-          </div>
-        </div>
-        <button class="ghost-button" id="resetButton" type="button">New consultation</button>
+      .record-row {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin: 25px 0 18px;
+      }
+      .primary {
+        border: 0;
+        background: var(--ink);
+        color: #fffefa;
+        padding: 14px 24px;
+        border-radius: 30px;
+        min-height: 50px;
+      }
+      .recording {
+        background: #9f5145 !important;
+      }
+      .status {
+        color: var(--muted);
+        font-size: 14px;
+        min-height: 28px;
+      }
+      .status.error {
+        color: #9f5145;
+      }
+      .small {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .upload-label {
+        display: inline-block;
+        text-decoration: underline;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      input[type="file"] {
+        max-width: 100%;
+        font-size: 13px;
+        margin: 6px 0 16px;
+      }
+      .divider {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-size: 12px;
+        color: var(--muted);
+        margin: 28px 0 14px;
+      }
+      .divider:after {
+        content: "";
+        height: 1px;
+        background: var(--line);
+        flex: 1;
+      }
+      textarea {
+        width: 100%;
+        resize: vertical;
+        min-height: 140px;
+        padding: 16px;
+        border: 1px solid #b6c5b5;
+        border-radius: 12px;
+        color: var(--ink);
+        background: #fff;
+        line-height: 1.8;
+      }
+      .form-bottom {
+        display: flex;
+        gap: 14px;
+        align-items: end;
+        flex-wrap: wrap;
+        margin-top: 17px;
+      }
+      .form-bottom label {
+        flex: 1;
+        min-width: 200px;
+        font-size: 13px;
+      }
+      select {
+        display: block;
+        width: 100%;
+        padding: 11px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        color: var(--ink);
+        background: #fff;
+        margin-top: 6px;
+      }
+      .count {
+        text-align: right;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .help {
+        padding: 15px;
+        background: #eef1e8;
+        border-radius: 12px;
+        margin: 15px 0;
+      }
+      .result-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+      }
+      .result-card {
+        padding: 24px 0;
+        border-top: 1px solid var(--line);
+      }
+      .result-card p {
+        margin: 8px 0;
+      }
+      .subtitle {
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .version {
+        display: block;
+        margin: 10px 0;
+        padding: 13px 16px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        text-decoration: none;
+        background: #f4f6ee;
+      }
+      .links {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        font-size: 14px;
+      }
+      summary {
+        cursor: pointer;
+      }
+      footer {
+        font-size: 12px;
+        color: var(--muted);
+        text-align: center;
+        padding-top: 28px;
+      }
+      .notice {
+        padding: 18px;
+        background: #edf1e7;
+        border-radius: 12px;
+      }
+      .preview {
+        color: #8c633b;
+        font-size: 12px;
+      }
+      @media (max-width: 650px) {
+        .hero {
+          grid-template-columns: 1fr;
+          padding-top: 35px;
+        }
+        .sound-art {
+          display: none;
+        }
+        .steps {
+          gap: 10px;
+          font-size: 12px;
+        }
+        .panel {
+          border-radius: 16px;
+        }
+        .form-bottom > button {
+          width: 100%;
+        }
+        .result-head {
+          align-items: flex-start;
+        }
+        .shell {
+          padding-top: 18px;
+        }
+        .brand {
+          font-size: 9px;
+          gap: 10px;
+        }
+        .quiet {
+          padding: 8px 15px;
+        }
+      }
+    </style>
+    <script src="/assistant.js" defer></script>
+  </head>
+  <body>
+    <main class="shell">
+      <header>
+        <a
+          class="brand"
+          href="https://frequencies-clinic.learnworlds.com/pages/home"
+          target="_top"
+          ><span class="mark">fc∿</span><span>FREQUENCIES<br />CLINIC</span></a
+        ><button id="language" class="quiet" type="button">English</button>
       </header>
-
-      <div class="content">
-        <div class="intro">
-          <p class="eyebrow">A calmer moment starts here</p>
-          <h1 id="pageTitle">How are you feeling today?</h1>
-          <p class="intro-text">
-            <span>Share what you need, and we’ll suggest FC content for gentle wellness support.</span>
-            <span lang="zh-CN">告诉我们你的近况，我们会为你推荐适合的 FC 身心支持内容。</span>
-          </p>
+      <section class="hero">
+        <div>
+          <p class="eyebrow">YOUR VOICE. YOUR STARTING POINT.</p>
+          <h1 id="title"></h1>
+          <p id="intro" class="lede"></p>
         </div>
-
-        <section class="consultation-card" aria-label="Share how you feel">
-          <div class="voice-zone">
-            <p class="voice-label">Tap to speak · 点击开始说话</p>
-            <button class="mic-button" id="micButton" type="button" aria-label="Start voice recording" aria-pressed="false">
-              <svg id="micIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <rect x="8" y="2.75" width="8" height="12.5" rx="4"></rect>
-                <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3M8.5 21h7"></path>
-              </svg>
-              <span class="stop-icon" id="stopIcon" hidden aria-hidden="true"></span>
-            </button>
-            <div class="status" id="status" data-state="idle" role="status" aria-live="polite">
-              <span class="status-dot" aria-hidden="true"></span>
-              <span id="statusText">Ready to listen · 准备聆听</span>
-            </div>
-            <div class="permission-help" id="permissionHelp" role="alert" hidden>
-              <strong id="permissionTitle"></strong>
-              <p id="permissionMessage"></p>
-            </div>
+        <div class="sound-art" aria-hidden="true">
+          <span>A little space.<br />A listening ear.</span>
+        </div>
+      </section>
+      <div id="steps" class="steps"></div>
+      <section class="panel" aria-labelledby="share-title">
+        <h2 id="share-title"></h2>
+        <label class="consent"
+          ><input id="consent" type="checkbox" /><span id="consent-copy"></span
+        ></label>
+        <div class="record-row">
+          <button
+            id="micButton"
+            class="primary"
+            type="button"
+            aria-pressed="false"
+          ></button
+          ><button
+            id="cancel-recording"
+            class="secondary"
+            type="button"
+            hidden
+          ></button
+          ><span id="record-note" class="small"></span>
+        </div>
+        <div id="status" class="status" role="status" aria-live="polite"></div>
+        <div id="mic-help" class="help" hidden>
+          <p id="mic-help-copy"></p>
+          <a id="open-direct" target="_blank" rel="noopener"></a>
+        </div>
+        <details>
+          <summary id="upload-label"></summary>
+          <p id="upload-copy" class="small"></p>
+          <input
+            id="audio-file"
+            type="file"
+            accept="audio/*,.webm,.m4a,.mp4,.mp3,.ogg,.wav,.flac"
+          /><button id="upload-button" type="button" class="secondary"></button>
+        </details>
+        <div id="review-label" class="divider"></div>
+        <form id="messageForm">
+          <label id="input-label" for="messageInput"></label
+          ><textarea id="messageInput" maxlength="2000" rows="4"></textarea>
+          <div id="count" class="count">0 / 2000</div>
+          <div class="form-bottom">
+            <label
+              ><span id="preference-label"></span
+              ><select id="preference"></select></label
+            ><button id="sendButton" class="primary" type="submit"></button>
           </div>
-
-          <div class="transcript" id="transcript" hidden>
-            <p class="transcript-label" id="transcriptLabel">What you shared</p>
-            <p class="transcript-text" id="transcriptText"></p>
-          </div>
-
-          <div class="divider"><span>or type below · 或输入文字</span></div>
-
-          <form class="message-form" id="messageForm">
-            <label for="messageInput" hidden>Describe how you feel</label>
-            <textarea class="message-input" id="messageInput" rows="2" maxlength="2000" placeholder="Tell us how you feel… / 告诉我们你的感受…" required></textarea>
-            <button class="send-button" id="sendButton" type="submit">Find support</button>
-            <p class="form-note">Voice is transcribed securely for this request. Please do not share sensitive personal details.</p>
-          </form>
-        </section>
-
-        <section class="results" id="results" aria-labelledby="resultsTitle" hidden>
-          <header class="results-header">
-            <p class="eyebrow" id="resultsEyebrow">Selected for you</p>
-            <h2 class="results-title" id="resultsTitle">Your FC recommendations</h2>
-            <p class="results-message" id="resultsMessage"></p>
-          </header>
-          <div class="recommendation-list" id="recommendationList"></div>
-        </section>
-
-        <p class="wellness-note">
-          FC content supports relaxation and general wellbeing. It does not diagnose, cure, prevent, or replace professional medical care.<br>
-          <span lang="zh-CN">FC 内容仅用于放松与日常身心支持，不能用于诊断、治疗、预防疾病或替代专业医疗服务。</span>
-        </p>
-      </div>
-    </section>
-  </main>
-
-  <script>
-    "use strict";
-
-    const elements = {
-      micButton: document.getElementById("micButton"),
-      micIcon: document.getElementById("micIcon"),
-      stopIcon: document.getElementById("stopIcon"),
-      status: document.getElementById("status"),
-      statusText: document.getElementById("statusText"),
-      permissionHelp: document.getElementById("permissionHelp"),
-      permissionTitle: document.getElementById("permissionTitle"),
-      permissionMessage: document.getElementById("permissionMessage"),
-      transcript: document.getElementById("transcript"),
-      transcriptLabel: document.getElementById("transcriptLabel"),
-      transcriptText: document.getElementById("transcriptText"),
-      form: document.getElementById("messageForm"),
-      input: document.getElementById("messageInput"),
-      sendButton: document.getElementById("sendButton"),
-      resetButton: document.getElementById("resetButton"),
-      results: document.getElementById("results"),
-      resultsEyebrow: document.getElementById("resultsEyebrow"),
-      resultsTitle: document.getElementById("resultsTitle"),
-      resultsMessage: document.getElementById("resultsMessage"),
-      recommendationList: document.getElementById("recommendationList")
-    };
-
-    const copy = {
-      en: {
-        ready: "Ready to listen",
-        requesting: "Requesting microphone access…",
-        recording: (seconds) => `Listening… ${seconds}s · tap to stop`,
-        transcribing: "Turning your voice into text…",
-        recommending: "Finding supportive FC content…",
-        complete: "Recommendations are ready",
-        permission: "Microphone access was denied. Follow the steps below to enable it.",
-        permissionTitle: "Allow microphone access",
-        permissionHelp: "Open your browser's site controls (lock or settings icon), set Microphone to Allow, then tap the microphone button again. On a phone, also allow microphone access for the browser in device Settings.",
-        popupBlocked: "Please allow pop-ups for this page, then tap the microphone again.",
-        insecure: "Microphone access requires a secure HTTPS page.",
-        insecureTitle: "A secure connection is required",
-        insecureHelp: "Open the deployed HTTPS address directly. Microphone access is unavailable on ordinary HTTP pages.",
-        noDevice: "No microphone was found on this device.",
-        noDeviceTitle: "No microphone available",
-        noDeviceHelp: "Connect or enable a microphone, check the device's privacy settings, then try again.",
-        deviceBusy: "The microphone is unavailable or being used by another app.",
-        deviceBusyTitle: "Microphone is busy",
-        deviceBusyHelp: "Close other apps using the microphone, check the device input settings, then try again.",
-        unsupported: "Voice recording is not supported here. You can type below instead.",
-        recordingError: "The recording could not be completed. Please try again or type below.",
-        transcriptionError: "We couldn't transcribe that recording. Please try again or type below.",
-        requestError: "We couldn't retrieve recommendations. Please try again.",
-        emptyTranscript: "We couldn't hear any speech. Please try again or type below.",
-        whatShared: "What you shared",
-        selected: "Selected for you",
-        resultsTitle: "Your FC recommendations",
-        listen: "Listen now",
-        unavailable: "Listening link coming soon",
-        empty: "No matching FC content was returned. Try describing how you feel in a little more detail.",
-        send: "Find support"
-      },
-      zh: {
-        ready: "准备聆听",
-        requesting: "正在请求麦克风权限…",
-        recording: (seconds) => `正在聆听… ${seconds}秒 · 点击停止`,
-        transcribing: "正在将语音转换为文字…",
-        recommending: "正在寻找适合的 FC 支持内容…",
-        complete: "推荐内容已准备好",
-        permission: "麦克风权限被拒绝。请按照下方步骤开启权限。",
-        permissionTitle: "允许使用麦克风",
-        permissionHelp: "打开浏览器的网站控制（锁形或设置图标），将麦克风设为允许，然后再次点击麦克风按钮。手机用户也需要在系统设置中允许浏览器使用麦克风。",
-        popupBlocked: "请允许此页面打开弹出式窗口，然后再次点击麦克风。",
-        insecure: "麦克风需要通过安全的 HTTPS 页面使用。",
-        insecureTitle: "需要安全连接",
-        insecureHelp: "请直接打开已部署的 HTTPS 地址；普通 HTTP 页面无法使用麦克风。",
-        noDevice: "此设备未找到可用的麦克风。",
-        noDeviceTitle: "没有可用的麦克风",
-        noDeviceHelp: "请连接或启用麦克风，检查设备隐私设置，然后重试。",
-        deviceBusy: "麦克风暂时无法使用，或正被其他应用占用。",
-        deviceBusyTitle: "麦克风正被占用",
-        deviceBusyHelp: "请关闭正在使用麦克风的其他应用，检查设备输入设置，然后重试。",
-        unsupported: "此浏览器不支持语音录制。你也可以在下方输入文字。",
-        recordingError: "无法完成录音，请重试或在下方输入文字。",
-        transcriptionError: "无法识别这段录音，请重试或在下方输入文字。",
-        requestError: "暂时无法获取推荐，请稍后重试。",
-        emptyTranscript: "没有听到清楚的语音，请重试或在下方输入文字。",
-        whatShared: "你分享的内容",
-        selected: "为你精选",
-        resultsTitle: "你的 FC 推荐",
-        listen: "立即聆听",
-        unavailable: "聆听链接即将提供",
-        empty: "暂时没有找到合适的 FC 内容，请更详细地描述你的感受。",
-        send: "寻找支持"
-      }
-    };
-
-    const appState = {
-      language: "en",
-      processing: false,
-      recording: false,
-      recorder: null,
-      stream: null,
-      chunks: [],
-      seconds: 0,
-      timer: null,
-      sequence: 0,
-      activeRecording: 0,
-      processedRecordings: new Set(),
-      discardRecording: false,
-      abortController: null,
-      permissionIssue: null
-    };
-
-    function detectLanguage(text) {
-      const chineseCharacters = (text.match(/[\u3400-\u9fff]/g) || []).length;
-      const latinWords = (text.match(/[a-z]+/gi) || []).length;
-      return chineseCharacters > latinWords * 2 ? "zh" : "en";
-    }
-
-    function translated(key, ...args) {
-      const value = copy[appState.language][key];
-      return typeof value === "function" ? value(...args) : value;
-    }
-
-    function setStatus(key, state = "idle", detail = "") {
-      elements.status.dataset.state = state;
-      elements.statusText.textContent = detail || translated(key);
-    }
-
-    function isEmbedded() {
-      try {
-        return window.self !== window.top;
-      } catch (_error) {
-        return true;
-      }
-    }
-
-    function directMicrophoneUrl() {
-      const url = new URL(window.location.href);
-      url.searchParams.set("requestMicrophone", "1");
-      return url.href;
-    }
-
-    function openDirectMicrophoneTab() {
-      const directTab = window.open(directMicrophoneUrl(), "_blank");
-      if (directTab) {
-        directTab.opener = null;
-        return;
-      }
-
-      setStatus("popupBlocked", "error");
-    }
-
-    function microphoneAllowedByPolicy() {
-      const policy = document.permissionsPolicy || document.featurePolicy;
-      if (!policy || typeof policy.allowsFeature !== "function") return true;
-
-      try {
-        return policy.allowsFeature("microphone");
-      } catch (_error) {
-        return true;
-      }
-    }
-
-    function showMicrophoneHelp(reason) {
-      const issueCopy = {
-        permission: ["permission", "permissionTitle", "permissionHelp"],
-        insecure: ["insecure", "insecureTitle", "insecureHelp"],
-        noDevice: ["noDevice", "noDeviceTitle", "noDeviceHelp"],
-        deviceBusy: ["deviceBusy", "deviceBusyTitle", "deviceBusyHelp"]
-      };
-      const [statusKey, titleKey, helpKey] = issueCopy[reason] || issueCopy.permission;
-
-      appState.permissionIssue = reason;
-      setStatus(statusKey, "error");
-      elements.permissionTitle.textContent = translated(titleKey);
-      elements.permissionMessage.textContent = translated(helpKey);
-      elements.permissionHelp.hidden = false;
-    }
-
-    function hideMicrophoneHelp() {
-      appState.permissionIssue = null;
-      elements.permissionHelp.hidden = true;
-      elements.permissionTitle.textContent = "";
-      elements.permissionMessage.textContent = "";
-    }
-
-    function requestMicrophoneFromDirectTab() {
-      const url = new URL(window.location.href);
-      if (url.searchParams.get("requestMicrophone") !== "1" || isEmbedded()) return;
-
-      url.searchParams.delete("requestMicrophone");
-      window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
-      void startRecording();
-    }
-
-    function updateControls() {
-      elements.micButton.disabled = appState.processing;
-      elements.input.disabled = appState.processing || appState.recording;
-      elements.sendButton.disabled = appState.processing || appState.recording;
-      elements.micButton.classList.toggle("recording", appState.recording);
-      elements.micButton.setAttribute("aria-pressed", String(appState.recording));
-      elements.micButton.setAttribute(
-        "aria-label",
-        appState.recording ? "Stop voice recording" : "Start voice recording"
-      );
-      elements.micIcon.hidden = appState.recording;
-      elements.stopIcon.hidden = !appState.recording;
-      elements.sendButton.textContent = translated("send");
-    }
-
-    function setLanguage(language) {
-      appState.language = language === "zh" ? "zh" : "en";
-      document.documentElement.lang = appState.language === "zh" ? "zh-CN" : "en";
-      updateControls();
-      if (appState.permissionIssue) showMicrophoneHelp(appState.permissionIssue);
-    }
-
-    function showTranscript(text) {
-      elements.transcriptLabel.textContent = translated("whatShared");
-      elements.transcriptText.textContent = text;
-      elements.transcript.hidden = false;
-    }
-
-    function clearResults() {
-      elements.results.hidden = true;
-      elements.resultsMessage.textContent = "";
-      elements.recommendationList.replaceChildren();
-    }
-
-    async function readJsonResponse(response) {
-      const text = await response.text();
-      let data = {};
-
-      if (text) {
-        try {
-          data = JSON.parse(text);
-        } catch (_error) {
-          if (response.ok) throw new Error("The server returned an invalid response.");
-        }
-      }
-
-      if (!response.ok) {
-        throw new Error(data.error || `Request failed (${response.status})`);
-      }
-
-      return data;
-    }
-
-    function validHttpUrl(value) {
-      if (typeof value !== "string") return null;
-      try {
-        const parsed = new URL(value);
-        return parsed.protocol === "http:" || parsed.protocol === "https:" ? parsed.href : null;
-      } catch (_error) {
-        return null;
-      }
-    }
-
-    function renderRecommendations(data) {
-      const recommendations = Array.isArray(data.recommendations)
-        ? data.recommendations.slice(0, 3)
-        : [];
-
-      elements.resultsEyebrow.textContent = translated("selected");
-      elements.resultsTitle.textContent = translated("resultsTitle");
-      elements.resultsMessage.textContent = typeof data.message === "string" ? data.message : "";
-      elements.recommendationList.replaceChildren();
-
-      if (recommendations.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "empty-state";
-        empty.textContent = translated("empty");
-        elements.recommendationList.appendChild(empty);
-      } else {
-        recommendations.forEach((item, index) => {
-          const card = document.createElement("article");
-          card.className = "recommendation-card";
-
-          const number = document.createElement("span");
-          number.className = "recommendation-number";
-          number.textContent = String(index + 1).padStart(2, "0");
-          number.setAttribute("aria-hidden", "true");
-
-          const content = document.createElement("div");
-          content.className = "recommendation-copy";
-          const categoryNames = [item.category_en, item.category_zh]
-            .filter((name, position, names) => name && names.indexOf(name) === position);
-          const primaryName = appState.language === "zh"
-            ? (item.name_zh || item.name_en)
-            : (item.name_en || item.name_zh);
-          const secondaryName = appState.language === "zh" ? item.name_en : item.name_zh;
-
-          if (categoryNames.length > 0) {
-            const category = document.createElement("p");
-            category.className = "recommendation-category";
-            category.textContent = categoryNames.join(" · ");
-            content.appendChild(category);
-          }
-
-          const title = document.createElement("h3");
-          title.className = "recommendation-name";
-          title.textContent = primaryName || "FC wellness session";
-          content.appendChild(title);
-
-          if (secondaryName && secondaryName !== primaryName) {
-            const translation = document.createElement("p");
-            translation.className = "recommendation-translation";
-            translation.textContent = secondaryName;
-            content.appendChild(translation);
-          }
-
-          card.append(number, content);
-
-          const url = validHttpUrl(item.url);
-          if (url) {
-            const link = document.createElement("a");
-            link.className = "listen-button";
-            link.href = url;
-            link.target = "_blank";
-            link.rel = "noopener noreferrer";
-            link.textContent = translated("listen");
-            card.appendChild(link);
-          } else {
-            const unavailable = document.createElement("span");
-            unavailable.className = "unavailable";
-            unavailable.textContent = translated("unavailable");
-            card.appendChild(unavailable);
-          }
-
-          elements.recommendationList.appendChild(card);
-        });
-      }
-
-      elements.results.hidden = false;
-      elements.results.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-
-    async function requestRecommendations(message) {
-      const cleanMessage = String(message || "").trim();
-      if (!cleanMessage || appState.processing) return;
-
-      const requestSequence = ++appState.sequence;
-      setLanguage(detectLanguage(cleanMessage));
-      showTranscript(cleanMessage);
-      clearResults();
-      appState.processing = true;
-      appState.abortController = new AbortController();
-      updateControls();
-      setStatus("recommending", "processing");
-
-      try {
-        const response = await fetch("/chat/recommend", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: cleanMessage }),
-          signal: appState.abortController.signal
-        });
-        const data = await readJsonResponse(response);
-
-        if (requestSequence !== appState.sequence) return;
-        if (data.language === "en" || data.language === "zh") setLanguage(data.language);
-        renderRecommendations(data);
-        setStatus("complete", "idle");
-      } catch (error) {
-        if (error.name !== "AbortError" && requestSequence === appState.sequence) {
-          console.error("Recommendation request failed:", error);
-          setStatus("requestError", "error");
-        }
-      } finally {
-        if (requestSequence === appState.sequence) {
-          appState.processing = false;
-          appState.abortController = null;
-          updateControls();
-        }
-      }
-    }
-
-    function stopTracks() {
-      if (appState.stream) {
-        appState.stream.getTracks().forEach((track) => track.stop());
-        appState.stream = null;
-      }
-    }
-
-    function stopTimer() {
-      if (appState.timer) {
-        window.clearInterval(appState.timer);
-        appState.timer = null;
-      }
-    }
-
-    function recordingOptions() {
-      const preferredTypes = [
-        "audio/webm;codecs=opus",
-        "audio/webm",
-        "audio/mp4",
-        "audio/ogg;codecs=opus",
-        "audio/ogg"
-      ];
-      const mimeType = preferredTypes.find(
-        (type) => typeof MediaRecorder.isTypeSupported !== "function" || MediaRecorder.isTypeSupported(type)
-      );
-      return mimeType ? { mimeType } : undefined;
-    }
-
-    function audioFilename(mimeType) {
-      if (mimeType.includes("mp4")) return "recording.m4a";
-      if (mimeType.includes("ogg")) return "recording.ogg";
-      if (mimeType.includes("wav")) return "recording.wav";
-      if (mimeType.includes("mpeg")) return "recording.mp3";
-      return "recording.webm";
-    }
-
-    async function processRecording(recordingId, mimeType) {
-      if (appState.discardRecording || appState.processedRecordings.has(recordingId)) return;
-      appState.processedRecordings.add(recordingId);
-
-      const blob = new Blob(appState.chunks, { type: mimeType || "audio/webm" });
-      appState.chunks = [];
-      if (blob.size === 0) {
-        setStatus("emptyTranscript", "error");
-        return;
-      }
-
-      const requestSequence = ++appState.sequence;
-      appState.processing = true;
-      appState.abortController = new AbortController();
-      updateControls();
-      setStatus("transcribing", "processing");
-
-      try {
-        const formData = new FormData();
-        formData.append("audio", blob, audioFilename(blob.type));
-        const response = await fetch("/chat/transcribe", {
-          method: "POST",
-          body: formData,
-          signal: appState.abortController.signal
-        });
-        const data = await readJsonResponse(response);
-        const transcript = typeof data.transcript === "string" ? data.transcript.trim() : "";
-
-        if (requestSequence !== appState.sequence) return;
-        if (!transcript) {
-          setStatus("emptyTranscript", "error");
-          return;
-        }
-
-        setLanguage(detectLanguage(transcript));
-        showTranscript(transcript);
-        appState.processing = false;
-        appState.abortController = null;
-        updateControls();
-        await requestRecommendations(transcript);
-      } catch (error) {
-        if (error.name !== "AbortError" && requestSequence === appState.sequence) {
-          console.error("Transcription request failed:", error);
-          setStatus("transcriptionError", "error");
-        }
-      } finally {
-        if (requestSequence === appState.sequence && appState.processing) {
-          appState.processing = false;
-          appState.abortController = null;
-          updateControls();
-        }
-      }
-    }
-
-    function stopRecording() {
-      if (!appState.recorder || appState.recorder.state === "inactive") return;
-      appState.recorder.stop();
-    }
-
-    async function startRecording() {
-      hideMicrophoneHelp();
-
-      if (!window.isSecureContext) {
-        showMicrophoneHelp("insecure");
-        return;
-      }
-
-      if (!microphoneAllowedByPolicy()) {
-        openDirectMicrophoneTab();
-        return;
-      }
-
-      if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
-        setStatus("unsupported", "error");
-        return;
-      }
-
-      appState.discardRecording = false;
-      const permissionSequence = ++appState.sequence;
-      appState.processing = true;
-      updateControls();
-      setStatus("requesting", "processing");
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        if (permissionSequence !== appState.sequence) {
-          stream.getTracks().forEach((track) => track.stop());
-          return;
-        }
-        const recordingId = permissionSequence;
-        const options = recordingOptions();
-        const recorder = new MediaRecorder(stream, options);
-
-        appState.stream = stream;
-        appState.recorder = recorder;
-        appState.activeRecording = recordingId;
-        appState.chunks = [];
-        appState.seconds = 0;
-        appState.recording = true;
-        appState.processing = false;
-        hideMicrophoneHelp();
-
-        recorder.addEventListener("dataavailable", (event) => {
-          if (event.data?.size > 0) appState.chunks.push(event.data);
-        });
-
-        recorder.addEventListener("error", (event) => {
-          console.error("Recording failed:", event.error || event);
-          appState.discardRecording = true;
-          appState.recording = false;
-          stopTimer();
-          stopTracks();
-          updateControls();
-          setStatus("recordingError", "error");
-        });
-
-        recorder.addEventListener("stop", () => {
-          const mimeType = recorder.mimeType || options?.mimeType || "audio/webm";
-          appState.recording = false;
-          stopTimer();
-          stopTracks();
-          updateControls();
-          void processRecording(recordingId, mimeType);
-        }, { once: true });
-
-        recorder.start();
-        updateControls();
-        setStatus("recording", "recording", translated("recording", 0));
-        appState.timer = window.setInterval(() => {
-          appState.seconds += 1;
-          setStatus("recording", "recording", translated("recording", appState.seconds));
-          if (appState.seconds >= 60) stopRecording();
-        }, 1000);
-      } catch (error) {
-        if (permissionSequence !== appState.sequence) return;
-        console.error("Microphone access failed:", error);
-        stopTracks();
-        appState.recording = false;
-        appState.processing = false;
-        updateControls();
-        if (error.name === "NotAllowedError" || error.name === "SecurityError") {
-          if (isEmbedded() && !microphoneAllowedByPolicy()) openDirectMicrophoneTab();
-          else showMicrophoneHelp("permission");
-        } else if (error.name === "NotFoundError" || error.name === "DevicesNotFoundError") {
-          showMicrophoneHelp("noDevice");
-        } else if (error.name === "NotReadableError" || error.name === "TrackStartError") {
-          showMicrophoneHelp("deviceBusy");
-        } else {
-          setStatus("recordingError", "error");
-        }
-      }
-    }
-
-    function resetConsultation() {
-      appState.sequence += 1;
-      appState.abortController?.abort();
-      appState.abortController = null;
-      appState.discardRecording = true;
-      if (appState.recorder && appState.recorder.state !== "inactive") {
-        appState.recorder.stop();
-      }
-      stopTimer();
-      stopTracks();
-      appState.recording = false;
-      appState.processing = false;
-      appState.chunks = [];
-      appState.language = "en";
-      document.documentElement.lang = "en";
-      elements.input.value = "";
-      elements.transcript.hidden = true;
-      elements.transcriptText.textContent = "";
-      clearResults();
-      hideMicrophoneHelp();
-      updateControls();
-      elements.status.dataset.state = "idle";
-      elements.statusText.textContent = "Ready to listen · 准备聆听";
-      elements.input.focus();
-    }
-
-    elements.micButton.addEventListener("click", () => {
-      if (appState.recording) stopRecording();
-      else if (!appState.processing) void startRecording();
-    });
-
-    elements.form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const message = elements.input.value.trim();
-      if (!message) {
-        elements.input.focus();
-        return;
-      }
-      elements.input.value = "";
-      void requestRecommendations(message);
-    });
-
-    elements.input.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
-        event.preventDefault();
-        elements.form.requestSubmit();
-      }
-    });
-
-    elements.resetButton.addEventListener("click", resetConsultation);
-    window.addEventListener("pagehide", stopTracks);
-    updateControls();
-    requestMicrophoneFromDirectTab();
-  </script>
-</body>
+        </form>
+        <p id="boundary" class="small"></p>
+      </section>
+      <section
+        id="results"
+        class="panel"
+        hidden
+        aria-labelledby="results-title"
+      >
+        <p class="eyebrow">YOUR FC LISTENING COMPANIONS</p>
+        <div class="result-head">
+          <h2 id="results-title" tabindex="-1"></h2>
+          <button id="reset" class="quiet" type="button"></button>
+        </div>
+        <p id="results-message" class="notice"></p>
+        <div id="membership-row">
+          <label for="membership" id="membership-label"></label
+          ><select id="membership"></select>
+          <p id="access-note" class="small"></p>
+        </div>
+        <div id="recommendations"></div>
+        <p id="results-boundary" class="small"></p>
+      </section>
+      <footer id="footer"></footer>
+    </main>
+  </body>
 </html>
