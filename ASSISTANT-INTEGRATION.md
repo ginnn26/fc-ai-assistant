@@ -18,6 +18,8 @@ OpenAI does not automatically read LearnWorlds, and embedding the app in FC does
 
 Without an existing source interface, alternatives require a deliberate workflow choice: an approved shared content-management source used by both FC descriptions and the assistant, or browser-assisted snapshot refreshes. The latter is manual and must not be advertised as automatic. A shared source must also handle access to protected descriptions rather than publishing paid content in a public repository. No authenticated browser cookies may be copied to Render as a shortcut.
 
+The actual FC Developers > API screen was checked read-only: it explicitly requires a higher plan and disables the credential fields. Therefore this is not just a missing key on an available current-plan feature. No plan change was made. The owner has been asked whether to adopt a new FC-contained shared content-management workflow while preserving existing pages, or retain snapshot testing for now. That decision, a durable store and access controls are separate from the adapters already implemented here.
+
 Membership choices in the UI select playback routes only. Browser attributes, a posted user ID, course labels, `postMessage` from an iframe or a client-selected plan are not sufficient proof of paid membership. Anonymous device identifiers are resettable and cannot enforce a human-level quota; they are a convenience plus abuse guard, not a verified identity.
 
 ## Knowledge source contract
