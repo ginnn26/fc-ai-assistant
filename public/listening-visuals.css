@@ -1,0 +1,123 @@
+.fc-scene {
+  background: #e7eee5;
+  margin: 0 0 18px;
+  overflow: hidden;
+  border-radius: 18px;
+}
+.fc-scene img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  object-position: center;
+}
+.fc-visual-point {
+  display: flex;
+  gap: 13px;
+  align-items: flex-start;
+  margin: 18px 0;
+}
+.fc-visual-point > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+header .language {
+  flex-shrink: 0;
+}
+header .language button {
+  white-space: nowrap;
+  min-height: 44px;
+}
+@media (max-width: 700px) {
+  header {
+    gap: 12px;
+  }
+  header .language button {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+}
+.fc-point-icon {
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  color: #497363;
+  background: #e7efe8;
+}
+.fc-point-listen {
+  color: #586c95;
+  background: #e9edf6;
+}
+.fc-point-care {
+  color: #8a603c;
+  background: #f3e7d6;
+}
+.fc-point-icon svg {
+  width: 23px;
+  height: 23px;
+}
+.fc-visual-point h4,
+.fc-visual-point h2 {
+  display: block;
+  font:
+    600 16px/1.5 Arial,
+    "Microsoft YaHei",
+    sans-serif;
+  color: #29483c;
+  margin: 0;
+}
+.fc-visual-point p {
+  font-size: 16px;
+  line-height: 1.75;
+  margin: 5px 0 0 !important;
+}
+.reading .fc-scene {
+  max-width: 560px;
+}
+#recommendations {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+#recommendations > .listening-plan {
+  grid-column: 1/-1;
+  margin-bottom: 0;
+}
+@media (min-width: 1150px) {
+  #recommendations[data-count="3"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+#recommendations > .result-card {
+  padding: 22px;
+  border: 1px solid #dce2d6;
+  border-radius: 22px;
+  background: #fffefa;
+  min-width: 0;
+}
+.result-card h3 {
+  font-size: 23px;
+  line-height: 1.4;
+  margin: 5px 0;
+}
+.result-card .subtitle {
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+.result-card .recommendation-details {
+  border-top: 1px solid #e1e5da;
+  padding-top: 15px;
+  margin-top: 20px;
+}
+@media (max-width: 700px) {
+  #recommendations {
+    grid-template-columns: 1fr;
+  }
+  #recommendations > .result-card {
+    padding: 18px;
+  }
+}
