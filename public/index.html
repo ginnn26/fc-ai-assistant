@@ -392,6 +392,7 @@
     </style>
     <link rel="stylesheet" href="/listening-visuals.css" />
     <link rel="stylesheet" href="/voice-ui.css" />
+    <link rel="stylesheet" href="/companion-design.css" />
     <script src="/theme-media.js" defer></script>
     <script src="/listening-visuals.js" defer></script>
     <script src="/voice-ui.js" defer></script>
@@ -408,21 +409,34 @@
         ><button id="language" class="quiet" type="button">English</button>
       </header>
       <section class="hero">
-        <div>
+        <div class="hero-copy">
           <p class="eyebrow">YOUR VOICE. YOUR STARTING POINT.</p>
           <h1 id="title"></h1>
           <p id="intro" class="lede"></p>
         </div>
-        <div class="sound-art" aria-hidden="true">
-          <span>A little space.<br />A listening ear.</span>
-        </div>
+        <figure class="welcome-scene">
+          <img src="/assistant-welcome.webp" alt="" width="840" height="1050" fetchpriority="high" />
+          <figcaption>A little space.<br /><em>A listening ear.</em></figcaption>
+          <span class="scene-caption" id="scene-caption"></span>
+        </figure>
       </section>
       <div id="steps" class="steps"></div>
       <section class="panel" aria-labelledby="share-title">
         <h2 id="share-title"></h2>
+        <div class="voice-layout">
+        <aside class="speaking-guide" aria-labelledby="guide-title">
+          <p class="eyebrow" id="guide-title"></p>
+          <div class="guide-item"><span class="guide-icon mood" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M20.8 4.8a5.5 5.5 0 0 0-7.8 0L12 5.9l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.4a5.5 5.5 0 0 0 0-7.8Z"/></svg></span><div><h3 id="guide-feel"></h3><p id="guide-feel-copy"></p></div></div>
+          <div class="guide-item"><span class="guide-icon time" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><h3 id="guide-time"></h3><p id="guide-time-copy"></p></div></div>
+          <div class="guide-item"><span class="guide-icon care" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="6" width="16" height="15" rx="3"/><path d="M9 6V3h6v3M12 10v7M8.5 13.5h7"/></svg></span><div><h3 id="guide-care"></h3><p id="guide-care-copy"></p></div></div>
+          <p class="guide-foot" id="guide-foot"></p>
+        </aside>
+        <div class="voice-workspace">
+        <p class="voice-invite" id="voice-invite"></p>
         <label class="consent"
-          ><input id="consent" type="checkbox" /><span id="consent-copy"></span
+          ><input id="consent" type="checkbox" /><span id="consent-short"></span
         ></label>
+        <details class="privacy-details"><summary id="privacy-label"></summary><p id="consent-copy"></p></details>
         <div class="record-row">
           <div class="voice-stage">
             <span class="voice-halo one" aria-hidden="true"></span>
@@ -446,6 +460,8 @@
             type="button"
             hidden
           >取消录音</button>
+        </div>
+        </div>
         </div>
         <div id="status" class="status" role="status" aria-live="polite"></div>
         <div id="mic-help" class="help" hidden>
