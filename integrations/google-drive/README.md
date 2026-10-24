@@ -16,6 +16,7 @@ The owner has entered the same credential into Render and saved the connection s
 - Revision checks and Apps Script `ScriptLock` prevent concurrent editors from overwriting a newer version. A request ID and content digest make an immediate repeated write idempotent. Unknown write outcomes require a fresh read before another edit; there is no blind automatic write retry.
 - AI refreshes the same published feed on publication and at most every 15 minutes on ordinary use. Content has a real publication date plus a separate generation/check timestamp, so unchanged explanations do not expire merely because they were edited more than a week ago. Failed checks still expire the cached feed after seven days.
 - The public reader does not disclose drafts, prior versions, administrator credentials or the Drive file ID. Plain text is rendered with DOM text nodes, not injected HTML. The owner reviews both language versions and the source/recording mapping before publication.
+- Customer-facing reading is progressive: concise purpose and listening guidance appear first, full explanations/references and customer shares are closed by default, and care instructions stay visible without truncation. Recommendation cards likewise show short reasons and usage, with source quotations behind a disclosure. Multiple suggestions are optional listening choices, not a prescribed medical treatment order. The membership route selector does not grant access; FC still checks playback permissions.
 
 ## Owner setup — not completed
 
