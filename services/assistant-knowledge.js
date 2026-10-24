@@ -11,6 +11,22 @@ function fcURL(value, playback = false) {
     return false;
   }
 }
+function sourceURL(value) {
+  if (fcURL(value)) return true;
+  try {
+    const u = new URL(value);
+    return (
+      u.origin === "https://fc-ai-assistant.onrender.com" &&
+      /^\/library\/[a-z0-9_-]{1,100}$/.test(u.pathname) &&
+      !u.search &&
+      !u.hash &&
+      !u.username &&
+      !u.password
+    );
+  } catch {
+    return false;
+  }
+}
 function text(value, max = 1400) {
   if (typeof value !== "string" || value.length > max || /[<>]/.test(value))
     throw Error("invalid_source_text");
@@ -27,10 +43,14 @@ function validateFeed(feed, now = Date.now()) {
   )
     throw Error("invalid_feed");
   const stamp = Date.parse(feed.publishedAt);
+  const generated = Date.parse(feed.generatedAt || feed.publishedAt);
   if (
     !Number.isFinite(stamp) ||
     stamp > now + 300000 ||
-    now - stamp > 7 * 86400000
+    !Number.isFinite(generated) ||
+    generated > now + 300000 ||
+    generated < stamp ||
+    now - generated > 7 * 86400000
   )
     throw Error("stale_feed");
   const ids = new Set(),
@@ -78,14 +98,14 @@ function validateFeed(feed, now = Date.now()) {
         url: r.url,
       };
     });
-    if (item.description_url && !fcURL(item.description_url))
+    if (item.description_url && !sourceURL(item.description_url))
       throw Error("invalid_description_url");
     const passages = (item.passages || []).slice(0, 12).map((p) => {
       if (
         !/^[a-z0-9_-]{1,80}$/.test(p.id) ||
         !["purpose", "usage", "caution"].includes(p.kind) ||
         p.reviewed !== true ||
-        !fcURL(p.url)
+        !sourceURL(p.url)
       )
         throw Error("unreviewed_passage");
       if (
@@ -137,6 +157,7 @@ function validateFeed(feed, now = Date.now()) {
   return {
     version: text(feed.version, 100),
     publishedAt: new Date(stamp).toISOString(),
+    generatedAt: new Date(generated).toISOString(),
     items,
   };
 }
@@ -174,15 +195,16 @@ function createKnowledge({
   fetcher = fetch,
   now = Date.now,
   interval = 900000,
+  loader = null,
 } = {}) {
   let current = null,
     checkedAt = null,
-    state = url ? "pending" : "not-connected",
+    state = url || loader ? "pending" : "not-connected",
     flight = null,
     lastTry = 0;
   const endpoint = url ? secureEndpoint(url) : null;
   const fresh = () =>
-    current && now() - Date.parse(current.publishedAt) <= 7 * 86400000;
+    current && now() - Date.parse(current.generatedAt) <= 7 * 86400000;
   const status = () => ({
     state: fresh() ? state : current ? "stale" : state,
     version: fresh() ? current.version : seed.version,
@@ -197,22 +219,27 @@ function createKnowledge({
       : 0,
   });
   async function refresh(force = false) {
-    if (!endpoint) return status();
+    if (!endpoint && !loader) return status();
     if (flight) return flight;
     if (!force && now() - lastTry < interval) return status();
     lastTry = now();
     flight = (async () => {
       try {
-        if (!token) throw Error("bridge_not_configured");
-        const response = await fetcher(endpoint, {
-          headers: {
-            Authorization: "Bearer " + token,
-            Accept: "application/json",
-          },
-          redirect: "error",
-          signal: AbortSignal.timeout(8000),
-        });
-        const next = validateFeed(await readJSON(response), now());
+        let raw;
+        if (loader) raw = await loader();
+        else {
+          if (!token) throw Error("bridge_not_configured");
+          const response = await fetcher(endpoint, {
+            headers: {
+              Authorization: "Bearer " + token,
+              Accept: "application/json",
+            },
+            redirect: "error",
+            signal: AbortSignal.timeout(8000),
+          });
+          raw = await readJSON(response);
+        }
+        const next = validateFeed(raw, now());
         if (
           current &&
           Date.parse(next.publishedAt) < Date.parse(current.publishedAt)
@@ -232,7 +259,11 @@ function createKnowledge({
   }
   return { refresh, status, get: () => (fresh() ? current : seed) };
 }
-const knowledge = createKnowledge();
+// The shared source is optional until its owner authorizes and connects storage.
+const shared = require("./shared-content-store");
+const knowledge = createKnowledge({
+  loader: shared.store ? () => shared.publishedFeed(shared.store) : null,
+});
 module.exports = {
   knowledge,
   createKnowledge,
@@ -240,4 +271,5 @@ module.exports = {
   fcURL,
   readJSON,
   secureEndpoint,
+  sourceURL,
 };
