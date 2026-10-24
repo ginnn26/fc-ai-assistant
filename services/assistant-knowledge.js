@@ -100,7 +100,12 @@ function validateFeed(feed, now = Date.now()) {
     });
     if (item.description_url && !sourceURL(item.description_url))
       throw Error("invalid_description_url");
-    const passages = (item.passages || []).slice(0, 12).map((p) => {
+    if (
+      !Array.isArray(item.passages || []) ||
+      (item.passages || []).length > 12
+    )
+      throw Error("invalid_passage_limit");
+    const passages = (item.passages || []).map((p) => {
       if (
         !/^[a-z0-9_-]{1,80}$/.test(p.id) ||
         !["purpose", "usage", "caution"].includes(p.kind) ||

@@ -69,9 +69,17 @@ function configuredStore() {
 async function publishedFeed(store, now = Date.now()) {
   const s = checkState(await store.read());
   if (!s.catalog.length) throw Error("empty_content_store");
-  const items = s.catalog.map(
-    (i) => s.published[i.id]?.item || { ...i, passages: [], testimonials: [] },
-  );
+  const items = s.catalog.map((i) => {
+    const item = { ...(s.published[i.id]?.item || i) };
+    if (!s.published[i.id]) {
+      item.passages = [];
+      item.testimonials = [];
+    }
+    // Public long-form text is served by the reader. AI receives reviewed summaries,
+    // not every full article in a catalog-wide provider payload.
+    delete item.article;
+    return item;
+  });
   return {
     version: "shared-" + s.revision,
     publishedAt: s.publishedAt || new Date(now).toISOString(),
@@ -118,6 +126,7 @@ function sanitizeItem(raw, now = Date.now()) {
     ...valid,
     passages: valid.passages.map((p) => ({ ...p, reviewed: true })),
     testimonials: valid.testimonials.map((p) => ({ ...p, approved: true })),
+    article: require("./content-article").validateArticle(raw.article),
   };
 }
 async function editContent(
@@ -129,7 +138,7 @@ async function editContent(
   if (s.revision !== revision) throw Error("revision_conflict");
   if (!safeId(id)) throw Error("invalid_theme_id");
   if (action === "save") {
-    if (item?.id !== id || Buffer.byteLength(JSON.stringify(item)) > 65000)
+    if (item?.id !== id || Buffer.byteLength(JSON.stringify(item)) > 220000)
       throw Error("invalid_draft");
     // Drafts may contain unreviewed source material, but never executable HTML or instructions.
     if (/[<>]/.test(JSON.stringify(item))) throw Error("plain_text_required");
@@ -140,6 +149,8 @@ async function editContent(
     if (reviewed !== true || (!item && !s.drafts[id]))
       throw Error("human_review_required");
     if (item && item.id !== id) throw Error("unknown_catalog_item");
+    if (Buffer.byteLength(JSON.stringify(item || s.drafts[id].item)) > 220000)
+      throw Error("invalid_draft");
     const valid = sanitizeItem(item || s.drafts[id].item, now);
     const otherUnits = new Set(
       s.catalog
@@ -159,6 +170,7 @@ async function editContent(
     s.published[id] = { item: valid, publishedAt: new Date(now).toISOString() };
     const index = s.catalog.findIndex((x) => x.id === id);
     const metadata = { ...valid, passages: [], testimonials: [] };
+    delete metadata.article;
     if (index < 0) {
       if (s.catalog.length >= 600) throw Error("invalid_catalog_limit");
       s.catalog.push(metadata);
