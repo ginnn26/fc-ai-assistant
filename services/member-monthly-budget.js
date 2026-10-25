@@ -34,6 +34,14 @@ function createMemberMonthlyBudget({ verifyMember, store, hashSecret, now = Date
       throw Error('member_login_required');
     return { member: crypto.createHmac('sha256', hashSecret).update(identity.subject).digest('hex'), month: monthAt(now()) };
   }
+  async function reserve(req) {
+    const { member, month } = await verifiedAccount(req);
+    const result = await store.reserve({ member, month, amountSen: TEXT_RESERVATION_SEN,
+      limitSen: LIMIT_SEN, requestId: crypto.randomUUID() });
+    if (result?.accepted === false) throw Error('monthly_allowance_reached');
+    if (result?.accepted !== true) throw Error('member_budget_unavailable');
+    return allowanceFrom(result, month, TEXT_RESERVATION_SEN);
+  }
   return {
     ready,
     includedTextAttempts: LIMIT_SEN / TEXT_RESERVATION_SEN,
@@ -41,18 +49,10 @@ function createMemberMonthlyBudget({ verifyMember, store, hashSecret, now = Date
       const { member, month } = await verifiedAccount(req);
       return allowanceFrom(await store.status({ member, month }), month);
     } } : {}),
-    async reserveText(req) {
-      const { member, month } = await verifiedAccount(req);
-      // The store must compare-and-increment in ONE transaction, commit before
-      // returning and retain reservations after timeouts or ambiguous failures.
-      const result = await store.reserve({ member, month, amountSen: TEXT_RESERVATION_SEN,
-        limitSen: LIMIT_SEN, requestId: crypto.randomUUID() });
-      if (result?.accepted === false) throw Error('monthly_allowance_reached');
-      if (result?.accepted !== true) throw Error('member_budget_unavailable');
-      // Customer output is in usage units. Internal cost reservations and the
-      // RM5 purchased-cost budget never become customer-facing cash balances.
-      return allowanceFrom(result, month, TEXT_RESERVATION_SEN);
-    },
+    // Both operations share the SAME durable wallet. Each reserves one unit
+    // before a provider attempt; failed/ambiguous attempts are never retried.
+    reserveText: reserve,
+    reserveVoice: reserve,
   };
 }
 module.exports = { createMemberMonthlyBudget, monthAt, nextResetAt, LIMIT_SEN, TEXT_RESERVATION_SEN };

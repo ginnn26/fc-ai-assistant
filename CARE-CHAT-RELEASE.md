@@ -10,6 +10,25 @@ Prefer free text chat first. Keep the RM10 pack as an information preview only
 until authoritative payment, credit, refund and support handling are connected.
 Do not expose a checkout button or accept payment for a preview.
 
+Owner subsequently approved optional voice INPUT with TEXT replies. The new
+`FC_CARE_CHAT_VOICE_ENABLED` flag defaults off. Its `/chat/voice-draft` route is
+separate from the legacy assistant transcription endpoint. It accepts only bounded
+mono PCM WAV captured by AudioWorklet, with actual byte/sample validation and a
+60-second ceiling. Verify microphone permission/delegation on FC's embedded page,
+record/stop/review/discard flows on actual Android/iOS devices, background cleanup,
+and multilingual real ASR before enabling. Conversion and sending each use one
+unit from the same ledger; local recording/playback do not. A user must explicitly
+convert and then review/send; conversion alone never invokes conversation.
+
+The new route uses `gpt-transcribe`, not a deprecated transcription model. At the
+checked USD0.0045/minute estimate, a maximum60-second recording is0.45US cents;
+using the documented RM6/USD ×1.2 headroom gives3.24sen, covered by the existing
+5sen reservation under those assumptions. Real account availability, billing,
+tax/FX and representative speech still need verification. No model fallback or
+automatic retry is enabled. Do not equate the prior100 TEXT sends to100 complete
+voice exchanges: this conservative draft policy permits50 conversion+send pairs
+if no other units are used. Final model/cost policy must be presented clearly.
+
 The existing voice assistant is live. `FC_CARE_CHAT_ENABLED=true` currently also
 gates legacy recommendation calls and closes transcription pending voice cost
 protection. **Do not enable this flag as an isolated text-chat change**: confirm

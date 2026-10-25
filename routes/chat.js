@@ -3,7 +3,8 @@ const multer = require("multer");
 const { prepareConversation, answerConversation } = require('../services/care-chat');
 const { createConfiguredMemberBudget } = require('../services/supabase-chat-store');
 const { createEmailAuth } = require('../services/care-chat-email-auth');
-const { transcribeAudio } = require("../services/openai");
+const { transcribeAudio, transcribeCareVoice } = require("../services/openai");
+const { inspectVoiceWav, MAX_BYTES } = require('../services/care-chat-audio');
 const {
   generateRecommendations,
 } = require("../services/assistant-recommendation");
@@ -35,6 +36,8 @@ function validAudio(file) {
 }
 function createChatRouter({
   transcribe = transcribeAudio,
+  transcribeVoice = transcribeCareVoice,
+  careVoiceEnabled = process.env.FC_CARE_CHAT_VOICE_ENABLED === 'true',
   recommend = generateRecommendations,
   maxRequests = 60,
   now = Date.now,
@@ -84,8 +87,8 @@ function createChatRouter({
       active--;
     }
   };
-  async function reserveAllowance(req, res) {
-    try { return await memberBudget.reserveText(req); }
+  async function reserveAllowance(req, res, voice = false) {
+    try { return await (voice ? memberBudget.reserveVoice(req) : memberBudget.reserveText(req)); }
     catch (error) {
       const known = ['member_budget_not_ready', 'member_login_required', 'monthly_allowance_reached'];
       const code = known.includes(error.message) ? error.message : 'member_budget_unavailable';
@@ -98,6 +101,7 @@ function createChatRouter({
     conversation: memberBudget.ready === true,
     emailLogin: memberBudget.ready === true && emailAuth.ready === true,
     allowanceStatus: typeof memberBudget.status === 'function',
+    voiceInput: careVoiceEnabled && memberBudget.ready === true && typeof memberBudget.reserveVoice === 'function',
     monthlyAllowance: { scope: 'per_member', includedTextAttempts: memberBudget.includedTextAttempts || null,
       resetsIn: 'Asia/Kuala_Lumpur' },
   }));
@@ -159,6 +163,23 @@ function createChatRouter({
     if (!allowance) return;
     const answer = await converse(prepared);
     res.json({ ...answer, allowance });
+  }));
+  router.post('/voice-draft', multer({ storage: multer.memoryStorage(),
+    limits: { fileSize: MAX_BYTES, files: 1, fields: 1 } }).single('audio'), withSlot(async (req, res) => {
+    if (!careVoiceEnabled || !memberBudget.ready || typeof memberBudget.reserveVoice !== 'function')
+      return res.status(503).json({ error: 'voice_input_not_ready' });
+    if (req.body?.consent !== 'true') return res.status(422).json({ error: 'consent_required' });
+    if (!req.file) return res.status(422).json({ error: 'audio_required' });
+    try { inspectVoiceWav(req.file.buffer); }
+    catch (error) { return res.status(422).json({ error: error.message }); }
+    const allowance = await reserveAllowance(req, res, true);
+    if (!allowance) return;
+    const transcript = String(await transcribeVoice(req.file.buffer) || '').trim();
+    if (!transcript || /^\[?(music|silence|blank audio|音乐|静音)\]?$/i.test(transcript))
+      return res.status(422).json({ error: 'speech_not_clear', allowance });
+    if (transcript.length > 1200) return res.status(422).json({ error: 'please_shorten', allowance });
+    // Return a draft only. Never invoke conversation/recommendation here.
+    res.json({ transcript, allowance });
   }));
   router.post(
     "/transcribe",

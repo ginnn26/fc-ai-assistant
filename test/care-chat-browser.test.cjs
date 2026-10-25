@@ -126,11 +126,11 @@ test('invalid-code feedback differs from service failure and tokens need explici
   assert.equal(f.saved.size, 0);
 });
 
-async function chatFixture(response) {
+async function chatFixture(response, voiceInput = false) {
   let calls = 0;
   const auth = { language() {}, configure() {}, signedIn: () => true, headers: async () => ({}) };
   const f = browserFixture('care-chat.js', async url => {
-    if (url === '/chat/features') return Response.json({ conversation: true, emailLogin: true,
+    if (url === '/chat/features') return Response.json({ conversation: true, emailLogin: true, voiceInput,
       monthlyAllowance: { includedTextAttempts: 100 } });
     calls++; return response();
   }, auth);
@@ -227,5 +227,13 @@ test('starting cards only prepare a draft, preserve existing writing and never s
   assert.match(f.element('message').value, /现在只想先说说/);
   f.element('choose-tired').onclick();
   assert.match(f.element('message').value, /现在只想先说说/);
+  assert.equal(f.calls(), 0);
+});
+
+test('a voice transcript becomes an editable draft without automatically sending a chat request', async () => {
+  const f = await chatFixture(() => { throw Error('must not auto-send'); }, true);
+  assert.match(f.element('allowance').textContent, /转文字用 1 次，确认发送再用 1 次/);
+  f.window.dispatchEvent({ type: 'fc-care-voice-transcript', detail: 'A fictional editable transcript' });
+  assert.equal(f.element('message').value, 'A fictional editable transcript');
   assert.equal(f.calls(), 0);
 });

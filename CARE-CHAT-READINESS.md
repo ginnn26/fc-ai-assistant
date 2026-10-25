@@ -2,6 +2,47 @@
 
 ## Current status — 26 October 2026
 
+Owner-approved voice-input follow-up: new Care Chat now has a local recorder with
+AudioWorklet capture, playback/discard, explicit conversion, editable transcript,
+and a separate Send step. It never auto-uploads on Stop and never auto-sends a
+transcript. Microphone tracks stop immediately on Stop, discard, sign-out,
+pagehide/backgrounding or processor failure. Buffered audio is memory-only and
+object URLs are revoked on discard/completion. The UI includes explicit audio
+processing consent and a 60-second maximum. Real microphone/device QA is pending;
+the browser preview did NOT request microphone permission or record real speech.
+
+`/chat/voice-draft` is separately gated by **FC_CARE_CHAT_VOICE_ENABLED=false** by
+default and requires the same server-verified member/durable wallet. The server
+accepts only exact mono16-bit PCM WAV, derives duration from validated sample
+bytes, rejects silence/invalid/over60s uploads BEFORE reserving, then reserves5sen
+from the SAME included/purchased wallet before one ASR call. No retries. The new
+model is **gpt-transcribe**, following current official guidance; the existing
+legacy transcription function/model is unchanged. Sources checked26October:
+https://developers.openai.com/api/docs/guides/speech-to-text and
+https://developers.openai.com/api/docs/pricing . Old gpt-4o-mini-transcribe is now
+marked deprecated; do not reuse its earlier USD0.003/min estimate for this new
+route. Current gpt-transcribe estimate isUSD0.0045/min. The maximum60-second
+reservation uses documented RM6/USD ×1.2 headroom assumptions, NOT proven billing.
+
+Customer draft policy is explicit: local recording/playback use no units;
+conversion uses1unit, reviewed-text Send uses1more, from the same allowance.
+The new-voice UI calls these allowance units, not100 free complete voice chats.
+With the current nano/5sen prototype,100units allow100 text sends or50 complete
+conversion+send pairs, before any purchased units; final model/count decisions
+remain pending. Record is disabled below2available units in the normal UI.
+Pack preview wording has been updated in both languages. Internal cost never
+appears in customer output. No speech playback/TTS or realtime voice is added.
+
+Verification: full suite138/138 passed before the final microphone-stop watchdog;
+the affected voice suite6/6 then passed with immediate track-stop, encoder/server
+compatibility, auth-change cleanup and processor-error checks. Coverage includes
+forged WAV headers/durations, silence, long files, mixed text/voice budget cap,
+disabled gate, reserve-before-provider, paid-failure no retry, explicit consent,
+worklet60-second bound, and transcript-not-auto-send. Chinese/English browser UI
+previews use fictional balance and mocked ASR only. Real ASR accuracy, language
+mixes, model availability, real budget concurrency and live billing remain untested.
+New code is not deployed; new chat and voice flags must stay off pending gates.
+
 Session recovery follow-up: browser requests now share one in-flight refresh, so
 concurrent allowance/chat requests do not rotate the same refresh token twice.
 Temporary refresh outages preserve the local session for a later explicit retry;

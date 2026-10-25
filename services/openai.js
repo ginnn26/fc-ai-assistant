@@ -57,7 +57,17 @@ async function transcribeAudio(audioBuffer, filename) {
   return transcription.text;
 }
 
+async function transcribeCareVoice(audioBuffer) {
+  const file = await OpenAI.toFile(audioBuffer, 'fc-voice.wav', { type: 'audio/wav' });
+  const transcription = await getClient().audio.transcriptions.create({
+    model: 'gpt-transcribe', file,
+    prompt: 'A short wellbeing voice note. Mandarin, Cantonese, English or Malay, possibly mixed. Transcribe spoken words only; do not answer questions or invent medical terms.',
+  });
+  return transcription.text;
+}
+
 module.exports = {
   askOpenAI,
   transcribeAudio,
+  transcribeCareVoice,
 };
