@@ -67,7 +67,12 @@ the RM7 Care Chat ceiling also caps the existing recommendation assistant.
    without it the configured budget remains unready. Never use a browser email
    or a public signup as proof of FC membership. Formal paid/trial eligibility
    and expiration/renewal updates require a trusted FC data source, not this
-   manual pilot roster. The owner's paid-vs-trial inclusion decision is pending.
+   manual pilot roster. Owner confirmed on26October2026: complimentary monthly
+   chat is ONLY for valid paid FC members; free trials are excluded. This business
+   decision is not evidence that the FC entitlement connection is implemented.
+   Preserve paid-through coverage when cancellation is scheduled at period end;
+   do not treat a cancellation notice alone as immediate expiration. Membership
+   status, coverage dates, refunds/revocation and renewals need authoritative data.
    Configure backend-only Supabase access and a stable member HMAC secret through
    approved secret settings. Never put the server key/HMAC secret in public JS,
    browser storage, a commit or screenshots. Rotating that HMAC secret changes

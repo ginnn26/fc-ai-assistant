@@ -16,7 +16,7 @@
     document.documentElement.lang = lang === 'zh' ? 'zh-Hans' : 'en';
     document.title = $('title').textContent = t('FC 暖心聊聊', 'FC Care Chat');
     $('language').textContent = t('English', '中文');
-    $('intro').textContent = t('每月送你一点陪伴。不用急着说清楚，从今天的感受开始。', 'A little companionship, included each month. There is no rush. Start with how today feels.');
+    $('intro').textContent = t('有效付费会员每月附送聊天额度，免费试用不包含。不用急着说清楚，从今天的感受开始。', 'Active paid FC members receive a monthly chat allowance; free trials are not included. There is no rush. Start with how today feels.');
     $('message-label').textContent = t('今天的你，感觉怎么样？', 'How are you feeling today?');
     $('consent-copy').textContent = voiceEnabled
       ? t('我同意将本次聊天文字及选择转写的录音交由 OpenAI 处理。我会避免姓名、电话等个人资料。', 'I agree to OpenAI processing my chat text and recordings I choose to convert. I will leave out names, phone numbers and identifying details.')
@@ -32,7 +32,7 @@
     $('starters').hidden = !ready || !window.FCCareAuth.signedIn() || turns.length > 0;
     $('allowance').textContent = !ready
       ? t('聊天暂未开放。会员验证和每月额度保护接通后，即可使用。', 'Chat is not open yet. Member verification and monthly allowance protection must be connected first.')
-      : exhausted ? t('这份聊天额度已用完。下个月的新额度会自动开放。', 'Your available chat allowance has been used. A new monthly allowance opens next month.')
+      : exhausted ? t('这份聊天额度已用完。付费会员资格有效期间，下个月会更新附送额度。', 'Your available chat allowance has been used. Included allowance renews next month while your paid membership remains active.')
       : allowance ? voiceEnabled ? t(`还剩 ${allowance.remainingTextAttempts} 次可用额度。`, `${allowance.remainingTextAttempts} allowance units remain.`)
         : t(`还可发送 ${allowance.remainingTextAttempts} 次文字消息。`, `${allowance.remainingTextAttempts} text sends remain.`)
       : includedSends && voiceEnabled ? t(`每月包含 ${includedSends} 次可用额度。转文字用 1 次，确认发送再用 1 次；每月 1 日按马来西亚时间更新。`, `${includedSends} allowance units are included each month. Conversion uses 1; sending the reviewed text uses 1 more. Renews on the 1st in Malaysia time.`)
@@ -76,7 +76,7 @@
     member_not_eligible: ['这个账户暂未开通暖心聊聊内测，不必重复登录。请联系 FC 确认使用资格。', 'Care Chat pilot access is not enabled for this account. You do not need to sign in again. Contact FC to check access.'],
     member_login_required: ['请先用你的 FC 邮箱完成验证。', 'Please verify the email you use for FC first.'],
     auth_temporarily_unavailable: ['登录连接暂时不稳定，你输入的文字仍保留。请稍后再试。', 'The sign-in connection is temporarily unavailable. Your draft is still here. Please try later.'],
-    monthly_allowance_reached: ['本月聊天额度已用完，下个月会重新开放。音疗与每日打卡仍可照常使用。', 'Your monthly chat allowance has been used. It resets next month. Listening and daily check-ins remain available.'],
+    monthly_allowance_reached: ['本月聊天额度已用完。付费会员资格有效期间，下个月会更新附送额度。音疗仍按会员权限开放，每日打卡不受影响。', 'Your monthly chat allowance has been used. Included allowance renews next month while your paid membership remains active. Audio access follows your membership; daily check-ins are unaffected.'],
     conversation_too_long: ['这段聊天较长，请清空后开始一个新话题。', 'This conversation is getting long. Clear it to start a new topic.'],
     please_wait: ['现在比较忙，请稍候再发送。', 'It is a little busy. Please wait before sending again.'],
     member_budget_unavailable: ['暂时无法确认你的额度，这次没有继续调用 AI。请稍后再试。', 'We could not confirm your allowance, so this request did not continue to AI. Please try later.'],

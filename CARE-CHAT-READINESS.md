@@ -11,9 +11,12 @@ explains access is not enabled without a repeated-login loop. Code requests for
 uninvited emails receive the same public acknowledgement without sending mail,
 avoiding roster disclosure or consuming mail quota. The invite roster is ONLY a
 private pilot safeguard, not automated paid/trial membership or renewal validation.
-Public release still requires a trusted FC eligibility source. Asked owner whether
-monthly included chat is for valid paid members only or also free trials; answer
-pending. No real customer roster exported/imported or Render settings changed.
+Public release still requires a trusted FC eligibility source. Owner confirmed
+on26October2026 that monthly included chat is ONLY for valid paid FC members;
+free trials are excluded. Updated Chinese/English introduction and pack preview
+accordingly; renewal messaging now requires continuing valid paid membership.
+This copy change does not connect entitlement enforcement. No real customer
+roster exported/imported or Render settings changed.
 Full offline regression suite164/164passed. The completed second-round local
 key-handoff server has been stopped; no credential retained.
 Prepared integrations/care-chat/render-config.example.json with all flags off
