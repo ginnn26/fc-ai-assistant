@@ -36,7 +36,13 @@ async function run({ live = false, output = null, simulateResponse = null, maxPa
         try {
           response = await execute({ model: options.model, input, store: false,
             max_output_tokens: options.maxOutputTokens, reasoning: { effort: 'none' } });
-        } catch { row.outcome = 'provider-failed'; throw Error('evaluation_provider_failed'); }
+         } catch (error) {
+          row.outcome = 'provider-failed';
+          const status = Number(error?.status);
+          row.failureKind = status === 401 ? 'authentication' : status === 403 ? 'permission' : status === 429 ? 'rate-or-credit-limit' : 'unavailable';
+          if ([401,403,429].includes(status)) stopPaidCalls = true;
+          throw Error('evaluation_provider_failed');
+        }
         row.costEstimate = estimateTextCost(model, response?.usage);
         if (row.costEstimate) {
           row.usage = { inputTokens: row.costEstimate.inputTokens, outputTokens: row.costEstimate.outputTokens };

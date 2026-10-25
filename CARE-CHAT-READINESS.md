@@ -2,6 +2,16 @@
 
 ## Current status — 26 October 2026
 
+Owner generated the dedicated test key personally. The agent did not inspect the
+secret display. Opened a temporary loopback-only masked handoff at127.0.0.1:3088
+(tab115) for owner entry, not a production page. It never logs/saves a key; only
+the child evaluation process receives it in memory. Host/Origin/CSRF checks,
+bounded input, one-run latch and finite lifetime protect the local form. Verified
+foreign Origin403 with stage remaining ready; no provider call. Awaiting owner
+paste/start. Evaluation now stops further attempts on401/403/429;9/9 evaluation
+checks pass offline. No real AI result or cost report exists yet.
+
+
 Cost-evaluation follow-up: offline comparison now interleaves candidates, keeps
 partial results on budget exhaustion/provider errors, and never labels failed or
 incomplete responses as passing AI answers. It records validated usage and

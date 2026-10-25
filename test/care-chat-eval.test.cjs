@@ -83,3 +83,13 @@ test('an unexpected usage overrun stops further provider calls and test knobs ca
   await assert.rejects(run({budgetSen:201}),/cannot exceed/);
   await assert.rejects(run({live:true,simulateResponse:async()=>{}}),/Simulation cannot/);
 });
+
+test('authentication, permission and provider credit failures stop paid evaluation after one attempt', async () => {
+  for (const status of [401,403,429]) {
+    let calls=0;
+    const result=await run({simulateResponse:async()=>{calls++;const error=Error('private detail');error.status=status;throw error;}});
+    assert.equal(calls,1);assert.equal(result.reservedSen,10);
+    assert.equal(result.rows.filter(row=>row.outcome==='provider-failed').length,1);
+    assert.equal(result.costs.reduce((sum,row)=>sum+row.costUnknownAttempts,0),1);
+  }
+});
