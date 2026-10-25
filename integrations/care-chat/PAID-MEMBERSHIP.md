@@ -83,8 +83,11 @@ an expiry triggers User Updated. Both need provider confirmation and a controlle
 fictional integration test. Do not grant ongoing paid access from that sample.
 No real member event, customer record or credential was sent to Zapier.
 
-Prepared technical inquiry for LearnWorlds support (NOT SENT; owner authorization
-requested, pending):
+Technical inquiry sent to LearnWorlds support after owner explicitly authorized
+both the inquiry and the Gmail channel. LearnWorlds acknowledged receipt as
+ticket395581 (https://support.learnworlds.com/helpdesk/tickets/395581). No human
+technical answer yet. Only school details and the following questions were sent;
+no customer records, attachments or credentials:
 
 "Our Frequencies Clinic school uses Pro Trainer. Staff manually enroll some paid
 members and set their product enrollment expiration dates in LearnWorlds; others

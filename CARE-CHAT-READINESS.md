@@ -2,6 +2,17 @@
 
 ## Current status — 26 October 2026
 
+LearnWorlds inquiry SENT after the owner explicitly approved the Gmail channel.
+Gmail showed "Message sent" and LearnWorlds returned an acknowledgement creating
+ticket395581: https://support.learnworlds.com/helpdesk/tickets/395581 . Subject:
+"Pro Trainer: supported sync of member enrollment expiry and manual renewals".
+Only the approved school name/URL, plan and technical questions were sent to
+support@learnworlds.com. No attachments, credentials or customer records sent.
+Official receipt screenshot is in the private output folder as
+learnworlds-ticket-395581-received.png. No human technical answer received yet;
+this acknowledgement does not confirm sync capability. No new SMTP test,
+provider spend, membership import or deployment occurred in this step.
+
 Owner clarified staff set manual member expiration in FC. That is the intended
 authority, not a second independent expiry list. The official fictional
 manually-enrolled event sample linked by the school contains user/product data
