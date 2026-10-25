@@ -6,7 +6,7 @@ See `CARE-CHAT-READINESS.md` for evidence and current blockers.
 
 ## First release scope
 
-Prefer free text chat first. Keep the RM10 pack as an information preview only
+Prefer free text chat first. Keep the RM15 pack as an information preview only
 until authoritative payment, credit, refund and support handling are connected.
 Do not expose a checkout button or accept payment for a preview.
 

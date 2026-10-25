@@ -1,6 +1,6 @@
 const crypto = require('node:crypto');
 const PRODUCT_ID = 'fc-care-chat-extra-v1';
-const PRICE_SEN = 1000;
+const PRICE_SEN = 1500;
 const INTERNAL_ALLOWANCE_SEN = 500;
 
 // Called only from a payment-provider integration, never a browser success page.

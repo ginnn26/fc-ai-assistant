@@ -2,6 +2,15 @@
 
 ## Current status — 26 October 2026
 
+Latest pack decision: owner changed the optional sale price to **RM15 per pack**,
+retaining500sen internal purchased allowance and the RM7 included monthly ceiling.
+Local bilingual preview and authoritative fulfillment validation now require
+MYR1500sen. Prior RM10 statements below are historical. The additive order-price
+migration is prepared, NOT applied; historical1000sen order rows are preserved,
+but new fulfillment rejects an RM10 payment. Checkout remains unavailable;
+no payment was collected and no production change was made.
+
+
 Latest owner decision: RM6–7/member/month is acceptable. Adopt **RM7 maximum**,
 with approximately RM6 as an operating target, not a second entitlement/reset.
 Local backend ceiling is now700sen. Prepared additive migration

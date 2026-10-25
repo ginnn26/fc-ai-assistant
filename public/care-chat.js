@@ -50,7 +50,7 @@
         ? `${allowance.includedTextAttempts} included units left · ${allowance.purchasedTextAttempts} purchased units left.`
         : `${allowance.includedTextAttempts} included sends left · ${allowance.purchasedTextAttempts} purchased sends left.`) : '';
     $('extra-title').textContent = t('想多聊一会儿？', 'A little more time to talk?');
-    $('extra-copy').textContent = t('你可以等下个月的新额度。聊天加额包计划每份 RM10，自由选择，不会自动扣款。付款功能尚未开放。', 'You can wait for next month’s included allowance. An optional Extra Chat Pack is planned at RM10 per pack, with no automatic charge. Purchasing is not available yet.');
+    $('extra-copy').textContent = t('你可以等下个月的新额度。聊天加额包计划每份 RM15，自由选择，不会自动扣款。付款功能尚未开放。', 'You can wait for next month’s included allowance. An optional Extra Chat Pack is planned at RM15 per pack, with no automatic charge. Purchasing is not available yet.');
     $('extra-rules').textContent = t('查看加额包说明', 'Read pack details');
     $('extra-rules').href = '/care-chat-pack.html?lang=' + lang;
     $('extra-panel').hidden = !exhausted;
