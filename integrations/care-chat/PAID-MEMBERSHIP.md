@@ -4,6 +4,11 @@ Owner decision,26October2026: monthly complimentary Care Chat is for active
 paid FC members only. Free trials do not qualify. The daily guide retains its
 separate policy for all signed-in customers.
 
+Owner clarified on26October2026: staff set manually activated members' expiry
+dates in FC itself. FC enrollment expiry is therefore the intended authority;
+do not introduce a second independent member-expiry list or guess a term from
+a payment amount. The actual supported extraction/update channel is unproven.
+
 ## Backend enforcement prepared
 
 `FC_CARE_CHAT_ACCESS_MODE=pilot` remains the default and requires the explicit
@@ -67,6 +72,34 @@ Actual school-admin UI inspected26October2026 after the owner signed in:
   it did not show an authoritative current paid-through date. It was canceled
   without selecting or applying a value. Due dates must never be treated as
   membership expiration. Asked owner how staff currently record manual expiry.
+
+Follow-up read-only inspection: the school's Webhooks page links an official
+`user_manually_enrolled_in_product_v2.json` sample under its Asia API assets.
+The fictional sample contains version/type/trigger/school_id and data.product
+(id/title/type) plus data.user. It does NOT include enrollment paid-through or
+expiration dates. This is only the direct-webhook sample, not a tested Zapier
+output. It does not prove Zapier lacks expiry fields, nor that manually editing
+an expiry triggers User Updated. Both need provider confirmation and a controlled
+fictional integration test. Do not grant ongoing paid access from that sample.
+No real member event, customer record or credential was sent to Zapier.
+
+Prepared technical inquiry for LearnWorlds support (NOT SENT; owner authorization
+requested, pending):
+
+"Our Frequencies Clinic school uses Pro Trainer. Staff manually enroll some paid
+members and set their product enrollment expiration dates in LearnWorlds; others
+pay through card subscriptions. We are implementing an external member-only chat
+benefit without upgrading the school plan. Please confirm:
+1. Which supported Pro Trainer/Zapier trigger or read action returns a specific
+user's current course/program enrollment expiration timestamp and status?
+2. Does changing an existing learner's expiration date, including manual renewal
+or early access removal, emit a Zapier event? Which event and fields?
+3. Can existing enrollments be backfilled and reconciled through this supported
+integration, including manual grants, without REST API access or Learning Center?
+The public manually-enrolled webhook example includes user/product but no expiry.
+We need to avoid inferring paid validity from email verification, enrollment alone
+or a payment-created event. Please identify the supported route or confirm this
+is unavailable on Pro Trainer. We are requesting advice, not a plan upgrade."
 
 Zapier pricing checked at https://zapier.com/pricing : Free advertises100tasks
 per month and two-step Zaps. Professional advertises Webhooks and multistep

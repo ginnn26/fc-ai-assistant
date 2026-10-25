@@ -2,6 +2,15 @@
 
 ## Current status — 26 October 2026
 
+Owner clarified staff set manual member expiration in FC. That is the intended
+authority, not a second independent expiry list. The official fictional
+manually-enrolled event sample linked by the school contains user/product data
+but no enrollment expiry. Zapier's actual fields and manual-expiry update events
+remain unproven; no connection was created. Prepared an exact technical inquiry
+and requested permission to send it to LearnWorlds support (not Brevo; existing
+Brevo-contact permission does not authorize messaging this other recipient).
+No support message sent yet. No real customer data exported or transmitted.
+
 School-owner dashboard access restored after owner signed in. Read-only checks
 confirmed Pro Trainer, direct Webhooks upgrade gate, and an accessible Zapier
 settings page whose workflow pane requires Zapier login. No integration granted,
