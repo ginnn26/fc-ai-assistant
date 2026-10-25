@@ -21,3 +21,47 @@ html{scroll-behavior:smooth;scroll-padding-top:24px}.welcome-hero{background:#fd
 @media(max-width:540px){.header-actions{gap:6px}.header-actions button{padding:8px 11px;font-size:11px}.header-actions #language-toggle{padding-inline:3px}.listening-picker h2{font-size:23px}.listening-picker h2 .keep-phrase+ .keep-phrase{margin-left:0}.hero-pills>span{font-size:12px;padding:7px 12px}.report-toolbar>div{gap:5px}.report-toolbar button{font-size:11px;padding:7px 10px}#report-dialog{padding:14px}#report-frame{height:65vh}.chart{padding:10px}.chart-empty{font-size:11px}.trend-values{font-size:9px}.score-row{font-size:12px}.score-row b{font-size:11px}.gift-note{font-size:10px}html[lang=en] .journey-intro h2{font-size:22px}.path-step small{font-size:11px}.report-toolbar strong{font-size:15px}}
 
 .hero p.hello-label{font-size:14px;color:#896648}@media(max-width:540px){.hero p.hello-label{font-size:12px}}
+
+/* Coloured landmarks keep the warm FC palette, with a clear focus for each task. */
+.calendar-panel{background:linear-gradient(145deg,#fffdf7,#f0f5ee);border-color:#d5e2d5}
+.calendar button{min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.calendar .calendar-number{line-height:1.25}
+.calendar button.has-checkin{background:#d9ece3;border-color:#bad9cb;color:#214f43;font-weight:700;box-shadow:inset 0 -2px 0 #b9d6c4}
+.calendar button.has-checkin:after{display:none}
+.calendar button.selected{outline:2px solid #2c6654;outline-offset:1px}
+.calendar button.has-session:before{background:#bd8a39;width:14px;height:3px}
+.checkin-mark{display:block;width:15px;height:15px;line-height:0}
+.checkin-mark svg,.legend-smile svg{width:100%;height:100%;overflow:visible}
+.checkin-mark circle,.legend-smile circle{fill:#f9d989;stroke:#8e7337;stroke-width:1.2}
+.checkin-mark path,.legend-smile path{fill:none;stroke:#685936;stroke-width:1.5;stroke-linecap:round}
+.legend-smile{width:16px;height:16px;display:inline-block;flex-shrink:0}
+.calendar button:disabled{background:#f8f8f2;box-shadow:none}
+.trend-panel{background:linear-gradient(135deg,#f0f8f3,#fffdf8 68%);border:1px solid #bdd9ca;box-shadow:0 9px 28px #2b6e5310;position:relative;overflow:hidden}
+.trend-panel:before{content:'';position:absolute;top:0;left:28px;right:28px;height:4px;border-radius:0 0 8px 8px;background:linear-gradient(90deg,#338e7c,#9fcdb8,#eac77c)}
+.trend-panel .eyebrow{color:#44806c;font-weight:700}
+.trend-panel .section-head{align-items:flex-end;margin-bottom:15px}
+.trend-panel .section-head h2{color:#285a4a;font-size:30px}
+.trend-panel .trend-control{display:flex;flex-direction:column;align-items:flex-start;gap:8px;font-size:14px;min-width:180px}
+.trend-control-label{font-weight:700;font-size:14px;color:#285a4a}
+.trend-control select{background:white;border:1.5px solid #88bba5;font-weight:600;box-shadow:0 3px 8px #43856809;min-height:44px;width:100%}
+.trend-panel>.muted{font-size:13px;color:#5e7768}
+.chart{background:#fffefd;border:1px solid #cbded1;box-shadow:0 6px 18px #3d7c5d05;padding:20px}
+.chart line{stroke:#d2e2d9}.chart .chart-axis{stroke:#95b7a3}
+.chart text{fill:#597766;font-size:12px}
+.chart path{stroke:#16897c;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+.chart circle{fill:#eab96a;stroke:#276d59;stroke-width:2}
+.chart svg.chart-compact{max-height:220px}.chart .chart-compact text{font-size:11px}
+.chart-empty{color:#536f60;font-size:13px;margin:0 8px 14px}
+.trend-values{color:#637e6b;font-size:11px}
+.trend-empty-guide{display:flex;align-items:center;gap:18px;border-top:1px dashed #cbdccf;margin-top:18px;padding:17px 3px 0}
+.trend-empty-guide>div:first-child{flex:1}.example-label{display:inline-block;border:1px solid #d8c59a;background:#fcf3dc;color:#80683a;border-radius:14px;font-size:10px;padding:3px 9px;margin-bottom:7px}
+.trend-empty-guide strong{display:block;color:#345e4c;font-size:14px;font-weight:600}.trend-empty-guide small{display:block;font-size:11px;line-height:1.7;color:#7a8475;margin-top:5px}
+.example-art{width:170px;flex-shrink:0}.chart svg.trend-illustration{height:auto;max-height:100px}
+.chart .trend-illustration .illustration-wash{fill:#dcefe4;stroke:none}.chart .trend-illustration .illustration-line{stroke:#59a491;stroke-width:3;stroke-dasharray:6 5}.chart .trend-illustration circle{fill:#edc87f;stroke:#fff9ec;stroke-width:2}
+.trend-panel .compare-tabs button[aria-pressed=true]{background:#2b7662;border-color:#2b7662;box-shadow:0 4px 10px #2d765c19}
+.trend-panel .comparison article{background:#e0f0e6}.trend-panel .comparison .worse{background:#f6e4d8}
+#report-dialog{background:#faf7f0;border:1px solid #d6c9b2;box-shadow:0 20px 80px #214c3a33}
+.report-toolbar{border-bottom:1px solid #e7dbca;padding:4px 2px 16px;margin-bottom:14px}
+.report-toolbar strong{color:#356953;font-size:19px}.report-toolbar button{background:#f4e9d4;border-color:#dfcda9;color:#745c31}
+.report-toolbar #download-report{background:#386c59;border-color:#386c59;color:white}.report-toolbar #close-report{background:#ece7f1;border-color:#d8cee2;color:#705e80}
+@media(max-width:540px){.calendar button{min-height:53px}.trend-panel .section-head h2{font-size:27px}.trend-panel .trend-control{width:100%;min-width:0;gap:7px}.trend-control-label{font-size:14px}.trend-control select{width:100%;font-size:14px}.chart{padding:13px 11px}.trend-panel>.muted{font-size:12px}.trend-empty-guide{gap:8px;align-items:flex-start;flex-direction:column}.example-art{width:100%;max-width:230px;align-self:flex-end}.trend-empty-guide strong{font-size:14px}.trend-values{font-size:9px}.report-toolbar strong{font-size:17px}.report-toolbar button{min-height:44px}.report-toolbar>div{gap:7px;flex-wrap:wrap}}
