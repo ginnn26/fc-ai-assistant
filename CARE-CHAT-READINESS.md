@@ -2,6 +2,20 @@
 
 ## Current status — 26 October 2026
 
+Microphone visual follow-up: recording UI now has33 locally sound-reactive bars
+and a microphone glow driven by RMS energy from existing capture samples. Smaller
+1024-frame worklet batches improve response latency without adding a network
+request. Silence falls back to4px; stop/discard/logout/error clears the display.
+The waveform is a volume visual, not a clinical frequency analysis. Recording
+still stays local until explicit conversion; no automatic send or extra AI cost.
+Reduced-motion preference disables CSS interpolation/glow expansion. Affected
+voice/browser suites22/22 pass using generated samples/fake devices, including
+quiet/loud/stop assertions. Browser inspected the visual preview using clearly
+labelled synthetic bars; no real microphone permission requested. Real device
+QA and live deployment remain pending. Screenshot: care-chat-live-wave-preview.png
+in the local output folder.
+
+
 Latest independent follow-up: separated the legacy assistant budget switch from
 Care Chat. With a ready Care Chat wallet, legacy transcription/recommendation
 retain their existing access policy; Care Chat conversation and voice-draft still

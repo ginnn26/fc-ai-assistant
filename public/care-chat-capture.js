@@ -1,7 +1,7 @@
 // Mono PCM capture only; no network, storage or audible monitoring.
 class FCCareCapture extends AudioWorkletProcessor {
   constructor() {
-    super(); this.pending = new Float32Array(4096); this.used = 0; this.total = 0; this.done = false;
+    super(); this.pending = new Float32Array(1024); this.used = 0; this.total = 0; this.done = false;
     this.port.onmessage = event => { if (event.data === 'finish') this.finish(); };
   }
   flush() {

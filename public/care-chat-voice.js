@@ -5,6 +5,16 @@
   const supported = !!(navigator.mediaDevices?.getUserMedia && AudioContextClass && window.AudioWorkletNode);
   let enabled = false, allowed = false, lang = 'zh', phase = 'idle', status = '', epoch = 0;
   let stream, context, node, source, timer, stopTimer, chunks = [], rate = 16000, clip, clipUrl, started = 0, request;
+  const levels = Array(33).fill(0);
+  function drawWave(samples) {
+    let energy = 0;
+    if (samples?.length) for (const n of samples) energy += n * n;
+    // Actual local microphone energy, never a decorative simulated frequency.
+    const level = samples?.length ? Math.min(1, Math.sqrt(energy / samples.length) * 6) : 0;
+    if (samples) { levels.shift(); levels.push(level); } else levels.fill(0);
+    levels.forEach((value, i) => $('voice-bar-' + i).style.setProperty('--height', (4 + value * 48) + 'px'));
+    $('record-voice').style.setProperty('--voice-glow', (level * 14) + 'px');
+  }
   const t = (zh, en) => lang === 'zh' ? zh : en;
   const messages = {
     unavailable: ['这个浏览器暂时无法录音。你仍可直接打字聊天。', 'Recording is unavailable in this browser. You can still type.'],
@@ -26,6 +36,7 @@
   };
   function paint() {
     $('voice-panel').hidden = !enabled;
+    $('voice-wave').classList.toggle('is-recording', phase === 'recording');
     $('voice-title').textContent = t('不想打字？轻轻说一说。', 'Prefer to speak? Take your time.');
     $('voice-hint').textContent = t('最多 60 秒 · 先转文字，再确认发送', 'Up to 60 seconds · Convert, review, then send');
     $('voice-cost').textContent = t('录音和回听不扣次数。按「转成文字」使用 1 次，确认发送再使用 1 次，与打字共用额度。', 'Recording and playback use no allowance. Conversion uses 1 unit; sending the reviewed text uses another. Both share your chat allowance.');
@@ -43,6 +54,7 @@
   }
   function notify() { paint(); window.dispatchEvent(new Event('fc-care-voice-state')); }
   function stopDevices() {
+    drawWave();
     clearInterval(timer); timer = null;
     clearTimeout(stopTimer); stopTimer = null;
     stream?.getTracks().forEach(track => track.stop()); stream = null;
@@ -85,7 +97,7 @@
       source = context.createMediaStreamSource(stream); chunks = [];
       node.port.onmessage = event => {
         if (before !== epoch) return;
-        if (event.data.samples) chunks.push(event.data.samples);
+        if (event.data.samples) { chunks.push(event.data.samples); if (phase === 'recording') drawWave(event.data.samples); }
         if (event.data.done) {
           const result = wav(); stopDevices(); chunks = [];
           if (result.seconds < 0.5) { phase = 'idle'; status = 'short'; notify(); return; }
@@ -102,7 +114,7 @@
   }
   function finish() {
     if (phase !== 'recording') return;
-    phase = 'stopping';
+    phase = 'stopping'; drawWave();
     // Release the physical microphone immediately, even if the worklet fails
     // to acknowledge its final buffer. No background capture while stopping.
     stream?.getTracks().forEach(track => track.stop()); stream = null;
@@ -147,5 +159,5 @@
   window.addEventListener('fc-care-auth-changed', reset);
   window.addEventListener('pagehide', reset);
   document.addEventListener('visibilitychange', () => { if (document.hidden) reset(); });
-  paint();
+  drawWave(); paint();
 })();

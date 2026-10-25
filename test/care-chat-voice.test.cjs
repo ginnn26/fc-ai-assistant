@@ -99,7 +99,7 @@ test('capture worklet emits no more than sixty seconds and flushes once on stop'
 test('browser recording stays local until explicit consented conversion and never auto-sends chat', async () => {
   const elements = new Map(), events = [], listeners = new Map(); let capture, stopped = 0, calls = 0;
   const element = id => {
-    if (!elements.has(id)) elements.set(id, { value: '', checked: false, classList: { toggle() {} }, focus() {}, pause() {}, removeAttribute() {} });
+    if (!elements.has(id)) elements.set(id, { style: { setProperty(key, value) { this[key] = value; } }, value: '', checked: false, classList: { toggle() {} }, focus() {}, pause() {}, removeAttribute() {} });
     return elements.get(id);
   };
   class Context { constructor() { this.sampleRate = 16000; this.audioWorklet = { addModule: async () => {} }; this.destination = {}; }
@@ -120,7 +120,11 @@ test('browser recording stays local until explicit consented conversion and neve
   window.FCCareVoice.configure({ enabled: true, allowed: true, language: 'zh' });
   await element('record-voice').onclick();
   capture.port.onmessage({ data: { samples: new Float32Array(16000).fill(.1) } });
+  assert.ok(parseFloat(element('voice-bar-32').style['--height']) > 4);
+  capture.port.onmessage({ data: { samples: new Float32Array(0) } });
+  assert.equal(element('voice-bar-32').style['--height'], '4px');
   await element('record-voice').onclick();
+  assert.equal(element('voice-bar-31').style['--height'], '4px');
   assert.equal(stopped, 1); // Physical microphone closes before worklet flush.
   capture.port.onmessage({ data: { done: true } });
   assert.equal(calls, 0); assert.equal(stopped, 1); assert.equal(element('voice-preview').hidden, false);
