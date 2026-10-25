@@ -2,6 +2,20 @@
 
 ## Current status — 26 October 2026
 
+Latest independent follow-up: separated the legacy assistant budget switch from
+Care Chat. With a ready Care Chat wallet, legacy transcription/recommendation
+retain their existing access policy; Care Chat conversation and voice-draft still
+always reserve the verified member wallet. The new independent legacy switch is
+FC_ASSISTANT_MEMBER_BUDGET_ENABLED (default false). Explicitly enabling it keeps
+the previous fail-closed legacy behavior. This is NOT a claim that the RM7 chat
+ceiling caps all AI used by the existing recommendation assistant. A mounted
+regression check covers legacy voice/recommendation with an exhausted chat wallet,
+while confirming chat is denied without calling the conversation provider.
+Full local suite:140/140 passed using mocks; no provider/email/payment calls.
+All changes remain local, not deployed. Real SMTP, account integration, model
+quality/cost, microphone/device and payment checks are still outstanding.
+
+
 Latest pack decision: owner changed the optional sale price to **RM15 per pack**,
 retaining500sen internal purchased allowance and the RM7 included monthly ceiling.
 Local bilingual preview and authoritative fulfillment validation now require

@@ -43,7 +43,10 @@ function createChatRouter({
   now = Date.now,
   memberBudget = createConfiguredMemberBudget(),
   converse = answerConversation,
-  enforceMemberBudget = memberBudget.ready === true || process.env.FC_CARE_CHAT_ENABLED === 'true',
+  // The existing recommendation assistant has its own release/budget policy.
+  // Enabling private Care Chat must not silently disable its live microphone.
+  // Care Chat conversation/voice-draft ALWAYS reserve verified allowance below.
+  enforceMemberBudget = process.env.FC_ASSISTANT_MEMBER_BUDGET_ENABLED === 'true',
   emailAuth = createEmailAuth({ url: process.env.FC_SUPABASE_URL,
     publicKey: process.env.FC_SUPABASE_PUBLISHABLE_KEY,
     enabled: process.env.FC_CARE_CHAT_ENABLED === 'true' }),

@@ -203,3 +203,30 @@ test('purchased allowance is combined without exposing internal RM7 cost balance
   assert.equal(status.purchasedTextAttempts,10);
   assert.equal(status.remainingTextAttempts,50);
 });
+
+test('ready Care Chat preserves legacy voice while conversations still enforce the exhausted wallet', async () => {
+  let legacyTranscriptions = 0, recommendations = 0, conversations = 0, reserves = 0;
+  const app = express(); app.use(express.json());
+  app.use('/chat', createChatRouter({
+    memberBudget: { ready: true, reserveText: async () => { reserves++; throw Error('monthly_allowance_reached'); } },
+    converse: async () => { conversations++; },
+    recommend: async () => { recommendations++; return { message: 'Legacy recommendation fixture' }; },
+    transcribe: async () => { legacyTranscriptions++; return 'Legacy transcript fixture'; } }));
+  const server = app.listen(0,'127.0.0.1'); await new Promise(resolve => server.once('listening',resolve));
+  const base = 'http://127.0.0.1:' + server.address().port;
+  const headers = { Origin:base, 'Content-Type':'application/json' };
+  try {
+    for (const path of ['/chat/','/chat/recommend']) {
+      const response = await fetch(base+path,{method:'POST',headers,body:JSON.stringify({consent:true,message:'sleep'})});
+      assert.equal(response.status,200);
+    }
+    const body = new FormData(), wav = Buffer.alloc(64); wav.write('RIFF');
+    body.append('audio',new Blob([wav]),'fixture.wav'); body.append('consent','true');
+    const voice = await fetch(base+'/chat/transcribe',{method:'POST',headers:{Origin:base},body});
+    assert.equal(voice.status,200); assert.equal((await voice.json()).transcript,'Legacy transcript fixture');
+    const chat = await fetch(base+'/chat/conversation',{method:'POST',headers,
+      body:JSON.stringify({consent:true,turns:[{role:'user',content:'I want to chat'}]})});
+    assert.equal(chat.status,429); assert.equal((await chat.json()).error,'monthly_allowance_reached');
+    assert.equal(recommendations,2); assert.equal(legacyTranscriptions,1); assert.equal(conversations,0); assert.equal(reserves,1);
+  } finally {server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
+});

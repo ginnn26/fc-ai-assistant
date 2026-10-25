@@ -29,10 +29,14 @@ automatic retry is enabled. Do not equate the prototype140 units to140 complete
 voice exchanges: this draft policy permits70 conversion+send pairs
 if no other units are used. Final model/cost policy must be presented clearly.
 
-The existing voice assistant is live. `FC_CARE_CHAT_ENABLED=true` currently also
-gates legacy recommendation calls and closes transcription pending voice cost
-protection. **Do not enable this flag as an isolated text-chat change**: confirm
-the existing voice experience, authentication and shared allowance policy first.
+The existing voice assistant is live and retains its existing access policy.
+Care Chat now always meters its own conversation/voice-draft routes independently.
+Enabling FC_CARE_CHAT_ENABLED no longer changes legacy transcription/recommendation.
+The separate FC_ASSISTANT_MEMBER_BUDGET_ENABLED flag defaults off; leave it off
+until the legacy identity/cost integration has been reviewed. If enabled explicitly,
+legacy recommendations require the member wallet and legacy transcription closes
+until its own server-side duration/metering integration is complete. Do not claim
+the RM7 Care Chat ceiling also caps the existing recommendation assistant.
 
 ## Before enabling
 
@@ -97,6 +101,6 @@ Keep the last known deployed commit and environment settings before a release.
 Do not delete quota/payment tables or rotate the member HMAC secret to undo a UI
 release. Preserve the durable ledger; rolling back app code must not recreate
 spent allowance. Close the new entry first if identity, balance or cost behavior
-is uncertain. Check the impact on existing voice routes before toggling the shared
-enable flag. Record sanitized timestamps/status codes only; never health text,
+is uncertain. Keep the independent legacy assistant budget flag unchanged when rolling back
+Care Chat. Record sanitized timestamps/status codes only; never health text,
 audio, tokens or raw provider error objects in support logs.
