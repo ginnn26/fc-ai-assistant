@@ -11,6 +11,19 @@ and requested permission to send it to LearnWorlds support (not Brevo; existing
 Brevo-contact permission does not authorize messaging this other recipient).
 No support message sent yet. No real customer data exported or transmitted.
 
+Owner subsequently authorized the LearnWorlds inquiry. The separate help portal
+requires its own login, so the school's existing Help widget was used instead.
+Filled only the approved technical inquiry, school URL and existing prefilled
+sender details. Submission has NOT occurred: a reCAPTCHA gate required owner
+interaction, and showing the browser caused the narrow layout to hide the
+widget/form. Do not assume the filled draft survives a resize or reload.
+Official LearnWorlds support documentation confirms support@learnworlds.com as
+an alternate channel. Attempting to open Gmail was blocked by automatic review
+because private-mailbox access was not explicitly authorized for that channel.
+No Gmail contents read, no email sent. Explained this rejection and requested
+explicit permission for Gmail sending; awaiting response. Do not retry that
+blocked channel without the new authorization or bypass via another tool.
+
 School-owner dashboard access restored after owner signed in. Read-only checks
 confirmed Pro Trainer, direct Webhooks upgrade gate, and an accessible Zapier
 settings page whose workflow pane requires Zapier login. No integration granted,
