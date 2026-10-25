@@ -27,15 +27,15 @@ test('voice duration is derived from PCM samples and tampered containers fail cl
   assert.throws(() => inspectVoiceWav(Buffer.concat([wav(), Buffer.from('hidden trailing data')])), /invalid_voice_audio/);
 });
 
-test('mixed voice conversions and text calls share the same RM5 member cap', async () => {
+test('mixed voice conversions and text calls share the same RM7 member cap', async () => {
   let used = 0;
   const budget = createMemberMonthlyBudget({ hashSecret: 'x'.repeat(32), verifyMember: async () => ({ subject: 'fixture' }),
     store: { durable: true, reserve: async ({ amountSen }) => {
-      if (used + amountSen > 500) return { accepted: false };
+      if (used + amountSen > 700) return { accepted: false };
       used += amountSen; return { accepted: true, usedSen: used, paidRemainingSen: 0 };
     } } });
-  const results = await Promise.allSettled(Array.from({ length: 120 }, (_, i) => i % 2 ? budget.reserveVoice({}) : budget.reserveText({})));
-  assert.equal(results.filter(r => r.status === 'fulfilled').length, 100); assert.equal(used, 500);
+  const results = await Promise.allSettled(Array.from({ length: 160 }, (_, i) => i % 2 ? budget.reserveVoice({}) : budget.reserveText({})));
+  assert.equal(results.filter(r => r.status === 'fulfilled').length, 140); assert.equal(used, 700);
 });
 
 test('voice endpoint validates before spending, reserves before transcription and never sends chat', async () => {

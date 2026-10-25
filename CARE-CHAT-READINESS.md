@@ -2,6 +2,20 @@
 
 ## Current status — 26 October 2026
 
+Latest owner decision: RM6–7/member/month is acceptable. Adopt **RM7 maximum**,
+with approximately RM6 as an operating target, not a second entitlement/reset.
+Local backend ceiling is now700sen. Prepared additive migration
+`20261026_care_chat_rm7_ceiling.sql`; NOT applied to the actual database yet.
+It preserves existing usage and purchased balances; RM10 packs still add500sen.
+Current5sen prototype gives140 shared units, but this is NOT a final customer
+promise: final model/reservation and real billing must be verified first.
+Previous RM5/100-unit statements below describe earlier versions. No deployment
+or real allowance expansion has occurred. The affected chat/voice checks pass
+21/21, including cap enforcement, existing500sen usage retention and separate
+purchased allowance. Prepared `care_chat_rm7_verify.sql` for a later rollback-only
+DB check; that script has NOT been run against Supabase.
+
+
 Owner-approved voice-input follow-up: new Care Chat now has a local recorder with
 AudioWorklet capture, playback/discard, explicit conversion, editable transcript,
 and a separate Send step. It never auto-uploads on Stop and never auto-sends a

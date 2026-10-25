@@ -1,5 +1,5 @@
 const crypto = require('node:crypto');
-const LIMIT_SEN = 500;
+const LIMIT_SEN = 700; // Owner-approved monthly ceiling; purchased packs remain separate.
 const TEXT_RESERVATION_SEN = 5;
 
 function monthAt(now) {

@@ -25,8 +25,8 @@ checked USD0.0045/minute estimate, a maximum60-second recording is0.45US cents;
 using the documented RM6/USD ×1.2 headroom gives3.24sen, covered by the existing
 5sen reservation under those assumptions. Real account availability, billing,
 tax/FX and representative speech still need verification. No model fallback or
-automatic retry is enabled. Do not equate the prior100 TEXT sends to100 complete
-voice exchanges: this conservative draft policy permits50 conversion+send pairs
+automatic retry is enabled. Do not equate the prototype140 units to140 complete
+voice exchanges: this draft policy permits70 conversion+send pairs
 if no other units are used. Final model/cost policy must be presented clearly.
 
 The existing voice assistant is live. `FC_CARE_CHAT_ENABLED=true` currently also
@@ -52,12 +52,14 @@ the existing voice experience, authentication and shared allowance policy first.
 5. If choosing mini, update the member reservation and SQL constraint/RPC together
    before enabling: the existing 5-sen reservation cannot cover the documented
    mini worst-case token envelope. Confirm tax/currency headroom and resulting
-   customer send counts. Keep the internal RM5 cap out of customer copy.
+   customer send counts. Keep the internal RM7 cap out of customer copy.
 6. Configure backend-only Supabase access and a stable member HMAC secret through
    approved secret settings. Never put the server key/HMAC secret in public JS,
    browser storage, a commit or screenshots. Rotating that HMAC secret changes
    ledger identities; plan a migration rather than silently resetting allowances.
-7. Confirm the two migrations are applied. Both were applied to the setup project;
+7. Confirm the two initial migrations and the new RM7 ceiling migration are applied.
+   Only the two initial migrations were applied to the setup project; the RM7
+   migration is prepared locally and must be applied with this backend release;
    apply them explicitly in any other environment. The actual DB verification
    scripts use fictional data and rollback. Public clients must not execute RPCs.
 8. Complete real two-account and cross-device checks: usage/account isolation,

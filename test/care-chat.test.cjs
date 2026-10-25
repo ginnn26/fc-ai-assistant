@@ -20,8 +20,8 @@ test('checking an existing balance never reserves usage and cannot use a browser
       lookup = data; return { usedSen: 25, paidRemainingSen: 500 };
     } } });
   const result = await budget.status({ body: { member: 'forged-B' } });
-  assert.equal(result.includedTextAttempts, 95); assert.equal(result.purchasedTextAttempts, 100);
-  assert.equal(result.remainingTextAttempts, 195); assert.equal(reserves, 0);
+  assert.equal(result.includedTextAttempts, 135); assert.equal(result.purchasedTextAttempts, 100);
+  assert.equal(result.remainingTextAttempts, 235); assert.equal(reserves, 0);
   assert.match(lookup.member, /^[a-f0-9]{64}$/); assert.equal(lookup.month, '2026-10');
   assert.equal(result.nextResetAt, '2026-10-31T16:00:00.000Z');
   assert.equal('usedSen' in result, false); assert.equal('paidRemainingSen' in result, false);
@@ -34,8 +34,8 @@ test('a new month with no usage starts at included allowance while purchased all
       assert.equal(month, '2026-11'); return { usedSen: 0, paidRemainingSen: 25 };
     } } });
   const result = await budget.status({});
-  assert.equal(result.includedTextAttempts, 100); assert.equal(result.purchasedTextAttempts, 5);
-  assert.equal(result.remainingTextAttempts, 105);
+  assert.equal(result.includedTextAttempts, 140); assert.equal(result.purchasedTextAttempts, 5);
+  assert.equal(result.remainingTextAttempts, 145);
 });
 
 test('invalid balance counters or an unauthenticated status query fail closed without reserving', async () => {
@@ -55,7 +55,7 @@ test('missing verified identity or durable atomic storage fails closed', async (
   }
 });
 
-test('parallel reservations cap each member at RM5 and survive service re-instantiation', async () => {
+test('parallel reservations cap each member at RM7 and survive service re-instantiation', async () => {
   // Transactional test double: store belongs to the database, not an app instance.
   const balances = new Map();
   const store = { durable: true, reserve: async ({ member, month, amountSen, limitSen }) => {
@@ -67,11 +67,11 @@ test('parallel reservations cap each member at RM5 and survive service re-instan
   const options = { store, hashSecret: 'a'.repeat(32), now: () => Date.parse('2026-10-25T00:00:00Z'),
     verifyMember: async req => ({ subject: req.serverSession.subject }) };
   const first = createMemberMonthlyBudget(options);
-  const results = await Promise.allSettled(Array.from({ length: 110 }, () => first.reserveText({ serverSession: { subject: 'A' } })));
-  assert.equal(results.filter(r => r.status === 'fulfilled').length, 100);
+  const results = await Promise.allSettled(Array.from({ length: 150 }, () => first.reserveText({ serverSession: { subject: 'A' } })));
+  assert.equal(results.filter(r => r.status === 'fulfilled').length, 140);
   assert.equal(results.filter(r => r.status === 'rejected').length, 10);
   await assert.rejects(createMemberMonthlyBudget(options).reserveText({ serverSession: { subject: 'A' } }), /monthly_allowance_reached/);
-  assert.equal((await first.reserveText({ serverSession: { subject: 'B' } })).remainingTextAttempts, 99);
+  assert.equal((await first.reserveText({ serverSession: { subject: 'B' } })).remainingTextAttempts, 139);
   assert.ok([...balances.keys()].every(k => !k.includes('A') && !k.includes('B')));
 });
 
@@ -85,7 +85,7 @@ test('browser email and member selection cannot supply a trusted identity', asyn
 
 test('store errors or malformed counters never allow the provider call', async () => {
   const options = { hashSecret: 'x'.repeat(32), verifyMember: async () => ({ subject: 'A' }) };
-  for (const result of [undefined, { accepted: true, usedSen: 501 }, { accepted: true, usedSen: NaN }]) {
+  for (const result of [undefined, { accepted: true, usedSen: 701 }, { accepted: true, usedSen: NaN }]) {
     const budget = createMemberMonthlyBudget({ ...options, store: { durable: true, reserve: async () => result } });
     await assert.rejects(budget.reserveText({}), /member_budget_unavailable/);
   }
@@ -129,7 +129,7 @@ test('live default route advertises chat unavailable and rejects paid calls with
     assert.equal((await fetch(base + '/chat/features')).status, 200);
     const features = await (await fetch(base + '/chat/features', { headers })).json();
     assert.equal(features.conversation, false);
-    assert.deepEqual(features.monthlyAllowance, { scope: 'per_member', includedTextAttempts: 100, resetsIn: 'Asia/Kuala_Lumpur' });
+    assert.deepEqual(features.monthlyAllowance, { scope: 'per_member', includedTextAttempts: 140, resetsIn: 'Asia/Kuala_Lumpur' });
     const response = await fetch(base + '/chat/conversation', { method: 'POST', headers,
       body: JSON.stringify({ consent: true, turns: [{ role: 'user', content: 'Hello' }] }) });
     assert.equal(response.status, 503);
@@ -183,14 +183,23 @@ test('mounted allowance lookup is authenticated, private and never invokes a res
   } finally { server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); }
 });
 
-test('purchased allowance is combined without exposing internal RM5 cost balances', async () => {
+test('purchased allowance is combined without exposing internal RM7 cost balances', async () => {
   const budget = createMemberMonthlyBudget({ hashSecret: 'a'.repeat(32),
     verifyMember: async () => ({ subject: 'test-subject' }),
-    store: { durable: true, reserve: async () => ({ accepted: true, usedSen: 500, paidRemainingSen: 495 }) } });
+    store: { durable: true, reserve: async () => ({ accepted: true, usedSen: 700, paidRemainingSen: 495 }) } });
   const allowance = await budget.reserveText({});
   assert.equal(allowance.remainingTextAttempts, 99);
   assert.equal(allowance.purchasedTextAttempts, 99);
   assert.equal(allowance.includedTextAttempts, 0);
   assert.equal('remainingSen' in allowance, false);
   assert.equal('limitSen' in allowance, false);
+});
+
+ test('raising the ceiling retains previously consumed usage and purchased balance', async () => {
+  const budget = createMemberMonthlyBudget({ hashSecret: 'x'.repeat(32), verifyMember: async () => ({subject:'existing'}),
+    store: {durable:true, reserve:async()=>{}, status:async()=>({usedSen:500,paidRemainingSen:50})} });
+  const status=await budget.status({});
+  assert.equal(status.includedTextAttempts,40);
+  assert.equal(status.purchasedTextAttempts,10);
+  assert.equal(status.remainingTextAttempts,50);
 });
