@@ -19,3 +19,13 @@ Save recovery patch: idle checkpoints no longer replay successful historical pay
 Before public launch: owner-member save/exit and rapid closure, second authorized account isolation, real second-device recovery, offline/retry, loop/song changes, update preservation, retention/export/deletion. Do not enable a public navigation link until these pass. Use one record-editing device at a time until concurrent-edit behavior is resolved.
 
 Official platform guidance: https://support.learnworlds.com/support/solutions/articles/12000052986-how-to-upload-scorm-files-and-html5-packages-to-your-courses
+
+## Member feedback and presentation update — 25 October
+
+After PR #8, the owner reports that the earlier test record is available from both phone and computer. This confirms recovery in that member's tested sessions; second-account isolation and other release gates still need independent verification.
+
+The presentation update adds full Chinese/English switching, a dated empty chart with real score axes and no invented series, readable UTF-8 HTML reports with an in-page preview and browser print/PDF option, and a collapsed privacy section. Technical pilot/OpenAI text is removed from the primary customer view; the required storage consent remains. Three feature tags have distinct muted colours, and Chinese listening headings keep whole phrases together at narrow widths.
+
+The previously prepared welcoming design is included: one star per recorded day, derived from existing records, with optional keepsake badges at 1/3/7/14/30 days. Missed days never reset the collection and better symptom scores do not earn extra stars. Demo data and demo gifts remain separate. No new private fields, service, storage schema or AI calls are introduced. Keep the installed SCORM package intact; this is a public UI asset update, not a package replacement.
+
+Validation: 72 local tests pass, including empty/missing graph data, readable report labels, report escaping, language labels and reward rules, plus the original backend and native saving tests. Browser checks cover both languages, a fictional score persisting through local reload, language changes retaining the same scores, report preview, and 390/320px layouts. A generated download click has no observed local file in the in-app browser; do not claim host-file delivery or PDF printing verified until checked in a normal browser. Actual member save/playback should receive a post-deploy smoke test before public navigation.
