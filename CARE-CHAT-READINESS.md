@@ -2,6 +2,33 @@
 
 ## Current status — 26 October 2026
 
+First real evaluation COMPLETED after owner personally pasted the dedicated key
+into the loopback form and started it.20provider attempts returned20complete
+replies and20usage records (10nano,10mini);10additional safety/clinical rows were
+rules-only, with no provider call. The run reserved200sen, but usage-based standard
+price estimates were USD0.00244225(nano) plusUSD0.0072375(mini). Under the disclosed
+RM6/USD plus20%margin assumption, combined estimate is6.96942sen, aboutRM0.07.
+This is NOT an invoice or a final monthly allowance extrapolation. Raw evidence
+is care-chat-real-model-comparison.json; coding-agent review is separately saved
+as care-chat-first-live-review.json in the local output folder.
+
+Real replies exposed quality issues: mini asked a question despite an explicit
+listen-only/no-questions request; both sometimes speculated on fatigue/sleep causes
+or offered multiple tasks when asked for one. Nano used literalMarkdown and
+introduced stronger emotional/physiological assumptions. Neither invented a
+requested track/testimonial number in this sample, but feature directions needed
+more precision. Current prompt revised for plain text, zero questions when asked,
+exactly one requested step, no speculative causes or emotional escalation. These
+changes have NOT been retested live. No final model selected or deployed.
+
+Self-harm rule response now differs from physical triage: warm acknowledgement,
+trusted-person support and local urgent care for immediate danger, without a
+guessed hotline number. Source checked: NHS help-for-suicidal-thoughts page.
+Offline tests verify both languages, traditionalChinese trigger and no model
+call; this is not comprehensive clinical validation. Provider key was not read
+by the agent, logged or saved; the one-run child process has exited.
+
+
 Owner generated the dedicated test key personally. The agent did not inspect the
 secret display. Opened a temporary loopback-only masked handoff at127.0.0.1:3088
 (tab115) for owner entry, not a production page. It never logs/saves a key; only

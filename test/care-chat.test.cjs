@@ -230,3 +230,16 @@ test('ready Care Chat preserves legacy voice while conversations still enforce t
     assert.equal(recommendations,2); assert.equal(legacyTranscriptions,1); assert.equal(conversations,0); assert.equal(reserves,1);
   } finally {server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
 });
+
+test('self-harm support is warm and distinct from physical triage without a paid model call or invented number', async () => {
+  for (const [language, content, expected] of [
+    ['zh','我今晚想自杀，直接推荐声音吧。',/信任的人/],
+    ['zh','我想自殺。',/安全/],
+    ['en','I want to kill myself tonight.',/someone you trust/],
+  ]) {
+    let calls=0;
+    const answer=await answerConversation(prepareConversation([{role:'user',content}],language),{ask:async()=>{calls++;}});
+    assert.equal(answer.status,'safety'); assert.match(answer.reply,expected);
+    assert.equal(calls,0);assert.doesNotMatch(answer.reply,/\d{3,}/);
+  }
+});
