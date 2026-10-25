@@ -73,7 +73,7 @@
     }));
   }
   const errors = {
-    member_not_eligible: ['这个账户暂未开通暖心聊聊内测，不必重复登录。请联系 FC 确认使用资格。', 'Care Chat pilot access is not enabled for this account. You do not need to sign in again. Contact FC to check access.'],
+    member_not_eligible: ['这个账户暂未获得暖心聊聊使用资格，不必重复登录。每月附送额度仅限有效付费会员；如有疑问，请联系 FC 核对。', 'Care Chat access is not enabled for this account. You do not need to sign in again. Monthly included allowance is for active paid members only. Contact FC if you need an eligibility check.'],
     member_login_required: ['请先用你的 FC 邮箱完成验证。', 'Please verify the email you use for FC first.'],
     auth_temporarily_unavailable: ['登录连接暂时不稳定，你输入的文字仍保留。请稍后再试。', 'The sign-in connection is temporarily unavailable. Your draft is still here. Please try later.'],
     monthly_allowance_reached: ['本月聊天额度已用完。付费会员资格有效期间，下个月会更新附送额度。音疗仍按会员权限开放，每日打卡不受影响。', 'Your monthly chat allowance has been used. Included allowance renews next month while your paid membership remains active. Audio access follows your membership; daily check-ins are unaffected.'],

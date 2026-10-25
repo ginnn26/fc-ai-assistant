@@ -77,6 +77,12 @@ the RM7 Care Chat ceiling also caps the existing recommendation assistant.
    approved secret settings. Never put the server key/HMAC secret in public JS,
    browser storage, a commit or screenshots. Rotating that HMAC secret changes
    ledger identities; plan a migration rather than silently resetting allowances.
+   A separate `FC_CARE_CHAT_ACCESS_MODE=paid` is now implemented locally; it checks
+   the service-only `fc_chat_paid_membership` RPC per request. The new fifth
+   migration is NOT applied and the trusted FC source is NOT connected. Do not
+   enable this mode just because the configured adapter reports ready. Review
+   integrations/care-chat/PAID-MEMBERSHIP.md first. FC's annual payment page also
+   supports Payex/manual staff confirmation, so card-only sync is insufficient.
 7. Confirm all four migrations are applied: initial ledger, allowance status,
    RM7 ceiling and RM15 order price. All four are now applied to the setup project.
    Apply explicitly in other environments. The updated RM7 verification script

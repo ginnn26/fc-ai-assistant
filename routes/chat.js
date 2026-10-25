@@ -147,7 +147,7 @@ function createChatRouter({
         }
         // Do not disclose whether a mailbox is in the private pilot roster.
         // Ineligible requests get the same public acknowledgement but no mail.
-        if (typeof memberBudget.canRequestCode === 'function' && !memberBudget.canRequestCode(email))
+        if (typeof memberBudget.canRequestCode === 'function' && !await memberBudget.canRequestCode(email))
           return res.json({ sent: true });
         await emailAuth.requestCode(email.trim());
         return res.json({ sent: true });

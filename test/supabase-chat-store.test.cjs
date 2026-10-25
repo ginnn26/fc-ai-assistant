@@ -75,3 +75,50 @@ test('confirmed mailbox ownership cannot impersonate an invited FC account throu
  email=' Invited@EXAMPLE.test ';
  assert.deepEqual(await connection.verifyMember({headers:{authorization:token}}),{subject:'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'});
 });
+
+test('paid access checks only the Auth-confirmed email against the private RPC on every request', async () => {
+  const hash = require('node:crypto').createHash('sha256').update('member@example.test').digest('hex');
+  let eligible = true, checks = 0;
+  const connection = createSupabaseChatStore({ ...config, requirePaidMembership: true, fetcher: async (url, options) => {
+    if (url.endsWith('/auth/v1/user')) return Response.json({ id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+      email: ' Member@EXAMPLE.test ', email_confirmed_at: '2026-10-26' });
+    assert.equal(url, config.url + '/rest/v1/rpc/fc_chat_paid_membership');
+    assert.equal(options.headers.apikey, config.serverKey);
+    assert.equal(options.headers.Authorization, undefined);
+    assert.deepEqual(JSON.parse(options.body), { p_email_hash: hash });
+    checks++;
+    return Response.json({ eligible });
+  } });
+  const req = { headers: { authorization: token }, body: { email: 'someone-else@example.test', paid: true } };
+  assert.deepEqual(await connection.verifyMember(req), { subject: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' });
+  eligible = false;
+  await assert.rejects(connection.verifyMember(req), /member_not_eligible/);
+  assert.equal(checks, 2); // No stale per-process eligibility cache after revocation.
+});
+
+test('paid lookup failures, malformed grants and absent canonical email never grant access', async () => {
+  for (const result of [Response.json({ eligible: 'true' }), Response.json({}), new Response('', { status: 503 })]) {
+    const connection = createSupabaseChatStore({ ...config, requirePaidMembership: true, fetcher: async url => {
+      if (url.endsWith('/auth/v1/user')) return Response.json({ id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+        email: 'member@example.test', email_confirmed_at: '2026-10-26' });
+      return result;
+    } });
+    await assert.rejects(connection.verifyMember({ headers: { authorization: token } }), /member_verification_unavailable/);
+  }
+  let calls = 0;
+  const missingEmail = createSupabaseChatStore({ ...config, requirePaidMembership: true, fetcher: async () => {
+    calls++;
+    return Response.json({ id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', email_confirmed_at: '2026-10-26' });
+  } });
+  await assert.rejects(missingEmail.verifyMember({ headers: { authorization: token } }), /member_not_eligible/);
+  assert.equal(calls, 1);
+});
+
+test('paid configuration selects the durable membership check without silently using the pilot roster', () => {
+  const env = { FC_CARE_CHAT_ENABLED: 'true', FC_CARE_CHAT_ACCESS_MODE: 'paid', FC_SUPABASE_URL: config.url,
+    FC_SUPABASE_PUBLISHABLE_KEY: config.publicKey, FC_SUPABASE_SERVER_KEY: config.serverKey,
+    FC_CARE_CHAT_MEMBER_HASH_SECRET: 'x'.repeat(32) };
+  assert.equal(createConfiguredMemberBudget(env).ready, true);
+  assert.equal(typeof createConfiguredMemberBudget(env).canRequestCode, 'function');
+  assert.equal(createConfiguredMemberBudget({ ...env, FC_CARE_CHAT_ACCESS_MODE: 'typo' }).ready, false);
+});

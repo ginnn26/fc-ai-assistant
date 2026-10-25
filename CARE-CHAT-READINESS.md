@@ -2,6 +2,31 @@
 
 ## Current status — 26 October 2026
 
+Paid-access backend prepared locally: explicit `FC_CARE_CHAT_ACCESS_MODE=paid`
+checks a service-only membership RPC after each canonical Auth identity lookup.
+The mail prefilter now awaits eligibility too; a false result sends no mail,
+and malformed/unavailable lookup responses fail closed. Added a PREPARED ONLY
+fifth migration for private paid coverage, expiry, revocation and a bounded
+verification lease. It is NOT applied. There is no membership import/public
+write endpoint and no real FC membership synchronization yet. Pilot mode remains
+the default. Updated bilingual denial copy to cover the paid eligibility rule.
+All167offline regression checks passed with local loopback enabled; initial
+sandboxed execution had loopback EACCES failures, then passed in permitted mode.
+These tests do not prove the new SQL migration or real membership integration.
+One additional lookup-outage HTTP test was then added; the15-test focused
+membership/email-guard suite passed. An unavailable eligibility check sends no
+email and exposes only the generic service-unavailable response.
+
+Read-only FC annual-plan page inspection found both a Payex online-banking/e-wallet
+link and card checkout, plus instructions to send payment confirmation/email to
+staff. Therefore a card-only subscription source would miss manually activated
+members. Need the authoritative FC account coverage source for all payment paths;
+do not infer access from public page labels. No payment made or link key copied
+into code. The school-owner dashboard session is not accessible from the known
+school management entry; asked owner to open the normal member-management page.
+Brevo ticket5636055 refreshed: still Open, no new human response. No new OTP
+attempt or duplicate support message sent. See integrations/care-chat/PAID-MEMBERSHIP.md.
+
 Pilot eligibility follow-up: Supabase mailbox confirmation is NOT LearnWorlds
 membership. createConfiguredMemberBudget now stays unready without an explicit
 backend FC_CARE_CHAT_PILOT_EMAIL_HASHES roster. Auth's verified canonical email
@@ -15,7 +40,7 @@ Public release still requires a trusted FC eligibility source. Owner confirmed
 on26October2026 that monthly included chat is ONLY for valid paid FC members;
 free trials are excluded. Updated Chinese/English introduction and pack preview
 accordingly; renewal messaging now requires continuing valid paid membership.
-This copy change does not connect entitlement enforcement. No real customer
+The new backend check is prepared but not connected to authoritative FC data. No real customer
 roster exported/imported or Render settings changed.
 Full offline regression suite164/164passed. The completed second-round local
 key-handoff server has been stopped; no credential retained.

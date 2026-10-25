@@ -41,7 +41,7 @@ test('direct and parallel code requests cannot bypass cooldown after a provider 
 
 test('private pilot mail prefilter does not leak roster membership or spend mail calls on arbitrary addresses',async()=>{
  let calls=0;const app=express();app.use(express.json());
- app.use('/chat',createChatRouter({memberBudget:{ready:true,canRequestCode:email=>email==='invited@example.test'},
+ app.use('/chat',createChatRouter({memberBudget:{ready:true,canRequestCode:async email=>email==='invited@example.test'},
  emailAuth:{ready:true,requestCode:async()=>{calls++;}}}));
  const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
  const base='http://127.0.0.1:'+server.address().port;
@@ -52,4 +52,22 @@ test('private pilot mail prefilter does not leak roster membership or spend mail
   }
   assert.equal(calls,1);
  }finally{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
+});
+
+test('an unavailable asynchronous paid-membership lookup never falls through to sending a code', async () => {
+  let sends = 0;
+  const app = express(); app.use(express.json());
+  app.use('/chat', createChatRouter({ memberBudget: { ready: true, canRequestCode: async () => {
+    throw Error('private-membership-database-error');
+  } }, emailAuth: { ready: true, requestCode: async () => { sends++; } } }));
+  const server = app.listen(0, '127.0.0.1');
+  await new Promise(resolve => server.once('listening', resolve));
+  const base = 'http://127.0.0.1:' + server.address().port;
+  try {
+    const result = await fetch(base + '/chat/auth/request-code', { method: 'POST',
+      headers: { Origin: base, 'Content-Type': 'application/json' }, body: JSON.stringify({ email: 'member@example.test' }) });
+    assert.equal(result.status, 503);
+    assert.deepEqual(await result.json(), { error: 'email_auth_unavailable' });
+    assert.equal(sends, 0);
+  } finally { server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); }
 });
