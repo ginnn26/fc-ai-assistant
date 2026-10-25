@@ -9,7 +9,7 @@ try{
  for(const image of parsed.querySelectorAll('img[src]'))image.src=new URL(image.getAttribute('src').replace(/^\//,''),new URL('../',base)).href;
  // Keep the native account bridge on the FC origin; no second authentication.
  document.body.replaceChildren(...parsed.body.childNodes);document.body.dataset.storage='scorm';
- document.title='FC · 每日身心指南（账户内测）';
+ document.title='FC · 每日身心指南 · Daily wellbeing guide';
  const css=document.createElement('link');css.rel='stylesheet';css.href=new URL('daily.css',base).href;document.head.append(css);
  await import(new URL('daily.mjs',base).href);
 }catch(error){
