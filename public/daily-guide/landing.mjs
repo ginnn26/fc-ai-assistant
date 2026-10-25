@@ -8,7 +8,8 @@ function apply(root){
  root.lang=language==='en'?'en':'zh-Hans';
  for(const e of root.querySelectorAll('[data-fc-zh],[data-fc-en]'))e.hidden=language==='en'?e.hasAttribute('data-fc-zh'):e.hasAttribute('data-fc-en');
  for(const e of root.querySelectorAll('[data-fc-language-toggle]')){
-  e.textContent=language==='en'?'中文':'English';
+  const label=language==='en'?'中文':'English';
+  if(e.textContent!==label)e.textContent=label;
   e.setAttribute('aria-label',language==='en'?'切换到中文':'Switch to English');
  }
  // Preserve LearnWorlds' own enrollment action; only change its visible free CTA.
