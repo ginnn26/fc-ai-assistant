@@ -1,6 +1,7 @@
+const crypto = require('node:crypto');
 const { createMemberMonthlyBudget } = require('./member-monthly-budget');
 
-function createSupabaseChatStore({ url, publicKey, serverKey, fetcher = fetch } = {}) {
+function createSupabaseChatStore({ url, publicKey, serverKey, eligibleEmailHashes = null, fetcher = fetch } = {}) {
   let origin;
   try {
     const parsed = new URL(url);
@@ -9,6 +10,7 @@ function createSupabaseChatStore({ url, publicKey, serverKey, fetcher = fetch } 
     origin = parsed.origin;
   } catch { return { ready: false }; }
   if (!publicKey || !serverKey) return { ready: false };
+  const eligible = eligibleEmailHashes === null ? null : new Set(eligibleEmailHashes);
   const request = async (path, headers, body) => {
     const response = await fetcher(origin + path, {
       method: body ? 'POST' : 'GET', redirect: 'error',
@@ -28,6 +30,11 @@ function createSupabaseChatStore({ url, publicKey, serverKey, fetcher = fetch } 
       const user = await response.json();
       if (typeof user.id !== 'string' || !/^[a-f0-9-]{36}$/i.test(user.id) ||
           !user.email_confirmed_at || user.is_anonymous === true) return null;
+      if (eligible) {
+        const email = typeof user.email === 'string' ? user.email.trim().toLowerCase() : '';
+        const hash = crypto.createHash('sha256').update(email).digest('hex');
+        if (!email || !eligible.has(hash)) throw Error('member_not_eligible');
+      }
       return { subject: user.id };
     },
     store: {
@@ -53,10 +60,18 @@ function createSupabaseChatStore({ url, publicKey, serverKey, fetcher = fetch } 
 
 function createConfiguredMemberBudget(env = process.env) {
   if (env.FC_CARE_CHAT_ENABLED !== 'true') return createMemberMonthlyBudget();
+  // Email ownership is not FC membership. Keep the pilot closed unless a
+  // trusted operator has explicitly configured the invited account roster.
+  const hashes = String(env.FC_CARE_CHAT_PILOT_EMAIL_HASHES || '').split(',').map(v => v.trim());
+  if (!hashes.length || hashes.length > 1000 || hashes.some(v => !/^[a-f0-9]{64}$/.test(v))) return createMemberMonthlyBudget();
   const connection = createSupabaseChatStore({ url: env.FC_SUPABASE_URL,
-    publicKey: env.FC_SUPABASE_PUBLISHABLE_KEY, serverKey: env.FC_SUPABASE_SERVER_KEY });
+    publicKey: env.FC_SUPABASE_PUBLISHABLE_KEY, serverKey: env.FC_SUPABASE_SERVER_KEY, eligibleEmailHashes: hashes });
   if (!connection.ready) return createMemberMonthlyBudget();
-  return createMemberMonthlyBudget({ verifyMember: connection.verifyMember,
+  const budget = createMemberMonthlyBudget({ verifyMember: connection.verifyMember,
     store: connection.store, hashSecret: env.FC_CARE_CHAT_MEMBER_HASH_SECRET });
+  const invited = new Set(hashes);
+  return { ...budget, canRequestCode(email) {
+    return invited.has(crypto.createHash('sha256').update(email.trim().toLowerCase()).digest('hex'));
+  } };
 }
 module.exports = { createSupabaseChatStore, createConfiguredMemberBudget };

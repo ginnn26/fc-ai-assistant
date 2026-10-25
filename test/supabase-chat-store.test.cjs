@@ -58,3 +58,20 @@ test('reserve uses backend-only RPC and does not retry after an uncertain databa
   await assert.rejects(connection.store.reserve({ member: 'a'.repeat(64), month: '2026-10', amountSen: 5, limitSen: 500, requestId: 'test' }));
   assert.equal(calls, 1);
 });
+
+test('production pilot stays closed without an explicit server roster, regardless of valid Supabase keys',()=>{
+ const env={FC_CARE_CHAT_ENABLED:'true',FC_SUPABASE_URL:config.url,FC_SUPABASE_PUBLISHABLE_KEY:config.publicKey,
+ FC_SUPABASE_SERVER_KEY:config.serverKey,FC_CARE_CHAT_MEMBER_HASH_SECRET:'x'.repeat(32)};
+ assert.equal(createConfiguredMemberBudget(env).ready,false);
+ assert.equal(createConfiguredMemberBudget({...env,FC_CARE_CHAT_PILOT_EMAIL_HASHES:'not-a-hash'}).ready,false);
+ assert.equal(createConfiguredMemberBudget({...env,FC_CARE_CHAT_PILOT_EMAIL_HASHES:'a'.repeat(64)}).ready,true);
+});
+
+test('confirmed mailbox ownership cannot impersonate an invited FC account through client claims',async()=>{
+ const crypto=require('node:crypto');const allowed=crypto.createHash('sha256').update('invited@example.test').digest('hex');
+ let email='other@example.test';
+ const connection=createSupabaseChatStore({...config,eligibleEmailHashes:[allowed],fetcher:async()=>Response.json({id:'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',email,email_confirmed_at:'2026-10-26'})});
+ await assert.rejects(connection.verifyMember({headers:{authorization:token},body:{email:'invited@example.test',eligible:true}}),/member_not_eligible/);
+ email=' Invited@EXAMPLE.test ';
+ assert.deepEqual(await connection.verifyMember({headers:{authorization:token}}),{subject:'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'});
+});

@@ -2,6 +2,22 @@
 
 ## Current status — 26 October 2026
 
+Pilot eligibility follow-up: Supabase mailbox confirmation is NOT LearnWorlds
+membership. createConfiguredMemberBudget now stays unready without an explicit
+backend FC_CARE_CHAT_PILOT_EMAIL_HASHES roster. Auth's verified canonical email
+is SHA256-matched against that roster; browser email/member/eligible flags cannot
+grant access. Uninvited accounts fail before a reservation/model call; the UI
+explains access is not enabled without a repeated-login loop. Code requests for
+uninvited emails receive the same public acknowledgement without sending mail,
+avoiding roster disclosure or consuming mail quota. The invite roster is ONLY a
+private pilot safeguard, not automated paid/trial membership or renewal validation.
+Public release still requires a trusted FC eligibility source. Asked owner whether
+monthly included chat is for valid paid members only or also free trials; answer
+pending. No real customer roster exported/imported or Render settings changed.
+Prepared integrations/care-chat/render-config.example.json with all flags off
+and blank secrets, not real credentials. Current application remains undeployed.
+
+
 Second real evaluation COMPLETED after owner personally re-entered the same
 dedicated key:10complete replies/10usage records,5per model. Includes short
 listen-only/one-step/sleep cases and seven-turn Chinese/English conversations.

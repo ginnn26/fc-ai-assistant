@@ -49,7 +49,7 @@
     $('refresh-allowance').disabled = busy || checkingAllowance || voiceActive;
     $('refresh-allowance').textContent = checkingAllowance ? t('正在查看…', 'Checking…') : t('刷新次数', 'Refresh allowance');
     $('allowance-status').textContent = allowanceError
-      ? t('暂时未能查到剩余次数，请点「刷新次数」。查询不会扣次数。', 'We could not check your remaining sends. Select “Refresh allowance”. Checking uses no sends.')
+      ? errorCode === 'member_not_eligible' ? t(...errors.member_not_eligible) : t('暂时未能查到剩余次数，请点「刷新次数」。查询不会扣次数。', 'We could not check your remaining sends. Select “Refresh allowance”. Checking uses no sends.')
       : checkingAllowance ? t('正在查看你的剩余次数，不会扣次数。', 'Checking your remaining sends. This uses no sends.')
       : allowance && supportsStatus ? t(`本月免费剩余 ${allowance.includedTextAttempts} 次 · 已购买剩余 ${allowance.purchasedTextAttempts} 次。`, voiceEnabled
         ? `${allowance.includedTextAttempts} included units left · ${allowance.purchasedTextAttempts} purchased units left.`
@@ -73,6 +73,7 @@
     }));
   }
   const errors = {
+    member_not_eligible: ['这个账户暂未开通暖心聊聊内测，不必重复登录。请联系 FC 确认使用资格。', 'Care Chat pilot access is not enabled for this account. You do not need to sign in again. Contact FC to check access.'],
     member_login_required: ['请先用你的 FC 邮箱完成验证。', 'Please verify the email you use for FC first.'],
     auth_temporarily_unavailable: ['登录连接暂时不稳定，你输入的文字仍保留。请稍后再试。', 'The sign-in connection is temporarily unavailable. Your draft is still here. Please try later.'],
     monthly_allowance_reached: ['本月聊天额度已用完，下个月会重新开放。音疗与每日打卡仍可照常使用。', 'Your monthly chat allowance has been used. It resets next month. Listening and daily check-ins remain available.'],
@@ -97,10 +98,12 @@
       if (!response.ok) throw Error(data.error);
       const value = data.allowance;
       if (!validAllowance(value)) throw Error('member_budget_unavailable');
+      if (errorCode === 'member_not_eligible') errorCode = '';
       allowance = value; exhausted = value.remainingTextAttempts === 0; allowanceReady = true;
     } catch (error) {
       if (allowanceController !== request) return;
       allowanceError = true; allowanceReady = false;
+      if (error.message === 'member_not_eligible') errorCode = error.message;
       if (error.message === 'member_login_required') window.FCCareAuth.requireSignIn();
     } finally {
       clearTimeout(timer);

@@ -273,3 +273,10 @@ test('a low balance shows a bilingual gentle warning without charging or requiri
   assert.match(f.element('allowance-tip').textContent,/3 sends remain/);
   assert.equal(f.paths.includes('/chat/conversation'),false);
 });
+
+test('an ineligible verified email gets clear bilingual feedback without a sign-in loop or a paid call',async()=>{
+ const f=await statusFixture(()=>Response.json({error:'member_not_eligible'},{status:403}));
+ assert.equal(f.element('send').disabled,true);assert.match(f.element('allowance-status').textContent,/不必重复登录/);
+ assert.equal(f.paths.includes('/chat/conversation'),false);
+ f.element('language').onclick();assert.match(f.element('allowance-status').textContent,/do not need to sign in again/);
+});

@@ -264,3 +264,19 @@ test('large model context drops complete oldest pairs but earlier urgent signs s
   let calls=0;const answer=await answerConversation(prepared,{ask:async()=>{calls++;return 'Should not run';}});
   assert.equal(answer.status,'safety');assert.equal(calls,0);
 });
+
+test('ineligible accounts never invoke a reservation or AI even with a valid signed-in identity',async()=>{
+ let reserves=0,calls=0;
+ const budget=createMemberMonthlyBudget({hashSecret:'x'.repeat(32),verifyMember:async()=>{throw Error('member_not_eligible');},
+ store:{durable:true,reserve:async()=>{reserves++;},status:async()=>{throw Error('must not read');}}});
+ const app=express();app.use(express.json());app.use('/chat',createChatRouter({memberBudget:budget,converse:async()=>{calls++;}}));
+ const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
+ const base='http://127.0.0.1:'+server.address().port;
+ try{
+  for(const path of ['/chat/allowance','/chat/conversation']){
+   const response=await fetch(base+path,{method:'POST',headers:{Origin:base,'Content-Type':'application/json'},body:JSON.stringify({consent:true,turns:[{role:'user',content:'Hello'}]})});
+   assert.equal(response.status,403);assert.deepEqual(await response.json(),{error:'member_not_eligible'});
+  }
+  assert.equal(reserves,0);assert.equal(calls,0);
+ }finally{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
+});

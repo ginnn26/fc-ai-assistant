@@ -95,9 +95,9 @@ function createChatRouter({
   async function reserveAllowance(req, res, voice = false) {
     try { return await (voice ? memberBudget.reserveVoice(req) : memberBudget.reserveText(req)); }
     catch (error) {
-      const known = ['member_budget_not_ready', 'member_login_required', 'monthly_allowance_reached'];
+      const known = ['member_budget_not_ready', 'member_login_required', 'member_not_eligible', 'monthly_allowance_reached'];
       const code = known.includes(error.message) ? error.message : 'member_budget_unavailable';
-      res.status(code === 'member_login_required' ? 401 : code === 'monthly_allowance_reached' ? 429 : 503).json({ error: code });
+      res.status(code === 'member_login_required' ? 401 : code === 'member_not_eligible' ? 403 : code === 'monthly_allowance_reached' ? 429 : 503).json({ error: code });
       return null;
     }
   }
@@ -115,8 +115,8 @@ function createChatRouter({
       return res.status(503).json({ error: 'member_budget_not_ready' });
     try { res.json({ allowance: await memberBudget.status(req) }); }
     catch (error) {
-      const code = error.message === 'member_login_required' ? 'member_login_required' : 'member_budget_unavailable';
-      res.status(code === 'member_login_required' ? 401 : 503).json({ error: code });
+      const code = ['member_login_required','member_not_eligible'].includes(error.message) ? error.message : 'member_budget_unavailable';
+      res.status(code === 'member_login_required' ? 401 : code === 'member_not_eligible' ? 403 : 503).json({ error: code });
     }
   }));
   const authAction = action => withSlot(async (req, res) => {
@@ -145,6 +145,10 @@ function createChatRouter({
           res.set('Retry-After', String(attempt.retryAfter));
           return res.status(429).json({ error: 'auth_please_wait' });
         }
+        // Do not disclose whether a mailbox is in the private pilot roster.
+        // Ineligible requests get the same public acknowledgement but no mail.
+        if (typeof memberBudget.canRequestCode === 'function' && !memberBudget.canRequestCode(email))
+          return res.json({ sent: true });
         await emailAuth.requestCode(email.trim());
         return res.json({ sent: true });
       }

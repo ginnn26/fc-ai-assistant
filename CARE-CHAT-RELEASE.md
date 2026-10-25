@@ -62,7 +62,13 @@ the RM7 Care Chat ceiling also caps the existing recommendation assistant.
    This is not exact token counting or a billing guarantee. Confirm final-cap
    completion/truncation behavior and actual cost before enabling. The two live
    comparison runs used the previous600token cap. Internal RM7 stays private.
-6. Configure backend-only Supabase access and a stable member HMAC secret through
+6. Resolve eligibility separately from mailbox ownership. An explicit backend
+   FC_CARE_CHAT_PILOT_EMAIL_HASHES roster is now required for private testing;
+   without it the configured budget remains unready. Never use a browser email
+   or a public signup as proof of FC membership. Formal paid/trial eligibility
+   and expiration/renewal updates require a trusted FC data source, not this
+   manual pilot roster. The owner's paid-vs-trial inclusion decision is pending.
+   Configure backend-only Supabase access and a stable member HMAC secret through
    approved secret settings. Never put the server key/HMAC secret in public JS,
    browser storage, a commit or screenshots. Rotating that HMAC secret changes
    ledger identities; plan a migration rather than silently resetting allowances.

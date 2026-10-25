@@ -38,3 +38,18 @@ test('direct and parallel code requests cannot bypass cooldown after a provider 
     time += 60000; assert.equal((await post('person@example.test')).status,503); assert.equal(calls,3);
   } finally { server.closeAllConnections(); await new Promise(resolve=>server.close(resolve)); }
 });
+
+test('private pilot mail prefilter does not leak roster membership or spend mail calls on arbitrary addresses',async()=>{
+ let calls=0;const app=express();app.use(express.json());
+ app.use('/chat',createChatRouter({memberBudget:{ready:true,canRequestCode:email=>email==='invited@example.test'},
+ emailAuth:{ready:true,requestCode:async()=>{calls++;}}}));
+ const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
+ const base='http://127.0.0.1:'+server.address().port;
+ try{
+  for(const email of ['other@example.test','invited@example.test']){
+   const response=await fetch(base+'/chat/auth/request-code',{method:'POST',headers:{Origin:base,'Content-Type':'application/json'},body:JSON.stringify({email})});
+   assert.equal(response.status,200);assert.deepEqual(await response.json(),{sent:true});
+  }
+  assert.equal(calls,1);
+ }finally{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
+});
