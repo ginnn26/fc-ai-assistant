@@ -141,7 +141,7 @@ async function chatFixture(response, voiceInput = false) {
 }
 
 test('the last send opens optional-pack details; clearing chat cannot reset a depleted allowance', async () => {
-  const f = await chatFixture(() => Response.json({ reply: 'Fixture reply', allowance: { remainingTextAttempts: 0 } }));
+  const f = await chatFixture(() => Response.json({ reply: 'Fixture reply', allowance: { remainingTextAttempts: 0, includedTextAttempts: 0, purchasedTextAttempts: 0 } }));
   assert.match(f.element('allowance').textContent, /每月免费 100 次/);
   assert.doesNotMatch(f.element('allowance').textContent, /RM5|本钱|成本/);
   await f.element('chat-form').onsubmit(submit);
@@ -236,4 +236,29 @@ test('a voice transcript becomes an editable draft without automatically sending
   f.window.dispatchEvent({ type: 'fc-care-voice-transcript', detail: 'A fictional editable transcript' });
   assert.equal(f.element('message').value, 'A fictional editable transcript');
   assert.equal(f.calls(), 0);
+});
+
+test('malformed successful chat responses preserve the draft and never display a fabricated reply or balance', async () => {
+  const valid = {remainingTextAttempts:4,includedTextAttempts:4,purchasedTextAttempts:0};
+  for (const payload of [
+    {reply:'',allowance:valid}, {reply:{text:'bad'},allowance:valid},
+    {reply:'x'.repeat(1201),allowance:valid}, {reply:'Fixture',allowance:{remainingTextAttempts:4}},
+    {reply:'Fixture',allowance:{...valid,includedTextAttempts:5}},
+    {reply:'Fixture',allowance:{...valid,remainingTextAttempts:-1}},
+  ]) {
+    const f = await chatFixture(() => Response.json(payload));
+    await f.element('chat-form').onsubmit(submit);
+    assert.equal(f.calls(),1); assert.equal(f.element('message').value,'A fictional day');
+    assert.equal(f.element('messages').children.length,0);
+    assert.match(f.element('error').textContent,/可能会使用一次额度/);
+  }
+});
+
+test('a valid reply is rendered as text even when it contains HTML-like characters', async () => {
+  const reply = '<img src=x onerror=alert(1)> & a calm day';
+  const f = await chatFixture(() => Response.json({reply,allowance:{remainingTextAttempts:4,includedTextAttempts:4,purchasedTextAttempts:0}}));
+  await f.element('chat-form').onsubmit(submit);
+  assert.equal(f.element('messages').children[1].textContent,reply);
+  assert.equal(f.element('message').value,'');
+  assert.equal(f.calls(),1);
 });

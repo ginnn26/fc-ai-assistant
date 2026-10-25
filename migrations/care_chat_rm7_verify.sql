@@ -19,6 +19,16 @@ begin
      has_function_privilege('authenticated','public.fc_credit_chat(text,text,text,integer)','EXECUTE') then
     raise exception 'public_access_not_blocked';
   end if;
+  if exists(select 1 from care_private.monthly_usage where member in (repeat('c',64),repeat('d',64))) or
+     exists(select 1 from care_private.wallets where member in (repeat('c',64),repeat('d',64))) then
+    raise exception 'verification_fixture_collision';
+  end if;
+  insert into care_private.monthly_usage(member,month,used_sen) values(repeat('c',64),mon,500);
+  insert into care_private.wallets(member,balance_sen) values(repeat('c',64),50);
+  result := public.fc_reserve_chat(repeat('c',64),mon,5,700,gen_random_uuid());
+  if (result->>'usedSen')::integer <> 505 or (result->>'paidRemainingSen')::integer <> 50 then
+    raise exception 'existing_usage_or_paid_balance_changed';
+  end if;
   for n in 1..140 loop
     result := public.fc_reserve_chat(m,mon,5,700,gen_random_uuid());
     if result->>'accepted' <> 'true' or (result->>'usedSen')::integer <> n*5 then
@@ -28,7 +38,7 @@ begin
   result := public.fc_reserve_chat(m,mon,5,700,gen_random_uuid());
   if result->>'accepted' <> 'false' then raise exception 'monthly_cap_failed'; end if;
   insert into care_private.orders(id,member,merchant_id,product_id,price_sen,currency)
-    values('synthetic-ledger-verification',m,'synthetic-merchant','fc-care-chat-extra-v1',1000,'MYR');
+    values('synthetic-ledger-verification',m,'synthetic-merchant','fc-care-chat-extra-v1',1500,'MYR');
   for n in 1..12 loop
     result := public.fc_credit_chat(repeat('e',64),'synthetic-ledger-verification',m,500);
   end loop;

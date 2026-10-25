@@ -5,6 +5,11 @@
   let ready = false, busy = false, turns = [], allowance = null, includedSends = null, exhausted = false, errorCode = '', controller;
   let supportsStatus = false, allowanceReady = false, checkingAllowance = false, allowanceError = false, allowanceController;
   let voiceEnabled = false;
+  function validAllowance(value) {
+    return value && [value.remainingTextAttempts, value.includedTextAttempts, value.purchasedTextAttempts]
+      .every(n => Number.isSafeInteger(n) && n >= 0) &&
+      value.remainingTextAttempts === value.includedTextAttempts + value.purchasedTextAttempts;
+  }
   const t = (zh, en) => lang === 'zh' ? zh : en;
   function paint() {
     window.FCCareAuth.language(lang);
@@ -88,10 +93,7 @@
       if (allowanceController !== request) return;
       if (!response.ok) throw Error(data.error);
       const value = data.allowance;
-      if (!value || ![value.remainingTextAttempts, value.includedTextAttempts, value.purchasedTextAttempts]
-        .every(n => Number.isSafeInteger(n) && n >= 0) ||
-        value.remainingTextAttempts !== value.includedTextAttempts + value.purchasedTextAttempts)
-        throw Error('member_budget_unavailable');
+      if (!validAllowance(value)) throw Error('member_budget_unavailable');
       allowance = value; exhausted = value.remainingTextAttempts === 0; allowanceReady = true;
     } catch (error) {
       if (allowanceController !== request) return;
@@ -139,6 +141,8 @@
       const data = await response.json();
       if (!response.ok) throw Error(data.error);
       if (controller !== request) return;
+      if (typeof data.reply !== 'string' || !data.reply.trim() || data.reply.length > 1200 || !validAllowance(data.allowance))
+        throw Error('invalid_chat_response');
       turns = [...turns, { role: 'user', content }, { role: 'assistant', content: data.reply }].slice(-40);
       allowance = data.allowance; exhausted = allowance?.remainingTextAttempts === 0;
       showTurns(); $('message').value = '';
@@ -157,7 +161,8 @@
   window.addEventListener('fc-care-voice-state', paint);
   window.addEventListener('fc-care-voice-refresh', loadAllowance);
   window.addEventListener('fc-care-voice-allowance', event => {
-    allowance = event.detail; exhausted = allowance?.remainingTextAttempts === 0; paint();
+    if (!validAllowance(event.detail)) { allowanceReady = false; allowanceError = true; paint(); return; }
+    allowance = event.detail; exhausted = allowance.remainingTextAttempts === 0; paint();
   });
   window.addEventListener('fc-care-voice-transcript', event => {
     $('message').value = event.detail; errorCode = ''; paint(); $('message').focus();

@@ -2,6 +2,27 @@
 
 ## Current status — 26 October 2026
 
+Latest actual DB progress: applied both20261026_care_chat_rm7_ceiling.sql and
+20261026_care_chat_pack_rm15.sql to Supabase projecthgbwelnvtfrcditofswf using
+the authenticated SQL Editor. UI confirmed Success. No rows returned. Ran the
+updatedcare_chat_rm7_verify.sql with fictional fixtures and transaction rollback;
+actual resultPASS covers permissions, RM7 cap, retained500sen prior usage plus
+separate purchased balance, RM15 order acceptance, duplicate payment/request
+protection and account isolation. No customer rows were inspected, no payment was
+collected and no test balances were retained. This is serial DB verification,
+not real concurrent HTTP/webhook or Auth integration. Screenshot:
+care-chat-rm7-rm15-db-pass.png in the local output directory. The two migrations
+are NOW APPLIED; earlier prepared/not-applied statements below are historical.
+Render/app deployment is unchanged and new chat remains unavailable to customers.
+
+Browser response follow-up: a200 response must contain a non-empty bounded text
+reply and consistent nonnegative allowance counters before the draft is cleared
+or any reply/balance displayed. Invalid responses keep the draft and never
+automatically retry a potentially paid operation. Voice allowance updates are
+validated too. Literal HTML-like reply text remains textContent, never HTML.
+18/18 affected browser checks pass, including malformed-success cases.
+
+
 Email retry follow-up: backend now independently enforces a60-second resend
 cooldown per normalized email before invoking the mail provider, including failed
 or ambiguous attempts. Case changes, refreshes and simultaneous direct requests
