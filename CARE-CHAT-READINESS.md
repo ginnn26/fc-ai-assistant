@@ -2,6 +2,16 @@
 
 ## Current status — 26 October 2026
 
+School-owner dashboard access restored after owner signed in. Read-only checks
+confirmed Pro Trainer, direct Webhooks upgrade gate, and an accessible Zapier
+settings page whose workflow pane requires Zapier login. No integration granted,
+no credentials copied and no plan changed. Private library enrollment on the
+authorized test account coexists with no recurring plan; enrollment alone is
+not paid coverage. The per-enrollment expiration dialog was inspected and
+canceled unchanged; its new-setting chooser is not proof of a current expiry.
+Awaiting owner clarification on staff's manual membership-expiry recordkeeping.
+See the additional actual-school findings in integrations/care-chat/PAID-MEMBERSHIP.md.
+
 Paid-access backend prepared locally: explicit `FC_CARE_CHAT_ACCESS_MODE=paid`
 checks a service-only membership RPC after each canonical Auth identity lookup.
 The mail prefilter now awaits eligibility too; a false result sends no mail,

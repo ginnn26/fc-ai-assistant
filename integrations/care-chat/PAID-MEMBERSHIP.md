@@ -51,6 +51,29 @@ event fields and authentic backend delivery. Do not create a Zapier account,
 accept terms, grant permissions or subscribe without the relevant owner step.
 No Zapier connection has been made.
 
+Actual school-admin UI inspected26October2026 after the owner signed in:
+
+- Organization Schools page confirms Pro Trainer.
+- Settings > Developers > Webhooks displays a higher-plan/Upgrade notice.
+  No toggle, signature or connection was changed or copied.
+- Settings > Integrations > Zapier opens without an upgrade gate, but its
+  workflow pane asks for Zapier sign-up/login. This is not evidence of an
+  existing connection or permission grant. No Zapier login was initiated.
+- The owner's authorized test account has a private-library enrollment and
+  no recurring plan. This is not proof of paid coverage. No account details,
+  permissions, dates, payments or tags were modified.
+- Users > All users > user > Products > row three-dot menu > Edit exp. and
+  due date is available. The dialog offers new expiration/due-date settings;
+  it did not show an authoritative current paid-through date. It was canceled
+  without selecting or applying a value. Due dates must never be treated as
+  membership expiration. Asked owner how staff currently record manual expiry.
+
+Zapier pricing checked at https://zapier.com/pricing : Free advertises100tasks
+per month and two-step Zaps. Professional advertises Webhooks and multistep
+Zaps. Do not assume the proposed workflow is free or fits the free quota;
+actual event volume, fields, destination and plan must be validated first.
+No subscription or charge was created.
+
 Read-only actual FC annual payment page inspection on26October2026 found
 Payex online-banking/e-wallet and a separate card checkout, with staff payment
 confirmation instructions. A payment-provider-only approach must cover both
