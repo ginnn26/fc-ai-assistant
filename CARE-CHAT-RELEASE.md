@@ -63,11 +63,11 @@ the RM7 Care Chat ceiling also caps the existing recommendation assistant.
    approved secret settings. Never put the server key/HMAC secret in public JS,
    browser storage, a commit or screenshots. Rotating that HMAC secret changes
    ledger identities; plan a migration rather than silently resetting allowances.
-7. Confirm the two initial migrations and the new RM7 ceiling migration are applied.
-   Only the two initial migrations were applied to the setup project; the RM7
-   migration is prepared locally and must be applied with this backend release;
-   apply them explicitly in any other environment. The actual DB verification
-   scripts use fictional data and rollback. Public clients must not execute RPCs.
+7. Confirm all four migrations are applied: initial ledger, allowance status,
+   RM7 ceiling and RM15 order price. All four are now applied to the setup project.
+   Apply explicitly in other environments. The updated RM7 verification script
+   passed against the actual database using fictional fixtures and rollback.
+   Public clients must not execute the privileged RPCs.
 8. Complete real two-account and cross-device checks: usage/account isolation,
    purchased-vs-included balance, month reset, logout in remembered tabs, expired
    refresh, temporary outages, and ambiguous AI failures. Checking a balance must

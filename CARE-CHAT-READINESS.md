@@ -21,6 +21,7 @@ or any reply/balance displayed. Invalid responses keep the draft and never
 automatically retry a potentially paid operation. Voice allowance updates are
 validated too. Literal HTML-like reply text remains textContent, never HTML.
 18/18 affected browser checks pass, including malformed-success cases.
+Full local regression suite:145/145 passed after these changes.
 
 
 Email retry follow-up: backend now independently enforces a60-second resend
