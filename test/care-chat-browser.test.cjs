@@ -110,6 +110,10 @@ test('sending a code prevents parallel requests and immediate resends without st
   await f.element('send-code').onclick(); assert.equal(calls, 1);
   finish(Response.json({ sent: true })); await sending;
   assert.equal(f.element('send-code').disabled, true);
+  assert.match(f.element('login-status').textContent, /有效付费会员/);
+  f.window.FCCareAuth.language('en');
+  assert.match(f.element('login-status').textContent, /active paid members/);
+  assert.match(f.element('login-copy').textContent, /do not need a new email account/);
   await f.element('send-code').onclick(); assert.equal(calls, 1);
   assert.equal(f.saved.size, 0);
 });
@@ -121,9 +125,31 @@ test('invalid-code feedback differs from service failure and tokens need explici
   f.window.FCCareAuth.configure({ emailLogin: true });
   await f.element('login-form').onsubmit(submit);
   assert.match(f.element('login-status').textContent, /过期/);
+  f.window.FCCareAuth.language('en');
+  assert.match(f.element('login-status').textContent, /incorrect or has expired/);
   ok = true; await f.element('login-form').onsubmit(submit);
   assert.equal(f.window.FCCareAuth.signedIn(), true);
+  assert.equal(f.element('login-status').textContent, '');
   assert.equal(f.saved.size, 0);
+});
+
+test('mail-service failure remains translatable and sign-out clears the previous status', async () => {
+  let calls = 0;
+  const f = browserFixture('care-chat-login.js', async () => {
+    calls++;
+    return Response.json({ error: 'email_auth_unavailable' }, { status: 503 });
+  });
+  f.window.FCCareAuth.configure({ emailLogin: true });
+  f.element('login-email').value = 'fixture@example.test';
+  await f.element('send-code').onclick();
+  assert.match(f.element('login-status').textContent, /暂时无法发送/);
+  f.window.FCCareAuth.language('en');
+  assert.match(f.element('login-status').textContent, /Unable to send right now/);
+  f.window.FCCareAuth.language('zh');
+  assert.match(f.element('login-status').textContent, /暂时无法发送/);
+  f.window.FCCareAuth.requireSignIn();
+  assert.equal(f.element('login-status').textContent, '');
+  assert.equal(calls, 1);
 });
 
 async function chatFixture(response, voiceInput = false) {

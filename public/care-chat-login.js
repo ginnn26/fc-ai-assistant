@@ -2,7 +2,7 @@
   'use strict';
   const key = 'fc-care-chat-session-v1';
   let session = null, remember = false, enabled = false, language = 'zh', epoch = 0, authBusy = false, resendAt = 0;
-  let refreshInFlight = null;
+  let refreshInFlight = null, status = '';
   const $ = id => document.getElementById(id);
   const t = (zh, en) => language === 'zh' ? zh : en;
   try { session = JSON.parse(localStorage.getItem(key) || 'null'); remember = !!session; } catch {}
@@ -17,7 +17,7 @@
     session = null;
     remember = false;
     $('login-email').value = ''; $('login-code').value = '';
-    $('remember-login').checked = false; $('login-status').textContent = '';
+    $('remember-login').checked = false; status = '';
     try { localStorage.removeItem(key); } catch {}
     window.dispatchEvent(new Event('fc-care-auth-changed'));
     paint();
@@ -63,8 +63,8 @@
   function paint() {
     $('login-panel').hidden = !enabled || !!session;
     $('sign-out').hidden = !session || !enabled;
-    $('login-title').textContent = t('先确认是你，再开始聊聊。', 'A quick sign-in, then a little space to talk.');
-    $('login-copy').textContent = t('使用你在 FC 的同一个邮箱收验证码。无需另设密码。邮箱验证由 Supabase 处理，用来保存你的个人额度。', 'Use the same email as FC to receive a code. No extra password. Supabase processes verification so your allowance follows your account.');
+    $('login-title').textContent = t('确认邮箱，开始聊聊。', 'A little space starts here.');
+    $('login-copy').textContent = t('使用你在 FC 的同一个邮箱收验证码，不用申请新邮箱，也不用另设密码。验证后会核对你的使用资格。', 'Use the same email you already use for FC. You do not need a new email account or another password. We will check your access after verification.');
     $('email-label').textContent = t('你的 FC 邮箱', 'Your FC email');
     $('code-label').textContent = t('邮箱验证码', 'Email code');
     $('send-code').textContent = t('发送验证码', 'Send code');
@@ -77,6 +77,14 @@
     $('verify-code').disabled = !enabled || authBusy;
     $('login-email').disabled = authBusy;
     $('login-code').disabled = authBusy;
+    $('login-status').textContent = status === 'code_requested'
+      ? t('请确认使用 FC 的同一个邮箱，并查看验证码邮件或垃圾邮件。每月附送额度仅限有效付费会员；一直没收到时，请联系 FC 核对，不必连续重发。', 'Check that you used your FC email, then check your inbox and spam. Monthly included allowance is for active paid members. If no code arrives, contact FC to check access rather than repeatedly resending.')
+      : status === 'send_failed'
+        ? t('暂时无法发送。请稍后再试，不必连续点击重发。', 'Unable to send right now. Please try later rather than repeatedly resending.')
+      : status === 'invalid_code'
+        ? t('验证码不正确或已过期。请使用最新邮件中的验证码。', 'That code is incorrect or has expired. Use the code from your latest email.')
+      : status === 'verify_failed'
+        ? t('暂时无法完成验证，请稍后再试。', 'Unable to complete verification right now. Please try later.') : '';
   }
   $('send-code').onclick = async () => {
     if (!enabled || authBusy || Date.now() < resendAt) return;
@@ -87,12 +95,12 @@
       await post('request-code', { email: $('login-email').value.trim() });
       if (before !== epoch) return;
       resendAt = Date.now() + 60000;
-      $('login-status').textContent = t('请查看邮箱里的验证码邮件；若没看到，也看看垃圾邮件。', 'Check your inbox for the code. Check spam too if needed.');
+      status = 'code_requested';
       $('login-code').focus();
     } catch (error) {
       if (before !== epoch) return;
       if (error.message === 'auth_please_wait' || error.message === 'please_wait') resendAt = Date.now() + 60000;
-      $('login-status').textContent = t('暂时无法发送。请稍后再试，不必连续点击重发。', 'Unable to send right now. Please try later rather than repeatedly resending.');
+      status = 'send_failed';
     } finally { authBusy = false; paint(); }
   };
   $('login-form').onsubmit = async event => {
@@ -104,12 +112,10 @@
       remember = $('remember-login').checked;
       const value = await post('verify-code', { email: $('login-email').value.trim(), code: $('login-code').value.trim() });
       if (before !== epoch) return;
-      persist(value); $('login-code').value = ''; $('login-status').textContent = '';
+      status = ''; persist(value); $('login-code').value = '';
     } catch (error) {
       if (before !== epoch) return;
-      $('login-status').textContent = error.message === 'invalid_or_expired_code'
-        ? t('验证码不正确或已过期。请使用最新邮件中的验证码。', 'That code is incorrect or has expired. Use the code from your latest email.')
-        : t('暂时无法完成验证，请稍后再试。', 'Unable to complete verification right now. Please try later.');
+      status = error.message === 'invalid_or_expired_code' ? 'invalid_code' : 'verify_failed';
     } finally { authBusy = false; paint(); }
   };
   $('sign-out').onclick = () => {

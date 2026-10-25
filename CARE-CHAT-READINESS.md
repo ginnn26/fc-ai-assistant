@@ -2,6 +2,23 @@
 
 ## Current status — 26 October 2026
 
+Independent overnight follow-up completed locally: login/request/verification
+status is now state-based and repaints on a language switch rather than keeping
+the previous language's message. Sign-out and successful verification clear the
+status. Login copy explicitly says the existing FC email is sufficient, with no
+new mailbox/password; the code-request acknowledgement does not falsely promise
+mail was sent to an ineligible address. Voice denial copy now matches paid access.
+Full169-test regression suite passed. Afterwards, shortened the mobile login
+heading to avoid an orphan character, enlarged login help/status to14px and
+checked the real browser UI at375px using an isolated local fake-mail preview.
+The21-test browser suite passed again after these final presentation edits.
+Screenshots in the private output folder: care-chat-mobile-login-zh-final.png,
+care-chat-mobile-login-en-final.png and care-chat-mobile-login-en-status.png.
+Preview used only a fictional address and mocked features/mail failure; no actual
+email, AI call, mic permission or account data was used. Preview tab closed and
+its loopback server stopped. No new service account, fee or deployment.
+This is not real SMTP, ASR, membership-sync or final-model-cap verification.
+
 LearnWorlds inquiry SENT after the owner explicitly approved the Gmail channel.
 Gmail showed "Message sent" and LearnWorlds returned an acknowledgement creating
 ticket395581: https://support.learnworlds.com/helpdesk/tickets/395581 . Subject:

@@ -32,7 +32,7 @@
     failed: ['未能取得文字，请稍后再试或打字。不会自动重试，已开始的识别可能使用一次额度。', 'We could not retrieve a transcript. Try later or type. We will not retry automatically; a conversion that began may use one allowance unit.'],
     invalid_voice_audio: ['这段录音格式无法读取，请重新录音。这次没有进行识别。', 'We could not read this recording format. Record again. No transcription was started.'],
     voice_duration_invalid: ['录音需在半秒至 60 秒之间，请重新录音。这次没有进行识别。', 'Record between half a second and 60 seconds. No transcription was started.'],
-    member_not_eligible: ['这个账户暂未开通暖心聊聊内测，请联系 FC 确认。', 'Care Chat pilot access is not enabled for this account. Contact FC to check access.'],
+    member_not_eligible: ['这个账户暂未获得暖心聊聊使用资格。每月附送额度仅限有效付费会员，请联系 FC 核对。', 'Care Chat access is not enabled for this account. Monthly included allowance is for active paid members only. Contact FC to check access.'],
     member_budget_unavailable: ['暂时无法确认额度，这次没有继续进行识别。请稍后再试。', 'We could not confirm your allowance, so transcription did not proceed. Please try later.'],
     voice_input_not_ready: ['录音转文字暂未开放，请先用打字聊天。', 'Voice conversion is not open yet. Please type for now.'],
   };
