@@ -262,3 +262,14 @@ test('a valid reply is rendered as text even when it contains HTML-like characte
   assert.equal(f.element('message').value,'');
   assert.equal(f.calls(),1);
 });
+
+test('a low balance shows a bilingual gentle warning without charging or requiring a pack', async () => {
+  const f=await statusFixture(()=>Response.json({allowance:{remainingTextAttempts:3,includedTextAttempts:3,purchasedTextAttempts:0}}));
+  assert.equal(f.element('allowance-tip').hidden,false);
+  assert.match(f.element('allowance-tip').textContent,/还可发送 3 次/);
+  assert.equal(f.element('extra-panel').hidden,true);
+  assert.equal(f.element('send').disabled,false);
+  f.element('language').onclick();
+  assert.match(f.element('allowance-tip').textContent,/3 sends remain/);
+  assert.equal(f.paths.includes('/chat/conversation'),false);
+});

@@ -2,6 +2,27 @@
 
 ## Current status — 26 October 2026
 
+Cost-evaluation follow-up: offline comparison now interleaves candidates, keeps
+partial results on budget exhaustion/provider errors, and never labels failed or
+incomplete responses as passing AI answers. It records validated usage and
+standard-price estimates separately from conservative reservations. Missing usage
+is unknown cost, not free; output reasoning is not counted twice and no cached
+input discount is assumed. The RM2/20-attempt test ceiling cannot be increased
+through test options. An observed reservation overrun stops further calls.
+Simulation is labelled simulated-provider-no-real-calls and cannot run with live.
+Official model rate pages checked26October; no final customer quota is inferred.
+A refreshed30-row no-spend plan was generated with0provider calls. Real provider
+quality/billing remain unverified; OPENAI_API_KEY is absent from this process.
+Owner said the existing OpenAI account is theirs but the key is not remembered.
+Opened the official API-key entry in browser tab114, currently at login, for the
+owner; no key created, read or entered. No old key revoked.
+
+Customer allowance wording now calls the monthly inclusion a gift of companionship
+and gives a gentle bilingual reminder at1–10remaining units without requiring a
+pack. With1unit, the voice panel explains that typing can still send while voice
+conversion+send needs2. No extra provider call or spending is triggered by a warning.
+
+
 Latest actual DB progress: applied both20261026_care_chat_rm7_ceiling.sql and
 20261026_care_chat_pack_rm15.sql to Supabase projecthgbwelnvtfrcditofswf using
 the authenticated SQL Editor. UI confirmed Success. No rows returned. Ran the

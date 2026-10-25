@@ -3,6 +3,7 @@
   const $ = id => document.getElementById(id);
   const AudioContextClass = window.AudioContext || window.webkitAudioContext;
   const supported = !!(navigator.mediaDevices?.getUserMedia && AudioContextClass && window.AudioWorkletNode);
+  let remainingUnits = null;
   let enabled = false, allowed = false, lang = 'zh', phase = 'idle', status = '', epoch = 0;
   let stream, context, node, source, timer, stopTimer, chunks = [], rate = 16000, clip, clipUrl, started = 0, request;
   const levels = Array(33).fill(0);
@@ -38,7 +39,9 @@
     $('voice-panel').hidden = !enabled;
     $('voice-wave').classList.toggle('is-recording', phase === 'recording');
     $('voice-title').textContent = t('不想打字？轻轻说一说。', 'Prefer to speak? Take your time.');
-    $('voice-hint').textContent = t('最多 60 秒 · 先转文字，再确认发送', 'Up to 60 seconds · Convert, review, then send');
+    $('voice-hint').textContent = remainingUnits === 1 && phase === 'idle'
+      ? t('还剩 1 次额度，可以直接打字发送。录音转文字再发送需要 2 次额度。', 'You have 1 unit left and can send a typed message. Converting and sending a voice note needs 2 units.')
+      : t('最多 60 秒 · 先转文字，再确认发送', 'Up to 60 seconds · Convert, review, then send');
     $('voice-cost').textContent = t('录音和回听不扣次数。按「转成文字」使用 1 次，确认发送再使用 1 次，与打字共用额度。', 'Recording and playback use no allowance. Conversion uses 1 unit; sending the reviewed text uses another. Both share your chat allowance.');
     $('record-voice-label').textContent = phase === 'recording' ? t('结束录音', 'Stop recording') : phase === 'starting' ? t('准备麦克风…', 'Preparing microphone…') : t('录音说一说', 'Record a voice note');
     $('record-voice').disabled = !supported || (phase !== 'recording' && (!allowed || phase !== 'idle'));
@@ -154,7 +157,7 @@
       if (before === epoch) { request = null; notify(); window.dispatchEvent(new Event('fc-care-voice-refresh')); }
     }
   };
-  window.FCCareVoice = { configure(value) { enabled = value.enabled; allowed = value.allowed; lang = value.language; paint(); },
+  window.FCCareVoice = { configure(value) { enabled = value.enabled; allowed = value.allowed; lang = value.language; remainingUnits = value.remainingUnits ?? null; paint(); },
     active: () => phase !== 'idle', reset };
   window.addEventListener('fc-care-auth-changed', reset);
   window.addEventListener('pagehide', reset);

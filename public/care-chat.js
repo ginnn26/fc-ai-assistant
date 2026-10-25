@@ -16,7 +16,7 @@
     document.documentElement.lang = lang === 'zh' ? 'zh-Hans' : 'en';
     document.title = $('title').textContent = t('FC 暖心聊聊', 'FC Care Chat');
     $('language').textContent = t('English', '中文');
-    $('intro').textContent = t('不用急着说清楚。从今天的感受开始，一起聊一聊。', 'There is no rush. Start with how today feels.');
+    $('intro').textContent = t('每月送你一点陪伴。不用急着说清楚，从今天的感受开始。', 'A little companionship, included each month. There is no rush. Start with how today feels.');
     $('message-label').textContent = t('今天的你，感觉怎么样？', 'How are you feeling today?');
     $('consent-copy').textContent = voiceEnabled
       ? t('我同意将本次聊天文字及选择转写的录音交由 OpenAI 处理。我会避免姓名、电话等个人资料。', 'I agree to OpenAI processing my chat text and recordings I choose to convert. I will leave out names, phone numbers and identifying details.')
@@ -42,7 +42,7 @@
     const voiceActive = window.FCCareVoice?.active() === true;
     window.FCCareVoice?.configure({ enabled: voiceEnabled,
       allowed: ready && !busy && !exhausted && !waitingForAllowance && window.FCCareAuth.signedIn() &&
-        (!allowance || allowance.remainingTextAttempts >= 2), language: lang });
+        (!allowance || allowance.remainingTextAttempts >= 2), language: lang, remainingUnits: allowance?.remainingTextAttempts ?? null });
     $('message').disabled = !ready || busy || exhausted || waitingForAllowance || voiceActive || !window.FCCareAuth.signedIn();
     $('send').disabled = !ready || busy || exhausted || waitingForAllowance || voiceActive || !window.FCCareAuth.signedIn();
     $('refresh-allowance').hidden = !ready || !supportsStatus || !window.FCCareAuth.signedIn();
@@ -54,6 +54,9 @@
       : allowance && supportsStatus ? t(`本月免费剩余 ${allowance.includedTextAttempts} 次 · 已购买剩余 ${allowance.purchasedTextAttempts} 次。`, voiceEnabled
         ? `${allowance.includedTextAttempts} included units left · ${allowance.purchasedTextAttempts} purchased units left.`
         : `${allowance.includedTextAttempts} included sends left · ${allowance.purchasedTextAttempts} purchased sends left.`) : '';
+    const low = allowanceReady && !checkingAllowance && !allowanceError && allowance && allowance.remainingTextAttempts > 0 && allowance.remainingTextAttempts <= 10;
+    $('allowance-tip').hidden = !low;
+    $('allowance-tip').textContent = low && !voiceEnabled ? t(`温馨提醒：还可发送 ${allowance.remainingTextAttempts} 次。用完后可等下月更新，加额由你自由选择。`, `A gentle reminder: ${allowance.remainingTextAttempts} sends remain. You can wait for next month or choose an optional pack.`) : low ? t(`温馨提醒：还剩 ${allowance.remainingTextAttempts} 次额度。打字发送用 1 次；录音转文字再发送合共用 2 次。用完后可等下月更新，加额由你自由选择。`, `A gentle reminder: ${allowance.remainingTextAttempts} units remain. A typed send uses 1; converting and sending a voice note uses 2. You can wait for next month or choose an optional pack.`) : '';
     $('extra-title').textContent = t('想多聊一会儿？', 'A little more time to talk?');
     $('extra-copy').textContent = t('你可以等下个月的新额度。聊天加额包计划每份 RM15，自由选择，不会自动扣款。付款功能尚未开放。', 'You can wait for next month’s included allowance. An optional Extra Chat Pack is planned at RM15 per pack, with no automatic charge. Purchasing is not available yet.');
     $('extra-rules').textContent = t('查看加额包说明', 'Read pack details');

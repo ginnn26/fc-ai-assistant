@@ -117,6 +117,8 @@ test('browser recording stays local until explicit consented conversion and neve
     Blob, FormData, AbortController, Event, CustomEvent, Float32Array, ArrayBuffer, DataView, Date,
     setTimeout, clearTimeout, setInterval: () => 1, clearInterval() {},
   });
+  window.FCCareVoice.configure({ enabled: true, allowed: false, language: 'en', remainingUnits: 1 });
+  assert.match(element('voice-hint').textContent, /1 unit left/);
   window.FCCareVoice.configure({ enabled: true, allowed: true, language: 'zh' });
   await element('record-voice').onclick();
   capture.port.onmessage({ data: { samples: new Float32Array(16000).fill(.1) } });
