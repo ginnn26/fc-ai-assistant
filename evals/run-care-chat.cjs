@@ -2,13 +2,14 @@
 // environment. simulateResponse is an offline test seam, explicitly labelled.
 const fs = require('node:fs');
 const path = require('node:path');
-const { prepareConversation, answerConversation, MODEL, CANDIDATE_MODEL, MAX_INPUT_BYTES, MAX_OUTPUT_TOKENS } = require('../services/care-chat');
+const { prepareConversation, answerConversation, MODEL, BASELINE_MODEL, CANDIDATE_MODEL, MAX_INPUT_BYTES, MAX_OUTPUT_TOKENS } = require('../services/care-chat');
 const { RATES, MYR_PER_USD_WITH_MARGIN, estimateTextCost } = require('./care-chat-costs.cjs');
 const cases = require('./care-chat-cases.json');
-const MODELS = [MODEL, CANDIDATE_MODEL];
+const followupCases = require('./care-chat-followup-cases.json');
+const MODELS = [BASELINE_MODEL, CANDIDATE_MODEL];
 const RESERVE_SEN = 10, INPUT_TOKEN_ENVELOPE = 13000;
 
-async function run({ live = false, output = null, simulateResponse = null, maxPaidCalls = 20, budgetSen = 200 } = {}) {
+async function run({ live = false, output = null, simulateResponse = null, maxPaidCalls = 20, budgetSen = 200, followup = false } = {}) {
   if (!Number.isInteger(maxPaidCalls) || maxPaidCalls < 0 || maxPaidCalls > 20 ||
       !Number.isInteger(budgetSen) || budgetSen < 0 || budgetSen > 200) throw Error('Evaluation limits cannot exceed the approved RM2/20-call envelope.');
   if (live && simulateResponse) throw Error('Simulation cannot be labelled a live evaluation.');
@@ -18,7 +19,7 @@ async function run({ live = false, output = null, simulateResponse = null, maxPa
   let calls = 0, reservedSen = 0, stopPaidCalls = false;
   const rows = [];
   // Interleave models, so a limited/partial run never uses all its calls on one.
-  for (const item of cases) for (const model of MODELS) {
+  for (const item of (followup ? followupCases : cases)) for (const model of MODELS) {
     const prepared = prepareConversation(item.turns, item.language);
     const row = { id: item.id, model, expectedStatus: item.status, reviewChecklist: item.review,
       realModelCalled: false, providerAttempted: false, humanQualityReview: 'pending', reply: null };
@@ -73,6 +74,7 @@ async function run({ live = false, output = null, simulateResponse = null, maxPa
       estimatedSenWithMarginForKnownUsage: known.reduce((sum,row) => sum + row.costEstimate.estimatedSenWithMargin,0) };
   });
   const result = { mode: live ? 'real-model-comparison' : simulateResponse ? 'simulated-provider-no-real-calls' : 'plan-only-no-model-calls',
+    suite: followup ? 'followup-short-and-long' : 'initial-comparison',
     callsAttempted: calls, reservedSen, budgetSen, realModelQualityVerified: false,
     costAssumptions: { rates: RATES, myrPerUsdWithMargin: MYR_PER_USD_WITH_MARGIN,
       cachedInputDiscountApplied: false, invoiceVerified: false,
@@ -83,7 +85,9 @@ async function run({ live = false, output = null, simulateResponse = null, maxPa
 }
 if (require.main === module) {
   const args = process.argv.slice(2), outputAt = args.indexOf('--output');
-  run({ live: args.includes('--run'), output: outputAt >= 0 ? args[outputAt+1] : null })
+  run({ live: args.includes('--run'), followup: args.includes('--follow-up'),
+    ...(args.includes('--follow-up') ? {maxPaidCalls:10,budgetSen:100} : {}),
+    output: outputAt >= 0 ? args[outputAt+1] : null })
     .then(result => console.log(JSON.stringify({mode:result.mode,cases:result.rows.length,callsAttempted:result.callsAttempted,reservedSen:result.reservedSen,realModelQualityVerified:false})))
     .catch(error => { console.error(error.message); process.exitCode=1; });
 }

@@ -93,3 +93,15 @@ test('authentication, permission and provider credit failures stop paid evaluati
     assert.equal(result.costs.reduce((sum,row)=>sum+row.costUnknownAttempts,0),1);
   }
 });
+
+test('targeted follow-up covers corrected behavior and seven-turn conversations under the input envelope', async () => {
+  let calls=0,maxBytes=0;
+  const result=await run({followup:true,maxPaidCalls:10,budgetSen:100,simulateResponse:async input=>{
+    calls++;maxBytes=Math.max(maxBytes,Buffer.byteLength(JSON.stringify(input.input),'utf8'));
+    return {status:'completed',output_text:'A fictional supportive reply.',usage:{input_tokens:800,output_tokens:100}};
+  }});
+  assert.equal(calls,10);assert.equal(result.rows.length,10);assert.equal(result.suite,'followup-short-and-long');
+  assert.ok(result.rows.some(row=>row.id==='followup-long-zh'));assert.ok(result.rows.some(row=>row.id==='followup-long-en'));
+  assert.ok(maxBytes>6000&&maxBytes<=12000);assert.equal(result.reservedSen,100);
+  assert.equal(result.mode,'simulated-provider-no-real-calls');
+});

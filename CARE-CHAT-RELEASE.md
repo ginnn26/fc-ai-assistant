@@ -52,13 +52,16 @@ the RM7 Care Chat ceiling also caps the existing recommendation assistant.
 3. Review actual responses case by case for empathy, clarity, repetition,
    uncertainty, invented catalog claims and medical boundaries. The report always
    marks human quality review pending. Passing unit checks is not quality approval.
-4. Choose a supported final model and verify account access. The current default
-   nano model is marked Deprecated in the checked official documentation. Mini is
-   only a candidate. Do not change the model without its budget recalculation.
-5. If choosing mini, update the member reservation and SQL constraint/RPC together
-   before enabling: the existing 5-sen reservation cannot cover the documented
-   mini worst-case token envelope. Confirm tax/currency headroom and resulting
-   customer send counts. Keep the internal RM7 cap out of customer copy.
+4. The local Care Chat default is now gpt-5.4-mini. Both models were actually
+   available in30owner-triggered provider calls. Mini's shorter replies support
+   selection; sleep/fatigue quality still needs review. No zero-error guarantee.
+5. Production caps are now7000serialized input bytes and200output tokens,
+   reasoning:none. Oldest complete pairs are trimmed from model input, but all
+   validated user turns remain in safety checks. The conservative8000input-token
+   envelope at current mini rates and RM6/USD x1.2 estimates4.968sen, within5sen.
+   This is not exact token counting or a billing guarantee. Confirm final-cap
+   completion/truncation behavior and actual cost before enabling. The two live
+   comparison runs used the previous600token cap. Internal RM7 stays private.
 6. Configure backend-only Supabase access and a stable member HMAC secret through
    approved secret settings. Never put the server key/HMAC secret in public JS,
    browser storage, a commit or screenshots. Rotating that HMAC secret changes

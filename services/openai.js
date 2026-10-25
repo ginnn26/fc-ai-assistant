@@ -22,6 +22,7 @@ async function askOpenAI(message, options = {}) {
     model: options.model || "gpt-5.4-nano",
     input: message,
     store: false,
+    ...(options.reasoningEffort ? { reasoning: { effort: options.reasoningEffort } } : {}),
     max_output_tokens: options.maxOutputTokens || 1000,
     ...(options.schema
       ? {
@@ -37,6 +38,7 @@ async function askOpenAI(message, options = {}) {
       : {}),
   });
 
+  if (options.requireCompleted && response.status !== 'completed') throw Error('incomplete_model_response');
   return response.output_text;
 }
 

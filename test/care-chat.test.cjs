@@ -102,8 +102,8 @@ test('conversation bounds context, roles and output; system instructions cannot 
   } });
   assert.equal(answer.reply, '这种疲倦持续多久了？');
   assert.equal(seen.input[0].role, 'system');
-  assert.equal(seen.options.maxOutputTokens, 600);
-  assert.equal(seen.options.model, 'gpt-5.4-nano');
+  assert.equal(seen.options.maxOutputTokens, 200);
+  assert.equal(seen.options.model, 'gpt-5.4-mini');
 });
 
 test('urgent symptoms in earlier turns cannot be erased by later instructions', async () => {
@@ -242,4 +242,25 @@ test('self-harm support is warm and distinct from physical triage without a paid
     assert.equal(answer.status,'safety'); assert.match(answer.reply,expected);
     assert.equal(calls,0);assert.doesNotMatch(answer.reply,/\d{3,}/);
   }
+});
+
+test('selected mini policy stays within its current conservative reservation arithmetic',()=>{
+  const {MODEL,MAX_INPUT_BYTES,INPUT_TOKEN_ENVELOPE,MAX_OUTPUT_TOKENS}=require('../services/care-chat');
+  const {TEXT_RESERVATION_SEN}=require('../services/member-monthly-budget');
+  const {estimateTextCost}=require('../evals/care-chat-costs.cjs');
+  assert.equal(MODEL,'gpt-5.4-mini');assert.ok(MAX_INPUT_BYTES<INPUT_TOKEN_ENVELOPE);
+  assert.ok(estimateTextCost(MODEL,{input_tokens:INPUT_TOKEN_ENVELOPE,output_tokens:MAX_OUTPUT_TOKENS}).estimatedSenWithMargin<=TEXT_RESERVATION_SEN);
+});
+
+test('large model context drops complete oldest pairs but earlier urgent signs still stop the model',async()=>{
+  const {MAX_INPUT_BYTES}=require('../services/care-chat');
+  const turns=[{role:'user',content:'胸口很痛，呼吸困难。'+ '好'.repeat(1000)},
+    {role:'assistant',content:'好'.repeat(1000)},{role:'user',content:'好'.repeat(1000)},
+    {role:'assistant',content:'好'.repeat(1000)},{role:'user',content:'只想聊聊今天。'}];
+  const prepared=prepareConversation(turns);
+  assert.equal(prepared.history.length,5);assert.ok(prepared.input.length<6);
+  assert.ok(Buffer.byteLength(JSON.stringify(prepared.input),'utf8')<=MAX_INPUT_BYTES);
+  assert.equal(prepared.input.at(-1).content,'只想聊聊今天。');
+  let calls=0;const answer=await answerConversation(prepared,{ask:async()=>{calls++;return 'Should not run';}});
+  assert.equal(answer.status,'safety');assert.equal(calls,0);
 });

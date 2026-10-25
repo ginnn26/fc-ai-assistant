@@ -2,6 +2,37 @@
 
 ## Current status — 26 October 2026
 
+Second real evaluation COMPLETED after owner personally re-entered the same
+dedicated key:10complete replies/10usage records,5per model. Includes short
+listen-only/one-step/sleep cases and seven-turn Chinese/English conversations.
+Both models respected the explicit listening-only constraint in these samples;
+mini was shorter and followed the one-step request more closely. Sleep/fatigue
+replies still over-explained symptoms/quality, so clinical review remains pending.
+Second usage-priced estimate:4.6386sen under the disclosed conversion assumptions.
+Two-run total:30real provider calls, about11.60802sen (RM0.1161), NOT an invoice.
+Raw evidencecare-chat-followup-real-comparison.json and separate agent review
+care-chat-followup-review.json are in the local output folder. The dedicated key
+was not read, logged or saved by the agent; the second one-run child exited.
+
+Selected **gpt-5.4-mini** for the local Care Chat implementation, leaving legacy
+recommendation/transcription defaults unchanged. Production model input now caps
+at7000serialized UTF8bytes; oldest complete pairs are omitted as needed, while
+all validated turns remain in the urgent/clinical scan. Output caps at200tokens
+with reasoning:none and incomplete replies rejected without retry. Conservative
+input-envelope assumption8000tokens plus200output, current mini rates and
+RM6/USD x1.2 imply4.968sen/request, within5sen. This byte-plus-framing envelope
+is an engineering reservation assumption, not exact API token counting or an
+invoice guarantee. Revalidate model/prices/FX/billing before enabling. These final
+caps/default selection have offline coverage but were NOT the600token settings
+used by the two completed real evaluations; final-cap live truncation QA pending.
+The140shared units/month remain a draft entitlement, not newly released access.
+
+Refreshed Brevo ticket5636055: still Open, no new human response. Prepared the
+follow-up suite and tests with no provider calls before owner-triggered execution.
+No application deployment, formal navigation, payment or new secret provisioning
+was performed. Earlier defaultnano/12kbyte/600token notes are historical.
+
+
 First real evaluation COMPLETED after owner personally pasted the dedicated key
 into the loopback form and started it.20provider attempts returned20complete
 replies and20usage records (10nano,10mini);10additional safety/clinical rows were
