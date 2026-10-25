@@ -14,6 +14,8 @@ private pilot safeguard, not automated paid/trial membership or renewal validati
 Public release still requires a trusted FC eligibility source. Asked owner whether
 monthly included chat is for valid paid members only or also free trials; answer
 pending. No real customer roster exported/imported or Render settings changed.
+Full offline regression suite164/164passed. The completed second-round local
+key-handoff server has been stopped; no credential retained.
 Prepared integrations/care-chat/render-config.example.json with all flags off
 and blank secrets, not real credentials. Current application remains undeployed.
 
