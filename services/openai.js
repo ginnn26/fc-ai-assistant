@@ -1,21 +1,28 @@
 const OpenAI = require("openai");
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-  timeout: 25000,
-  maxRetries: 0,
-});
+let client;
+function getClient() {
+  // Loading safety rules or running a no-spend evaluation must not require a
+  // credential. Create the provider client only for an actual paid operation.
+  return client ||= new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+    timeout: 25000,
+    maxRetries: 0,
+  });
+}
 
 // =========================
 // Text Chat
 // =========================
 
 async function askOpenAI(message, options = {}) {
-  const response = await client.responses.create({
-    model: "gpt-5.4-nano",
+  if (Buffer.byteLength(JSON.stringify(message), 'utf8') > 16000)
+    throw Error('model_input_too_large');
+  const response = await getClient().responses.create({
+    model: options.model || "gpt-5.4-nano",
     input: message,
     store: false,
-    max_output_tokens: 1000,
+    max_output_tokens: options.maxOutputTokens || 1000,
     ...(options.schema
       ? {
           text: {
@@ -40,7 +47,7 @@ async function askOpenAI(message, options = {}) {
 async function transcribeAudio(audioBuffer, filename) {
   const file = await OpenAI.toFile(audioBuffer, filename);
 
-  const transcription = await client.audio.transcriptions.create({
+  const transcription = await getClient().audio.transcriptions.create({
     model: process.env.TRANSCRIPTION_MODEL || "gpt-4o-mini-transcribe",
     file: file,
     prompt:
