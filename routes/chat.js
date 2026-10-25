@@ -2,6 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const { prepareConversation, answerConversation } = require('../services/care-chat');
 const { createConfiguredMemberBudget } = require('../services/supabase-chat-store');
+const { createEmailResendGuard } = require('../services/care-chat-email-guard');
 const { createEmailAuth } = require('../services/care-chat-email-auth');
 const { transcribeAudio, transcribeCareVoice } = require("../services/openai");
 const { inspectVoiceWav, MAX_BYTES } = require('../services/care-chat-audio');
@@ -51,6 +52,7 @@ function createChatRouter({
     publicKey: process.env.FC_SUPABASE_PUBLISHABLE_KEY,
     enabled: process.env.FC_CARE_CHAT_ENABLED === 'true' }),
 } = {}) {
+  const emailResends = createEmailResendGuard({ now });
   const router = express.Router(),
     upload = multer({
       storage: multer.memoryStorage(),
@@ -138,6 +140,11 @@ function createChatRouter({
       if (typeof email !== 'string' || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
         return res.status(422).json({ error: 'invalid_login' });
       if (action === 'request') {
+        const attempt = emailResends.reserve(email);
+        if (!attempt.allowed) {
+          res.set('Retry-After', String(attempt.retryAfter));
+          return res.status(429).json({ error: 'auth_please_wait' });
+        }
         await emailAuth.requestCode(email.trim());
         return res.json({ sent: true });
       }

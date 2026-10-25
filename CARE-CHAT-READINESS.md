@@ -2,6 +2,20 @@
 
 ## Current status — 26 October 2026
 
+Email retry follow-up: backend now independently enforces a60-second resend
+cooldown per normalized email before invoking the mail provider, including failed
+or ambiguous attempts. Case changes, refreshes and simultaneous direct requests
+cannot bypass the process-local guard. Its in-memory map holds only short-lived
+address digests, prunes expired entries and fails closed at2000 entries rather
+than evicting an active cooldown. It stores no message/OTP and makes no additional
+provider call. This does NOT replace Supabase/Brevo distributed abuse limits; a
+server restart or another instance has a separate map. Verification, refresh and
+logout remain available during the resend cooldown. Responses use sanitized429
+auth_please_wait plus Retry-After. Full local suite143/143 passed with mocks,
+including failed-provider concurrency, address isolation and expiry boundaries.
+No real email sent, no support reply checked, no production deployment made.
+
+
 Microphone visual follow-up: recording UI now has33 locally sound-reactive bars
 and a microphone glow driven by RMS energy from existing capture samples. Smaller
 1024-frame worklet batches improve response latency without adding a network

@@ -41,6 +41,8 @@ the RM7 Care Chat ceiling also caps the existing recommendation assistant.
 ## Before enabling
 
 1. Confirm real SMTP delivery and a real verification/refresh/logout round trip.
+   Keep provider-level OTP limits active. The backend60-second resend guard is
+   bounded and process-local, not distributed protection across restarts/instances.
    Brevo ticket #5636055 is open; never include a credential in the ticket.
 2. Run `evals/run-care-chat.cjs --run --output <private-result-path>` in an
    authorized private execution environment using an existing provider key in
