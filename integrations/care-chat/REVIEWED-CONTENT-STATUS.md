@@ -15,7 +15,7 @@ presenting stale summaries as current. Rollbacks are rejected. Known themes
 retain their existing FC description links until a shared public reader is
 released in this codebase.
 
-Validation: 204 local checks passed, including archive capacity/long-text tests
+Validation: 206 local checks passed, including archive capacity/long-text tests
 and an eligibility-before-editorial-read route check. No paid AI
 request, production archive inspection or customer data write occurred during
 these tests. This change is local, not deployed. It does **not** establish that
@@ -34,8 +34,13 @@ Remaining core release gates:
 
 - Check source availability and report description coverage honestly. Missing
   purpose/use descriptions fall back to theme matching, never guessed effects.
-- Run the final structured chat policy and real voice transcription with fictional
-  inputs inside the previously approved test budget; test actual mobile recording.
+- Real provider checks completed on fictional bilingual inputs at the final
+  200-token cap. An initial run exposed raw structured text on no-candidate turns
+  and missed English conflict matching; six selected-mini retests completed after
+  correction, with parsed replies for all six and correct conflict IDs in both
+  languages. This is limited sample review, not a claim of universal correctness.
+  English synthetic speech (6.25 seconds) was transcribed correctly with the real
+  transcription model. Actual member/mobile microphone acceptance is still pending.
 - Stable member hashing was saved to the confirmed existing Render service on
   26 October; customer flags remain disabled. Verify paid-date eligibility, member
   isolation and one shared voice/text allowance against the production services.
@@ -45,6 +50,9 @@ Remaining core release gates:
 The HMAC configuration save caused Render to deploy already merged documentation
 commit `ae58bc2` (same runtime as PR #13). Eight live no-spend smoke checks passed.
 The reviewed-content code remains local on its feature branch, not deployed.
+
+The completed one-time local key handoff was replaced by a read-only results
+page. No test key is retained, and the results page cannot initiate new AI calls.
 
 The RM15 add-on remains informational until verified payment capture and durable
 credit delivery are connected. Customer sales materials must reflect this boundary.
