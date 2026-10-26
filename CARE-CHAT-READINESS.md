@@ -2,6 +2,17 @@
 
 ## Current status — 26 October 2026
 
+Owner explicitly approved the Supabase-to-Render backend secret connection and
+all four exact staff email identities. Saved FC_SUPABASE_URL, publishable key,
+existing legacy service-role backend key, staff hashes/labels and enabled admin
+flag in the existing Render service using Save only. Customer chat/unified/voice
+flags remain false; no restart or new code deploy yet. Existing OpenAI and Drive
+settings preserved. Keys transferred directly through the authorized UI, never
+written to source/local files or chat; temporary key variables cleared. Screenshot
+care-admin-render-config-saved.png shows masked settings. Staff access is saved
+but not yet effective because live f588c429 does not contain the admin routes.
+GitHub device authorization is awaiting the owner's Confirm access email step.
+
 Owner authorized proceeding toward activation after verification and confirmed
 Render workspace Agnes's workspace (tea-d9qubcqjnfac73e877m0). Existing service
 srv-d9qugn5bedkc73fpmq40 remains on live f588c429; no deployment yet. Applied fifth
