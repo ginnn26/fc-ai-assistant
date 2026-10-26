@@ -2,6 +2,24 @@
 
 ## Current status — 26 October 2026
 
+Owner explicitly authorized reading only Brevo ticket5636055 and LearnWorlds
+ticket395581 in Gmail. LearnWorlds Support Bot replied at03:11 Malaysia time:
+Pro Trainer has no supported Zapier-only read/sync route for enrollment expiry,
+manual expiry edits, withdrawal or historical reconciliation. Its proposed API
+read route requires Learning Center or above; no upgrade was requested.
+A follow-up was SENT in the same395581 thread to ask a human integrations
+specialist to confirm that limitation and identify any existing-plan export or
+scheduled report with authoritative expiry/revocation fields. Gmail confirmed
+Message sent; screenshot: learnworlds-395581-human-followup-sent.png in the
+private output folder. No customer records or credentials sent. Do not create
+a Zapier account on the assumption that it solves expiry synchronization.
+
+Brevo's email remains the25October23:49 automated reply confirming transactional
+activation but not credential validity. Refreshed ticket5636055 also contains
+only that reply and our existing human escalation; no new human fix. Do not
+treat either provider's automated reply as a verified end-to-end integration.
+No SMTP settings, credentials, memberships, paid plans or deployment changed.
+
 Independent overnight follow-up completed locally: login/request/verification
 status is now state-based and repaints on a language switch rather than keeping
 the previous language's message. Sign-out and successful verification clear the

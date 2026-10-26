@@ -9,7 +9,23 @@ dates in FC itself. FC enrollment expiry is therefore the intended authority;
 do not introduce a second independent member-expiry list or guess a term from
 a payment amount. The actual supported extraction/update channel is unproven.
 
-## Backend enforcement prepared
+## Support finding — 26 October 2026
+
+LearnWorlds ticket395581 received a Support Bot answer at03:11 Malaysia time.
+It explicitly states there is no supported Zapier-only Pro Trainer route to
+read/sync enrollment expiration, manual renewals/expiry edits, withdrawals or
+existing-member reconciliation. It identifies GET /v2/users/{id}/courses with
+an expires field as an API alternative requiring Learning Center or above.
+This is the bot's answer, not a human confirmation or a tested integration.
+
+Sent a follow-up in the same ticket asking a human specialist to confirm and
+check existing-plan export/scheduled-report options with user/product IDs,
+expiry and revocation status, including manual updates and existing members.
+No upgrade or Zapier account was requested, and no customer data was sent.
+Do not activate paid mode until an authoritative source and reconciliation
+workflow are implemented and verified. An enrollment-only trigger is insufficient.
+
+## Backend enforcement details
 
 `FC_CARE_CHAT_ACCESS_MODE=pilot` remains the default and requires the explicit
 pilot email-hash roster. `paid` selects a separate private-database eligibility
