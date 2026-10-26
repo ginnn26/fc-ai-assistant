@@ -4,14 +4,18 @@ Owner approved a manual additional workflow on26October2026. Active paid
 coverage is confirmed by staff, rather than automatically read from LearnWorlds.
 First intended operators: Agnes, Gin and Andrine; Andrine is the main responsible
 person. Owner supplied four individual login emails for these three staff on
-26 October 2026 (Agnes has two). A disabled configuration was prepared outside
-the repository; actual access approval and production verification remain pending.
+26 October 2026 (Agnes has two). Owner explicitly approved all four email
+identities and backend-secret connection. Configuration is saved in Render and
+staff code deployed via PR #13 (fe637cd). Unauthenticated deployment checks passed;
+owner's actual staff sign-in, protected tasks and fictional-email query passed.
+Gin/Andrine individual login and concurrent deployed-write checks remain pending.
 Agnes's emails share a display label but remain distinct verified audit actors.
 Names alone are not authorization.
 
 ## Prepared locally
 
 Staff UI: `/care-admin.html`. API: `/care-admin/*`.
+The production portal is https://fc-ai-assistant.onrender.com/care-admin.html.
 All operations are disabled without explicit configuration. Use separate
 staff-only Supabase email verification, server-verified canonical identities and
 the backend `FC_CARE_ADMIN_STAFF_EMAIL_HASHES` allowlist, never browser role flags.
