@@ -5,7 +5,7 @@
   const supported = !!(navigator.mediaDevices?.getUserMedia && AudioContextClass && window.AudioWorkletNode);
   let remainingUnits = null;
   let enabled = false, allowed = false, lang = 'zh', phase = 'idle', status = '', epoch = 0;
-  let stream, context, node, source, timer, stopTimer, chunks = [], rate = 16000, clip, clipUrl, started = 0, request;
+  let stream, context, node, source, timer, stopTimer, chunks = [], rate = 16000, clip, started = 0, request;
   const levels = Array(33).fill(0);
   function drawWave(samples) {
     let energy = 0;
@@ -23,13 +23,13 @@
     draft: ['请先发送或清空当前文字，再开始录音。', 'Send or clear your current draft before recording.'],
     short: ['录音太短，请再说一小段。还没有上传。', 'That recording was too short. Try a little longer. Nothing was uploaded.'],
     capture: ['录音中断，麦克风已关闭。还没有上传，你可以重录或打字。', 'Recording was interrupted and the microphone is off. Nothing was uploaded. You can record again or type.'],
-    review: ['录好了。按「发送录音」即可聊天，也可以先看文字。尚未上传。', 'Ready. Send your voice note, or preview the text first. Nothing has been uploaded.'],
-    consent: ['请先勾选聊天处理同意，再转成文字。', 'Please tick the chat processing consent before converting.'],
+    review: ['录音已结束，正在发送。', 'Recording finished. Sending your voice note.'],
+    consent: ['请先勾选聊天处理同意，再开始录音。', 'Please tick the chat processing consent before recording.'],
     converted: ['文字已放进输入框。请核对症状、数字和药名，再按发送。', 'Your transcript is in the draft. Check symptoms, numbers and medicine names before sending.'],
     speech_not_clear: ['没有听清楚，请重录或直接打字。识别已开始时仍可能使用一次额度。', 'We could not hear clear speech. Try recording again or type. A conversion that began may still use one allowance unit.'],
     please_shorten: ['内容较长，请分成短一点的留言。', 'Please split this into a shorter voice note.'],
     monthly_allowance_reached: ['可用次数已用完。请查看额度说明。', 'Your allowance has been used. Check the allowance information.'],
-    failed: ['未能取得文字，请稍后再试或打字。不会自动重试，已开始的识别可能使用一次额度。', 'We could not retrieve a transcript. Try later or type. We will not retry automatically; a conversion that began may use one allowance unit.'],
+    failed: ['未能处理录音，请稍后再试或打字。不会自动重试，已开始的识别可能使用一次额度。', 'We could not process your voice note. Try later or type. We will not retry automatically; processing that began may use one allowance unit.'],
     invalid_voice_audio: ['这段录音格式无法读取，请重新录音。这次没有进行识别。', 'We could not read this recording format. Record again. No transcription was started.'],
     voice_duration_invalid: ['录音需在半秒至 60 秒之间，请重新录音。这次没有进行识别。', 'Record between half a second and 60 seconds. No transcription was started.'],
     member_not_eligible: ['这个账户暂未获得暖心聊聊使用资格。每月附送额度仅限有效付费会员，请联系 FC 核对。', 'Care Chat access is not enabled for this account. Monthly included allowance is for active paid members only. Contact FC to check access.'],
@@ -43,20 +43,17 @@
     $('voice-title').textContent = t('不想打字？轻轻说一说。', 'Prefer to speak? Take your time.');
     $('voice-hint').textContent = remainingUnits === 1 && phase === 'idle'
       ? t('还剩 1 次额度，可以直接打字发送。录音转文字再发送需要 2 次额度。', 'You have 1 unit left and can send a typed message. Converting and sending a voice note needs 2 units.')
-      : t('最多 60 秒 · 录完直接发送，也可先看文字', 'Up to 60 seconds · Send when ready, or preview text first');
-    $('voice-cost').textContent = t('录音和回听不扣次数。发送录音合共用 2 次：自动转文字 1 次，发送聊天 1 次。也可选择先看文字，再自行发送。', 'Recording and playback use no allowance. Sending voice uses 2 units: 1 for transcription and 1 for chat. You can also preview text and send it yourself.');
-    $('record-voice-label').textContent = phase === 'recording' ? t('结束录音', 'Stop recording') : phase === 'starting' ? t('准备麦克风…', 'Preparing microphone…') : t('录音说一说', 'Record a voice note');
+      : t('再点一次结束并发送 · 最长 60 秒，到时自动发送', 'Tap again to finish and send · Sends automatically at 60 seconds');
+    $('voice-cost').textContent = t('录音本身不扣次数。结束并发送合共用 2 次：自动转文字 1 次，发送聊天 1 次。无需查看或确认文字。', 'Recording itself uses no allowance. Finish and send uses 2 units: 1 for transcription and 1 for chat. No text review or confirmation is needed.');
+    $('record-voice-label').textContent = phase === 'recording' ? t('结束并发送', 'Finish & send') : phase === 'starting' ? t('准备麦克风…', 'Preparing microphone…') : t('录音说一说', 'Record a voice note');
     $('record-voice').title = $('record-voice-label').textContent;
     $('record-voice').disabled = !supported || (phase !== 'recording' && (!allowed || phase !== 'idle'));
     $('record-voice').classList.toggle('recording', phase === 'recording');
-    $('convert-voice').textContent = phase === 'converting' ? t('正在处理录音…', 'Processing voice note…') : t('先看文字（用 1 次）', 'Preview text (1 unit)');
-    $('convert-voice').hidden = !clip; $('convert-voice').disabled = !allowed || phase !== 'review';
-    $('discard-voice').textContent = t('放弃这段录音', 'Discard recording');
+    $('discard-voice').textContent = t('取消录音', 'Cancel recording');
     $('discard-voice').hidden = phase === 'idle';
-    $('voice-preview').hidden = !clip;
     $('voice-status').textContent = !supported ? t(...messages.unavailable) : phase === 'recording'
       ? t(`正在录音 ${Math.min(60, Math.floor((Date.now() - started) / 1000))} / 60 秒`, `Recording ${Math.min(60, Math.floor((Date.now() - started) / 1000))} / 60 seconds`)
-      : status ? t(...(messages[status] || messages.failed)) : '';
+      : phase === 'converting' ? t('正在处理录音，请稍候…', 'Processing your voice note…') : status ? t(...(messages[status] || messages.failed)) : '';
   }
   function notify() { paint(); window.dispatchEvent(new Event('fc-care-voice-state')); }
   function stopDevices() {
@@ -68,9 +65,7 @@
     if (context) context.close().catch(() => {}); context = null;
   }
   function clearClip() {
-    $('voice-preview').pause(); $('voice-preview').removeAttribute('src');
-    if (clipUrl) URL.revokeObjectURL(clipUrl);
-    clipUrl = null; clip = null;
+    clip = null;
   }
   function reset() {
     epoch++; request?.abort(); request = null; stopDevices(); clearClip(); chunks = [];
@@ -90,6 +85,7 @@
   }
   async function start() {
     if (!enabled || !allowed || !supported || phase !== 'idle') return;
+    if (!$('consent').checked) { status = 'consent'; paint(); $('consent').focus(); return; }
     if ($('message').value.trim()) { status = 'draft'; paint(); return; }
     const before = ++epoch; phase = 'starting'; status = ''; notify();
     try {
@@ -104,11 +100,14 @@
       node.port.onmessage = event => {
         if (before !== epoch) return;
         if (event.data.samples) { chunks.push(event.data.samples); if (phase === 'recording') drawWave(event.data.samples); }
-        if (event.data.done) {
+        if (event.data.done && (phase === 'recording' || phase === 'stopping')) {
           const result = wav(); stopDevices(); chunks = [];
           if (result.seconds < 0.5) { phase = 'idle'; status = 'short'; notify(); return; }
-          clip = result.blob; clipUrl = URL.createObjectURL(clip); $('voice-preview').src = clipUrl;
+          clip = result.blob;
           phase = 'review'; status = 'review'; notify();
+          // The recording control says Finish & send, and the 60-second limit
+          // discloses automatic sending. No conversion/review confirmation UI.
+          window.dispatchEvent(new Event('fc-care-voice-submit'));
         }
       };
       source.connect(node); node.connect(context.destination); await context.resume();
@@ -133,7 +132,7 @@
   }
   $('record-voice').onclick = () => phase === 'recording' ? finish() : start();
   $('discard-voice').onclick = reset;
-  async function convert(directSend = false) {
+  async function convert() {
     if (phase !== 'review' || !clip || !allowed) return false;
     if (!$('consent').checked) { status = 'consent'; paint(); $('consent').focus(); return false; }
     const before = epoch, abort = request = new AbortController();
@@ -150,8 +149,8 @@
       if (data.allowance) window.dispatchEvent(new CustomEvent('fc-care-voice-allowance', { detail: data.allowance }));
       if (!response.ok) throw Error(data.error);
       if (typeof data.transcript !== 'string' || !data.transcript.trim() || data.transcript.length > 1200) throw Error('failed');
-      clearClip(); phase = 'idle'; status = directSend ? '' : 'converted'; converted = true;
-      window.dispatchEvent(new CustomEvent(directSend ? 'fc-care-voice-send-draft' : 'fc-care-voice-transcript', { detail: data.transcript }));
+      clearClip(); phase = 'idle'; status = ''; converted = true;
+      window.dispatchEvent(new CustomEvent('fc-care-voice-send-draft', { detail: data.transcript }));
       return true;
     } catch (error) {
       if (before !== epoch) return false;
@@ -164,13 +163,12 @@
         request = null; notify();
         // Direct send continues to conversation immediately. Do not race it with
         // a balance lookup; that would block the send after spending on conversion.
-        if (!directSend || !converted) window.dispatchEvent(new Event('fc-care-voice-refresh'));
+        if (!converted) window.dispatchEvent(new Event('fc-care-voice-refresh'));
       }
     }
   }
-  $('convert-voice').onclick = () => convert(false);
   window.FCCareVoice = { configure(value) { enabled = value.enabled; allowed = value.allowed; lang = value.language; remainingUnits = value.remainingUnits ?? null; paint(); },
-    active: () => phase !== 'idle', readyToSend: () => phase === 'review' && !!clip, convertForSend: () => convert(true), reset };
+    active: () => phase !== 'idle', readyToSend: () => phase === 'review' && !!clip, convertForSend: convert, reset };
   window.addEventListener('fc-care-auth-changed', reset);
   window.addEventListener('pagehide', reset);
   document.addEventListener('visibilitychange', () => { if (document.hidden) reset(); });

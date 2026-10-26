@@ -17,15 +17,15 @@
     document.title = $('title').textContent = t('FC 暖心聊聊', 'FC Care Chat');
     $('language').textContent = t('English', '中文');
     $('intro').textContent = t('说说今天的感受，我们一起慢慢了解，再找到适合此刻的频率音疗。打字或说话都可以。', 'Talk through how today feels. We can understand it together and explore a suitable FC listening theme. Type or use your voice.');
-    $('message-label').textContent = window.FCCareVoice?.readyToSend?.() ? t('录音已准备好', 'Your voice note is ready') : voiceEnabled ? t('打字，或点麦克风说一说', 'Type, or tap the microphone') : t('今天的你，感觉怎么样？', 'How are you feeling today?');
+    $('message-label').textContent = voiceEnabled ? t('打字，或点麦克风说一说', 'Type, or tap the microphone') : t('今天的你，感觉怎么样？', 'How are you feeling today?');
     document.documentElement.className = window.FCCareAuth.signedIn() ? 'chat-active' : '';
     $('chat-room').hidden = !window.FCCareAuth.signedIn();
     $('consent-copy').textContent = voiceEnabled
       ? t('我同意使用 FC AI 处理聊天和所选录音。', 'I agree to AI processing my chat and selected recordings.')
       : t('我同意使用 FC AI 处理这次聊天。', 'I agree to AI processing this chat for FC Care Chat.');
     $('privacy-label').textContent = t('隐私与使用说明', 'Privacy & how it works');
-    $('privacy-copy').textContent = t('FC 暖心聊聊使用 OpenAI 提供 AI 回复和录音转文字。你发送的聊天文字，以及选择发送或转文字的录音，会传送给 OpenAI 处理。请避免提供姓名、电话及可识别个人身份的资料。只有按「发送录音」或「先看文字」才会上传录音，单纯录音和回听不会上传。', 'FC Care Chat uses OpenAI for AI replies and voice transcription. Chat text you send and recordings you choose to send or convert are sent to OpenAI for processing. Leave out names, phone numbers and identifying details. Recordings are uploaded only when you choose Send voice or Preview text; recording and playback alone do not upload them.');
-    $('usage-copy').textContent = t('打字发送用 1 次额度。发送录音合共用 2 次：自动转文字用 1 次，发送聊天再用 1 次。选择「先看文字」会先用 1 次，之后发送再用 1 次。录音和回听不扣次数。每月 1 日按马来西亚时间更新附送额度。', 'A typed send uses 1 unit. Sending a voice note uses 2 in total: 1 for automatic transcription and 1 for the chat send. Previewing text uses 1 first; sending it later uses 1 more. Recording and playback use no allowance. Included allowance renews on the 1st in Malaysia time.');
+    $('privacy-copy').textContent = t('FC 暖心聊聊使用 OpenAI 提供 AI 回复和录音转文字。发送的聊天文字和录音会传送给 OpenAI 处理。请避免提供姓名、电话及可识别个人身份的资料。按「结束并发送」或达到 60 秒上限时才会上传录音；发送前可取消录音。', 'FC Care Chat uses OpenAI for AI replies and voice transcription. Chat text and voice notes you send are sent to OpenAI for processing. Leave out names, phone numbers and identifying details. Recordings upload when you choose Finish & send or reach the 60-second limit. You can cancel before sending.');
+    $('usage-copy').textContent = t('打字发送用 1 次额度。录音结束后自动处理并回复，无需查看或确认文字，合共用 2 次：后台转文字 1 次，聊天发送 1 次。录音本身不扣次数；发送前取消不会扣次数。每月 1 日按马来西亚时间更新附送额度。', 'A typed send uses 1 unit. Finishing a voice note automatically processes it and gets a reply, without text review or confirmation. It uses 2 units: 1 for transcription and 1 for chat. Recording itself is free; cancelling before sending uses no allowance. Included allowance renews on the 1st in Malaysia time.');
     $('latest-message').textContent = t('查看最新回复 ↓', 'Latest reply ↓');
     $('chat-scroll').ariaLabel = t('聊天消息', 'Chat messages');
     $('allowance-summary').textContent = allowance ? t(`本月还剩 ${allowance.remainingTextAttempts} 次 · 额度说明`, `${allowance.remainingTextAttempts} units left · Allowance`) : t('我的聊天额度', 'My chat allowance');
@@ -246,6 +246,7 @@
   };
   window.addEventListener('pagehide', () => { controller?.abort(); allowanceController?.abort(); });
   window.addEventListener('fc-care-voice-state', paint);
+  window.addEventListener('fc-care-voice-submit', () => $('chat-form').onsubmit({ preventDefault() {} }));
   window.addEventListener('fc-care-voice-refresh', loadAllowance);
   window.addEventListener('fc-care-voice-allowance', event => {
     if (!validAllowance(event.detail)) { allowanceReady = false; allowanceError = true; paint(); return; }

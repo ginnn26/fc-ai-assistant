@@ -120,6 +120,7 @@ test('browser recording stays local until explicit consented conversion and neve
   window.FCCareVoice.configure({ enabled: true, allowed: false, language: 'en', remainingUnits: 1 });
   assert.match(element('voice-hint').textContent, /1 unit left/);
   window.FCCareVoice.configure({ enabled: true, allowed: true, language: 'zh' });
+  element('consent').checked = true;
   await element('record-voice').onclick();
   capture.port.onmessage({ data: { samples: new Float32Array(16000).fill(.1) } });
   assert.ok(parseFloat(element('voice-bar-32').style['--height']) > 4);
@@ -129,19 +130,19 @@ test('browser recording stays local until explicit consented conversion and neve
   assert.equal(element('voice-bar-31').style['--height'], '4px');
   assert.equal(stopped, 1); // Physical microphone closes before worklet flush.
   capture.port.onmessage({ data: { done: true } });
-  assert.equal(calls, 0); assert.equal(stopped, 1); assert.equal(element('voice-preview').hidden, false);
-  await element('convert-voice').onclick(); assert.equal(calls, 0);
-  element('consent').checked = true; await element('convert-voice').onclick();
+  assert.equal(calls, 0); assert.equal(stopped, 1);
+  assert.ok(events.find(event => event.type === 'fc-care-voice-submit'));
+  element('consent').checked = false; await window.FCCareVoice.convertForSend(); assert.equal(calls, 0);
+  element('consent').checked = true; await window.FCCareVoice.convertForSend();
   assert.equal(calls, 1); assert.equal(window.FCCareVoice.active(), false);
-  assert.equal(events.find(event => event.type === 'fc-care-voice-transcript').detail, 'Check this fictional transcript');
+  assert.equal(events.find(event => event.type === 'fc-care-voice-send-draft').detail, 'Check this fictional transcript');
   await element('record-voice').onclick();
   const oldCapture = capture;
   window.dispatchEvent(new Event('fc-care-auth-changed'));
   oldCapture.port.onmessage({ data: { samples: new Float32Array(16000).fill(.1) } });
   oldCapture.port.onmessage({ data: { done: true } });
   assert.equal(stopped, 2); assert.equal(window.FCCareVoice.active(), false);
-  assert.equal(element('voice-preview').hidden, true);
-  assert.equal(events.filter(event => event.type === 'fc-care-voice-transcript').length, 1);
+  assert.equal(events.filter(event => event.type === 'fc-care-voice-send-draft').length, 1);
   await element('record-voice').onclick(); capture.onprocessorerror();
   assert.equal(stopped, 3); assert.equal(window.FCCareVoice.active(), false); assert.equal(calls, 1);
 });

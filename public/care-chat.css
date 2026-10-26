@@ -47,6 +47,7 @@ header{flex-wrap:wrap}.conversation{margin-bottom:20px}#login-panel h2{font-fami
 .chat-page .composer-row:has(#record-voice.recording) #message{display:none}
 .chat-page #record-voice.recording{flex:1;width:auto;flex-direction:row;gap:10px;border-radius:24px;background:#faeae2;padding:0 10px}
 .chat-page #record-voice.recording #record-voice-label{position:static;width:auto;height:auto;clip-path:none;overflow:visible;white-space:normal;font-size:14px}
+.chat-page .composer-row:has(#record-voice.recording) #send{display:none}
 .chat-page #send{flex:none;padding:12px 14px;min-height:48px;font-size:14px}
 .chat-page .has-voice-draft #message,.chat-page .has-voice-draft #record-voice{display:none}
 .chat-page .has-voice-draft #send{width:100%}
