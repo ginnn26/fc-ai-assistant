@@ -93,9 +93,11 @@ test('plain consent stays affirmative and detailed provider disclosure remains b
   await settle();
   assert.doesNotMatch(f.element('consent-copy').textContent,/OpenAI/);
   assert.match(f.element('privacy-copy').textContent,/OpenAI/);
+  assert.match(f.element('privacy-copy').textContent,/发送录音.*先看文字/);
   f.element('message').value='Fictional test';await f.element('chat-form').onsubmit(submit);assert.equal(calls,0);
   f.element('language').onclick();assert.match(f.element('consent-copy').textContent,/I agree/);
   assert.match(f.element('privacy-copy').textContent,/sent to OpenAI/);
+  assert.match(f.element('privacy-copy').textContent,/Send voice or Preview text/);
 });
 
 test('concurrent expired-session callers share one refresh instead of rotating the same token twice', async () => {

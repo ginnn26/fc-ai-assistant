@@ -24,7 +24,7 @@
       ? t('我同意使用 FC AI 处理聊天和所选录音。', 'I agree to AI processing my chat and selected recordings.')
       : t('我同意使用 FC AI 处理这次聊天。', 'I agree to AI processing this chat for FC Care Chat.');
     $('privacy-label').textContent = t('隐私与使用说明', 'Privacy & how it works');
-    $('privacy-copy').textContent = t('FC 暖心聊聊使用 OpenAI 提供 AI 回复和录音转文字。你发送的聊天文字，以及选择转文字的录音，会传送给 OpenAI 处理。请避免提供姓名、电话及可识别个人身份的资料。录音在你选择转文字前不会上传。', 'FC Care Chat uses OpenAI for AI replies and voice transcription. Chat text you send and recordings you choose to convert are sent to OpenAI for processing. Leave out names, phone numbers and identifying details. Recordings are not uploaded until you choose to convert them.');
+    $('privacy-copy').textContent = t('FC 暖心聊聊使用 OpenAI 提供 AI 回复和录音转文字。你发送的聊天文字，以及选择发送或转文字的录音，会传送给 OpenAI 处理。请避免提供姓名、电话及可识别个人身份的资料。只有按「发送录音」或「先看文字」才会上传录音，单纯录音和回听不会上传。', 'FC Care Chat uses OpenAI for AI replies and voice transcription. Chat text you send and recordings you choose to send or convert are sent to OpenAI for processing. Leave out names, phone numbers and identifying details. Recordings are uploaded only when you choose Send voice or Preview text; recording and playback alone do not upload them.');
     $('usage-copy').textContent = t('打字发送用 1 次额度。发送录音合共用 2 次：自动转文字用 1 次，发送聊天再用 1 次。选择「先看文字」会先用 1 次，之后发送再用 1 次。录音和回听不扣次数。每月 1 日按马来西亚时间更新附送额度。', 'A typed send uses 1 unit. Sending a voice note uses 2 in total: 1 for automatic transcription and 1 for the chat send. Previewing text uses 1 first; sending it later uses 1 more. Recording and playback use no allowance. Included allowance renews on the 1st in Malaysia time.');
     $('latest-message').textContent = t('查看最新回复 ↓', 'Latest reply ↓');
     $('chat-scroll').ariaLabel = t('聊天消息', 'Chat messages');
