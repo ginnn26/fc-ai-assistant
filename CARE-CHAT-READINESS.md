@@ -2,6 +2,15 @@
 
 ## Current status — 26 October 2026
 
+Owner completed the real received-code sign-in check through the temporary
+loopback page. The existing createEmailAuth implementation verified the code,
+GET /auth/v1/user confirmed the authenticated email, refresh succeeded, and
+the test session signed out. All four checks passed; only booleans/timestamp
+were written to care-chat-real-auth-result.json, not credentials or tokens.
+Screenshot: owner-auth-check-passed.png. No AI calls, paid eligibility grant or
+deployment. This proves one owner-email auth round trip; production embedding,
+cross-device login and authoritative paid-member synchronization remain gated.
+
 SMTP repair verified: owner generated a fresh Standard SMTP credential named
 FC Care Chat OTP 2 and personally saved it in Supabase. Agent did not read or
 enter the credential. A single authorized owner-address /auth/v1/otp test
