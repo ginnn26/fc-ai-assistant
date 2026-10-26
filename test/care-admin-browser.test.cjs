@@ -29,7 +29,7 @@ test('staff changes require an inline email/date review before saving and clear 
  assert.equal(f.el('member-email').disabled,true);
  f.el('review-confirm').onclick();await settle();await settle();assert.equal(f.writes.length,1);
  assert.equal(f.writes[0].expectedVersion,0);assert.equal(f.el('review').hidden,true);assert.match(f.el('save-status').textContent,/已保存/);
- await f.el('logout').onclick();assert.equal(f.el('member-email').value,'');assert.equal(f.el('workspace').hidden,true);assert.equal(f.el('record-summary').children.length,0);
+ await f.el('logout').onclick();assert.equal(f.el('member-email').value,'');assert.equal(f.el('workspace').hidden,true);assert.equal(f.el('record-summary').children.length,0);assert.match(f.el('global-status').textContent,/已退出工作人员账户/);
 });
 test('an ambiguous failure keeps the same request ID for explicit retry and does not retry automatically',async()=>{
  let attempts=0;

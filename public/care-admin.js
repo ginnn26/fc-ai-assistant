@@ -28,7 +28,7 @@
   return result;
  }
  function wipe(){epoch++;selected='';member=null;pending=null;reviewing=null;$('member-email').value='';$('reference').value='';$('staff-code').value='';$('record-status').textContent='';$('save-status').textContent='';$('tasks-status').textContent='';$('record-summary').replaceChildren();$('audit').replaceChildren();$('tasks').replaceChildren();$('change-form').hidden=true;$('audio-confirm').hidden=true;}
- async function logout(){const old=token;token='';wipe();paint();if(old)try{await fetch('/care-admin/auth/logout',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+old},body:'{}',signal:AbortSignal.timeout(10000)});}catch{} }
+ async function logout(){const old=token;token='';wipe();$('global-status').textContent='已退出工作人员账户。再次操作前请重新验证。';paint();if(old)try{await fetch('/care-admin/auth/logout',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+old},body:'{}',signal:AbortSignal.timeout(10000)});}catch{} }
  function showRecord(data){
   member=data.member;pending=null;$('record-summary').replaceChildren();$('audit').replaceChildren();$('change-form').hidden=false;$('audio-confirm').hidden=!member;
   for(const option of $('action').options)option.disabled=member?option.value==='activate':option.value!=='activate';

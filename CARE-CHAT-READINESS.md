@@ -20,11 +20,17 @@ Manual operator coverage is now an owner-approved alternative to automatic FC
 expiry sync. See integrations/care-chat/ADMIN-SETUP.md and STAFF-SOP.md.
 Actual staff access, private production configuration, migrations and deployment
 are NOT enabled/applied. Local in-memory PostgreSQL lifecycle/RLS tests and
-browser-state tests passed15checks. Real browser preview passed fictional staff
-login, tasks, search, paid-date display and history. An old native confirm dialog
-blocked further browser checks; changed the UI to an inline review and verified
-its save/retry/logout behavior in the browser-state harness. Owner was asked to
-close the temporary localhost62069tab before resuming real-browser acceptance.
+browser-state tests passed15checks. After the owner closed the old dialog tab,
+real-browser acceptance of the inline review passed fictional staff login,
+query, audio attestation, cancellation preserving paid coverage, renewal extending
+coverage and clearing expiry tasks, annual activation, return-to-edit without
+saving, audit refresh and logout clearing member data. All records were confined
+to in-memory PostgreSQL with stubbed auth; no production grant, email or AI call.
+Fixed a stale verified-status message after logout and passed both focused browser
+tests plus a real-browser recheck. Plan options were selectable; the earlier AX
+disabled-option rendering did not indicate a functional defect. Screenshot:
+care-admin-browser-accepted.png in the private output folder. This local acceptance
+does not establish production staff access or production paid-member isolation.
 Printable5-page internal training SOP created and visually reviewed; formal URL,
 approved login emails and effective date must follow actual deployment checks.
 
