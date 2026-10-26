@@ -155,3 +155,21 @@ test('editorial lookup runs only after verified allowance, without any conversat
     assert.equal((await send()).status,200);assert.equal(reads,1);assert.equal(calls,1);
   }finally{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
 });
+
+test('private listening acceptance does not switch the existing public assistant entry',async()=>{
+  let legacy=0;
+  const app=express();app.use(express.json());
+  app.use('/chat',createChatRouter({unifiedEnabled:false,listeningEnabled:true,
+    memberBudget:{ready:true,reserveText:async()=>({remainingTextAttempts:139,includedTextAttempts:139,purchasedTextAttempts:0})},
+    contentKnowledge:{snapshot:async()=>null},
+    recommend:async()=>{legacy++;return {message:'Existing assistant retained'};},
+    converse:async prepared=>{assert.equal(prepared.withListening,true);return {reply:'Private unified test',recommendations:[]};}}));
+  const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
+  const base='http://127.0.0.1:'+server.address().port;
+  const send=(path,body)=>fetch(base+path,{method:'POST',headers:{Origin:base,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  try{
+    assert.equal((await send('/chat/conversation',{consent:true,turns:[user('sleep')]})).status,200);
+    assert.equal((await send('/chat/recommend',{consent:true,message:'sleep'})).status,200);
+    assert.equal(legacy,1);
+  }finally{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
+});

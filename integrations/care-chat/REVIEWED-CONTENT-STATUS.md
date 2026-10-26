@@ -54,5 +54,12 @@ The reviewed-content code remains local on its feature branch, not deployed.
 The completed one-time local key handoff was replaced by a read-only results
 page. No test key is retained, and the results page cannot initiate new AI calls.
 
+Owner authorised private customer acceptance for her confirmed Gmail only.
+`FC_CARE_CHAT_LISTENING_ENABLED` permits the integrated conversation in the private
+pilot while `FC_CARE_CHAT_UNIFIED_ENABLED=false` preserves the current public
+entry and legacy routes. The latter must be enabled at the final unified switch
+to close old spending routes. Pilot readiness does not establish a shared cost
+cap on the old public assistant.
+
 The RM15 add-on remains informational until verified payment capture and durable
 credit delivery are connected. Customer sales materials must reflect this boundary.
