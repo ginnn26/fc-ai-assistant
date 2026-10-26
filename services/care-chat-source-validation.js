@@ -1,4 +1,5 @@
 
+const { MAX_THEMES } = require('./care-catalog-limits');
 const FC = "https://frequencies-clinic.learnworlds.com";
 function fcURL(value, playback = false) {
   try {
@@ -39,7 +40,7 @@ function validateFeed(feed, now = Date.now()) {
     typeof feed.version !== "string" ||
     !Array.isArray(feed.items) ||
     !feed.items.length ||
-    feed.items.length > 600
+    feed.items.length > MAX_THEMES
   )
     throw Error("invalid_feed");
   const stamp = Date.parse(feed.publishedAt);

@@ -42,8 +42,12 @@ every recording. The model is explicitly told that catalog titles are metadata,
 not efficacy evidence; it must not invent mechanisms, testimonials, treatment
 claims, EQ improvements, durations or promised changes in another person.
 Cards link to the existing full description. This is not an automatic read of
-all FC content or the private Google shared-content gateway. That verified
-content connection must be integrated before claiming comprehensive knowledge.
+all FC content. The reviewed-content branch now reads published summaries from
+the dedicated Google shared-content gateway; it has not been deployed or checked
+against that real source yet. Missing descriptions remain unknown. Per the
+owner's updated scope, completing every description is not a core launch gate.
+The near-term catalog roadmap is 300 themes, then 1,000+; those are capacity
+targets, not claims about the number of recordings currently available.
 
 ## Validation and remaining gates
 

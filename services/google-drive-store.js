@@ -1,5 +1,6 @@
 // Server-to-server Apps Script client. Never expose this credential to browsers.
 const crypto = require("node:crypto");
+const { MAX_ARCHIVE_BYTES } = require('./care-catalog-limits');
 function endpoint(value) {
   const u = new URL(value);
   if (
@@ -23,7 +24,7 @@ async function boundedJSON(response) {
   let size = 0;
   for await (const part of response.body) {
     size += part.length;
-    if (size > 3_000_000) throw Error("drive_response_too_large");
+    if (size > MAX_ARCHIVE_BYTES) throw Error("drive_response_too_large");
     parts.push(part);
   }
   return JSON.parse(Buffer.concat(parts).toString("utf8"));

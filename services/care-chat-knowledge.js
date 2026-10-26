@@ -47,8 +47,9 @@ function configuredKnowledge() {
 }
 function listeningItems(feed) {
   if (!feed) return seed.items;
+  const originals = new Map(seed.items.map(item => [item.id, item]));
   return feed.items.map(item => {
-    const original = seed.items.find(i => i.id === item.id);
+    const original = originals.get(item.id);
     return { ...original, ...item,
       // Until the public shared reader is released here, use the established
       // FC description page for known themes rather than a broken library URL.

@@ -118,3 +118,23 @@ test('the old public page redirects to the one chat entry only during the unifie
     server.closeAllConnections();await new Promise(resolve=>server.close(resolve));
   }
 });
+
+test('editorial lookup runs only after verified allowance, without any conversation argument',async()=>{
+  let reads=0,calls=0,permitted=false;
+  const app=express();app.use(express.json());
+  app.use('/chat',createChatRouter({unifiedEnabled:true,
+    memberBudget:{ready:true,reserveText:async()=>{
+      if(!permitted)throw Error('member_not_eligible');
+      return {remainingTextAttempts:139,includedTextAttempts:139,purchasedTextAttempts:0};
+    }},contentKnowledge:{snapshot:async(...args)=>{assert.equal(args.length,0);reads++;return null;}},
+    converse:async()=>{calls++;return {status:'conversation',reply:'A little space to talk.',recommendations:[]};}}));
+  const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
+  const base='http://127.0.0.1:'+server.address().port;
+  const send=()=>fetch(base+'/chat/conversation',{method:'POST',headers:{Origin:base,'Content-Type':'application/json'},
+    body:JSON.stringify({consent:true,turns:[user('sleep')]})});
+  try{
+    assert.equal((await send()).status,403);assert.equal(reads,0);assert.equal(calls,0);
+    permitted=true;
+    assert.equal((await send()).status,200);assert.equal(reads,1);assert.equal(calls,1);
+  }finally{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
+});

@@ -70,3 +70,37 @@ test('unconnected source stays explicitly metadata-only',async()=>{
   assert.equal(await createCareKnowledge().snapshot(),null);
   assert.equal(listeningItems(null),seed.items);
 });
+
+test('one thousand newly published themes can be searched without growing the model budget',async()=>{
+  const state=archive();state.catalog=[];state.published={};
+  for(let i=0;i<1000;i++){
+    const item=structuredClone(theme),unit=i.toString(16).padStart(24,'0');
+    item.id='theme-'+i;item.name_en=i===999?'Uncommon Serenity':'Theme '+i;
+    item.name_zh='主题'+i;item.aliases=[];
+    item.description_url='https://frequencies-clinic.learnworlds.com/detail-theme-'+i;
+    item.recordings=[{...item.recordings[0],unit,
+      url:'https://frequencies-clinic.learnworlds.com/path-player?courseid='+item.recordings[0].course+'&unit='+unit}];
+    item.passages=[];item.testimonials=[];
+    state.catalog.push(item);
+  }
+  const feed=await createCareKnowledge({now:()=>now,read:async()=>state}).snapshot();
+  assert.equal(feed.items.length,1000);
+  const prepared=prepareConversation([{role:'user',content:'Uncommon Serenity'}],'en',{
+    withListening:true,listeningItems:listeningItems(feed)});
+  assert.equal(prepared.candidates[0].id,'theme-999');
+  assert.ok(prepared.candidates.length<=6);
+  assert.ok(Buffer.byteLength(JSON.stringify(prepared.input))<=MAX_INPUT_BYTES);
+});
+
+test('long descriptions cannot evict a matching title or send a truncated caution to the model',async()=>{
+  const state=archive();
+  state.published[theme.id].item.passages.push({id:'long-caution',kind:'caution',reviewed:true,
+    zh:'完整注意事项'.repeat(180),en:'A complete caution. '.repeat(60),url:theme.description_url});
+  const feed=await createCareKnowledge({now:()=>now,read:async()=>state}).snapshot();
+  const prepared=prepareConversation([{role:'user',content:'conflict resolution'}],'en',{
+    withListening:true,listeningItems:listeningItems(feed)});
+  assert.ok(prepared.candidates.some(i=>i.id===theme.id));
+  assert.doesNotMatch(JSON.stringify(prepared.input),/A complete caution/);
+  assert.match(JSON.stringify(prepared.input),/Space to reflect after conflict/);
+  assert.ok(Buffer.byteLength(JSON.stringify(prepared.input))<=MAX_INPUT_BYTES);
+});
