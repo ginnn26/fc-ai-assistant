@@ -15,7 +15,7 @@
     discard = false;
   const t = (zh, en) => (lang === "zh" ? zh : en);
   const copy = {
-    title: ["说说此刻的你。", "Tell us how you feel."],
+    title: ["FC 暖心聊聊", "FC Care Chat"],
     intro: [
       "睡眠、情绪，或忙碌一天后的感受。用自己的话说一说，一起找到适合此刻的聆听起点。",
       "Sleep, mood, or how a busy day has left you feeling. Share in your own words and find a listening starting point for today.",
@@ -88,6 +88,7 @@
     return e;
   }
   function paint() {
+    document.title = t("FC 暖心聊聊", "FC Care Chat");
     document.documentElement.lang = lang === "zh" ? "zh-Hans" : "en";
     for (const [id, c] of Object.entries(copy)) $(id).textContent = t(...c);
     $("language").textContent = t("English", "中文");

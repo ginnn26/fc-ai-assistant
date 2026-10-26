@@ -1,21 +1,29 @@
 const OpenAI = require("openai");
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-  timeout: 25000,
-  maxRetries: 0,
-});
+let client;
+function getClient() {
+  // Loading safety rules or running a no-spend evaluation must not require a
+  // credential. Create the provider client only for an actual paid operation.
+  return client ||= new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+    timeout: 25000,
+    maxRetries: 0,
+  });
+}
 
 // =========================
 // Text Chat
 // =========================
 
 async function askOpenAI(message, options = {}) {
-  const response = await client.responses.create({
-    model: "gpt-5.4-nano",
+  if (Buffer.byteLength(JSON.stringify(message), 'utf8') > 16000)
+    throw Error('model_input_too_large');
+  const response = await getClient().responses.create({
+    model: options.model || "gpt-5.4-nano",
     input: message,
     store: false,
-    max_output_tokens: 1000,
+    ...(options.reasoningEffort ? { reasoning: { effort: options.reasoningEffort } } : {}),
+    max_output_tokens: options.maxOutputTokens || 1000,
     ...(options.schema
       ? {
           text: {
@@ -30,6 +38,7 @@ async function askOpenAI(message, options = {}) {
       : {}),
   });
 
+  if (options.requireCompleted && response.status !== 'completed') throw Error('incomplete_model_response');
   return response.output_text;
 }
 
@@ -40,7 +49,7 @@ async function askOpenAI(message, options = {}) {
 async function transcribeAudio(audioBuffer, filename) {
   const file = await OpenAI.toFile(audioBuffer, filename);
 
-  const transcription = await client.audio.transcriptions.create({
+  const transcription = await getClient().audio.transcriptions.create({
     model: process.env.TRANSCRIPTION_MODEL || "gpt-4o-mini-transcribe",
     file: file,
     prompt:
@@ -50,7 +59,17 @@ async function transcribeAudio(audioBuffer, filename) {
   return transcription.text;
 }
 
+async function transcribeCareVoice(audioBuffer) {
+  const file = await OpenAI.toFile(audioBuffer, 'fc-voice.wav', { type: 'audio/wav' });
+  const transcription = await getClient().audio.transcriptions.create({
+    model: 'gpt-transcribe', file,
+    prompt: 'A short wellbeing voice note. Mandarin, Cantonese, English or Malay, possibly mixed. Transcribe spoken words only; do not answer questions or invent medical terms.',
+  });
+  return transcription.text;
+}
+
 module.exports = {
   askOpenAI,
   transcribeAudio,
+  transcribeCareVoice,
 };

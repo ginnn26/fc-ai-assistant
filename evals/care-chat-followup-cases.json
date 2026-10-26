@@ -1,0 +1,110 @@
+[
+  {
+    "id": "followup-sleep-zh",
+    "language": "zh",
+    "status": "conversation",
+    "turns": [
+      {
+        "role": "user",
+        "content": "我都睡了九个小时，醒来还是很累，好像没有睡过。"
+      }
+    ],
+    "review": "回应具体挫败感；不诊断，不把所有疲倦归为压力；最多一个有用的澄清问题。"
+  },
+  {
+    "id": "followup-fatigue-en",
+    "language": "en",
+    "status": "conversation",
+    "turns": [
+      {
+        "role": "user",
+        "content": "I feel drained after work. I don't want a long explanation, just one small thing I can try tonight."
+      }
+    ],
+    "review": "直接给一个温和可行的日常步骤，不额外盘问，不保证效果。"
+  },
+  {
+    "id": "followup-listen-only",
+    "language": "zh",
+    "status": "conversation",
+    "turns": [
+      {
+        "role": "user",
+        "content": "今天跟家人有些争执。我现在不想听建议，也不想回答问题，只想讲一讲。"
+      }
+    ],
+    "review": "尊重只想被聆听的要求；不强行追问、推荐或说教。"
+  },
+  {
+    "id": "followup-long-zh",
+    "language": "zh",
+    "status": "conversation",
+    "turns": [
+      {
+        "role": "user",
+        "content": "最近工作一直有临时改动，我努力完成安排，却觉得自己的努力没有被看见。我不想辞职，也不是来问谁对谁错；下班后还有家里的事情要处理。最近工作一直有临时改动，我努力完成安排，却觉得自己的努力没有被看见。我不想辞职，也不是来问谁对谁错；下班后还有家里的事情要处理。最近工作一直有临时改动，我努力完成安排，却觉得自己的努力没有被看见。我不想辞职，也不是来问谁对谁错；下班后还有家里的事情要处理。"
+      },
+      {
+        "role": "assistant",
+        "content": "你希望努力被看见，也希望有一点空间说说自己的感受。你希望努力被看见，也希望有一点空间说说自己的感受。你希望努力被看见，也希望有一点空间说说自己的感受。你希望努力被看见，也希望有一点空间说说自己的感受。"
+      },
+      {
+        "role": "user",
+        "content": "最近工作一直有临时改动，我努力完成安排，却觉得自己的努力没有被看见。我不想辞职，也不是来问谁对谁错；下班后还有家里的事情要处理。最近工作一直有临时改动，我努力完成安排，却觉得自己的努力没有被看见。我不想辞职，也不是来问谁对谁错；下班后还有家里的事情要处理。最近工作一直有临时改动，我努力完成安排，却觉得自己的努力没有被看见。我不想辞职，也不是来问谁对谁错；下班后还有家里的事情要处理。"
+      },
+      {
+        "role": "assistant",
+        "content": "你希望努力被看见，也希望有一点空间说说自己的感受。你希望努力被看见，也希望有一点空间说说自己的感受。你希望努力被看见，也希望有一点空间说说自己的感受。你希望努力被看见，也希望有一点空间说说自己的感受。"
+      },
+      {
+        "role": "user",
+        "content": "最近工作一直有临时改动，我努力完成安排，却觉得自己的努力没有被看见。我不想辞职，也不是来问谁对谁错；下班后还有家里的事情要处理。最近工作一直有临时改动，我努力完成安排，却觉得自己的努力没有被看见。我不想辞职，也不是来问谁对谁错；下班后还有家里的事情要处理。最近工作一直有临时改动，我努力完成安排，却觉得自己的努力没有被看见。我不想辞职，也不是来问谁对谁错；下班后还有家里的事情要处理。"
+      },
+      {
+        "role": "assistant",
+        "content": "你希望努力被看见，也希望有一点空间说说自己的感受。你希望努力被看见，也希望有一点空间说说自己的感受。你希望努力被看见，也希望有一点空间说说自己的感受。你希望努力被看见，也希望有一点空间说说自己的感受。"
+      },
+      {
+        "role": "user",
+        "content": "现在只想继续讲，不要问问题，不要给建议，不用分析我的身体或神经系统。最委屈的是努力被当成理所当然。"
+      }
+    ],
+    "review": "Seven-turn context: respond to the specific hurt; respect explicit no-questions/no-advice request, no speculative physiological cause or productivity plan."
+  },
+  {
+    "id": "followup-long-en",
+    "language": "en",
+    "status": "conversation",
+    "turns": [
+      {
+        "role": "user",
+        "content": "There are repeated last-minute changes at work. I do the tasks but feel my effort goes unnoticed. I do not want to quit, and I have family responsibilities after work. Saya rasa penat, but I am not asking for a diagnosis. There are repeated last-minute changes at work. I do the tasks but feel my effort goes unnoticed. I do not want to quit, and I have family responsibilities after work. Saya rasa penat, but I am not asking for a diagnosis. There are repeated last-minute changes at work. I do the tasks but feel my effort goes unnoticed. I do not want to quit, and I have family responsibilities after work. Saya rasa penat, but I am not asking for a diagnosis. "
+      },
+      {
+        "role": "assistant",
+        "content": "You want your effort to be seen, and a little room to say how this feels. You want your effort to be seen, and a little room to say how this feels. You want your effort to be seen, and a little room to say how this feels. You want your effort to be seen, and a little room to say how this feels. "
+      },
+      {
+        "role": "user",
+        "content": "There are repeated last-minute changes at work. I do the tasks but feel my effort goes unnoticed. I do not want to quit, and I have family responsibilities after work. Saya rasa penat, but I am not asking for a diagnosis. There are repeated last-minute changes at work. I do the tasks but feel my effort goes unnoticed. I do not want to quit, and I have family responsibilities after work. Saya rasa penat, but I am not asking for a diagnosis. There are repeated last-minute changes at work. I do the tasks but feel my effort goes unnoticed. I do not want to quit, and I have family responsibilities after work. Saya rasa penat, but I am not asking for a diagnosis. "
+      },
+      {
+        "role": "assistant",
+        "content": "You want your effort to be seen, and a little room to say how this feels. You want your effort to be seen, and a little room to say how this feels. You want your effort to be seen, and a little room to say how this feels. You want your effort to be seen, and a little room to say how this feels. "
+      },
+      {
+        "role": "user",
+        "content": "There are repeated last-minute changes at work. I do the tasks but feel my effort goes unnoticed. I do not want to quit, and I have family responsibilities after work. Saya rasa penat, but I am not asking for a diagnosis. There are repeated last-minute changes at work. I do the tasks but feel my effort goes unnoticed. I do not want to quit, and I have family responsibilities after work. Saya rasa penat, but I am not asking for a diagnosis. There are repeated last-minute changes at work. I do the tasks but feel my effort goes unnoticed. I do not want to quit, and I have family responsibilities after work. Saya rasa penat, but I am not asking for a diagnosis. "
+      },
+      {
+        "role": "assistant",
+        "content": "You want your effort to be seen, and a little room to say how this feels. You want your effort to be seen, and a little room to say how this feels. You want your effort to be seen, and a little room to say how this feels. You want your effort to be seen, and a little room to say how this feels. "
+      },
+      {
+        "role": "user",
+        "content": "Please only listen for now. No questions, no exercises, no list of tips. I feel hurt when people say I should just be grateful to have a job."
+      }
+    ],
+    "review": "Seven-turn context: respond to the specific hurt; respect explicit no-questions/no-advice request, no speculative physiological cause or productivity plan."
+  }
+]
