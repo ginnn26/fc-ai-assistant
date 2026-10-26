@@ -2,6 +2,32 @@
 
 ## Current status — 26 October 2026
 
+Final complete local suite passed195checks, with the optional PGlite module
+enabled (no database test skipped). All six migrations ran only in the isolated
+fictional database. The5-page PDF staff SOP was rendered with Poppler and every
+final page visually inspected; it is an internal training draft pending actual
+staff approval, deployment and acceptance. Word rendering was unavailable on
+this host, so the unverified DOCX is internal only and is not delivered.
+
+Owner approved manual per-member operations without a LearnWorlds upgrade and
+requested a complete staff SOP. Intended staff: Agnes, Gin and Andrine (main
+responsible person); exact login emails requested and still pending. Implemented
+a disabled-by-default staff portal/API and a sixth prepared-only migration:
+verified staff allowlist, individually attributed audit, paid date registration,
+renew/cancel/revoke/approval restore, separate FC audio confirmation, paged tasks,
+optimistic versions, unique receipts and retry IDs. No wallet reset or FC mutation.
+Manual operator coverage is now an owner-approved alternative to automatic FC
+expiry sync. See integrations/care-chat/ADMIN-SETUP.md and STAFF-SOP.md.
+Actual staff access, private production configuration, migrations and deployment
+are NOT enabled/applied. Local in-memory PostgreSQL lifecycle/RLS tests and
+browser-state tests passed15checks. Real browser preview passed fictional staff
+login, tasks, search, paid-date display and history. An old native confirm dialog
+blocked further browser checks; changed the UI to an inline review and verified
+its save/retry/logout behavior in the browser-state harness. Owner was asked to
+close the temporary localhost62069tab before resuming real-browser acceptance.
+Printable5-page internal training SOP created and visually reviewed; formal URL,
+approved login emails and effective date must follow actual deployment checks.
+
 Owner clarified that Care Chat and audio recommendation must be ONE service.
 Implemented a gated unified flow locally: local catalog retrieval plus one
 structured model reply/selection, inline bilingual exact-theme-cover cards,

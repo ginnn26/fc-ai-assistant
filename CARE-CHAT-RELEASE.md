@@ -4,6 +4,13 @@ Current release state: **NOT OPEN TO CUSTOMERS**. Local implementation and mocke
 checks are not proof of real delivery, model quality, payment or membership.
 See `CARE-CHAT-READINESS.md` for evidence and current blockers.
 
+Owner has accepted manual staff activation/renewal alongside existing FC work.
+Use integrations/care-chat/ADMIN-SETUP.md for this alternative to automatic
+LearnWorlds expiry sync. Staff portal and sixth migration are prepared locally;
+no staff rights or production membership data have been provisioned. Individual
+Agnes/Gin/Andrine email approvals, real database acceptance and deployment remain
+required. The internal SOP is a training version pending formal activation.
+
 ## First release scope
 
 Owner has now explicitly unified the old voice recommendation assistant and
