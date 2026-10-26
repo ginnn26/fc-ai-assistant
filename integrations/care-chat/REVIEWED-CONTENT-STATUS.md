@@ -61,5 +61,6 @@ entry and legacy routes. The latter must be enabled at the final unified switch
 to close old spending routes. Pilot readiness does not establish a shared cost
 cap on the old public assistant.
 
-The RM15 add-on remains informational until verified payment capture and durable
-credit delivery are connected. Customer sales materials must reflect this boundary.
+The owner cancelled the RM15 add-on on 26 October 2026. It is no longer a pending
+release item. Customer copy offers the included monthly allowance only; the old
+pack URL explains monthly allowance without a price or promised checkout.

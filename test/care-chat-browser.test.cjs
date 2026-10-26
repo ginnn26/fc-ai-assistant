@@ -189,7 +189,7 @@ async function chatFixture(response, voiceInput = false) {
   return { ...f, calls: () => calls };
 }
 
-test('the last send opens optional-pack details; clearing chat cannot reset a depleted allowance', async () => {
+test('the last send explains next month without an upsell; clearing chat cannot reset a depleted allowance', async () => {
   const f = await chatFixture(() => Response.json({ reply: 'Fixture reply', allowance: { remainingTextAttempts: 0, includedTextAttempts: 0, purchasedTextAttempts: 0 } }));
   assert.match(f.element('allowance').textContent, /每月免费 100 次/);
   assert.doesNotMatch(f.element('allowance').textContent, /RM5|本钱|成本/);
@@ -201,7 +201,13 @@ test('the last send opens optional-pack details; clearing chat cannot reset a de
   await f.element('chat-form').onsubmit(submit); assert.equal(f.calls(), 1);
   f.element('language').onclick();
   assert.match(f.element('allowance').textContent, /used/);
-  assert.equal(f.element('extra-rules').href, '/care-chat-pack.html?lang=en');
+  assert.match(f.element('extra-copy').textContent, /1st of next month/);
+  assert.doesNotMatch(f.element('extra-copy').textContent, /RM15|pack|purchas/i);
+  const html = fs.readFileSync(path.join(__dirname, '../public/care-chat.html'), 'utf8');
+  assert.doesNotMatch(html, /extra-rules|care-chat-pack\.html/);
+  const oldPackPage = fs.readFileSync(path.join(__dirname, '../public/care-chat-pack.html'), 'utf8');
+  assert.doesNotMatch(oldPackPage, /RM15|付款功能开放|purchasing opens/i);
+  assert.match(oldPackPage, /目前不提供付费加额服务/);
 });
 
 test('a depleted-server response stops duplicate paid requests and translates its feedback', async () => {
@@ -237,11 +243,12 @@ async function statusFixture(responder) {
   return { ...f, paths };
 }
 
-test('returning customers see actual free and purchased sends before sending; refresh never calls AI', async () => {
+test('returning customers see actual allowance without a purchase offer; refresh never calls AI', async () => {
   const f = await statusFixture(() => Response.json({ allowance: {
     remainingTextAttempts: 102, includedTextAttempts: 97, purchasedTextAttempts: 5 } }));
   assert.match(f.element('allowance').textContent, /102/);
-  assert.match(f.element('allowance-status').textContent, /免费剩余 97 次/);
+  assert.match(f.element('allowance-status').textContent, /附送剩余 97 次/);
+  assert.doesNotMatch(f.element('allowance-status').textContent, /购买|purchased/i);
   assert.equal(f.element('send').disabled, false);
   await f.element('refresh-allowance').onclick();
   assert.equal(f.paths.filter(p => p === '/chat/allowance').length, 2);
@@ -312,7 +319,7 @@ test('a valid reply is rendered as text even when it contains HTML-like characte
   assert.equal(f.calls(),1);
 });
 
-test('a low balance shows a bilingual gentle warning without charging or requiring a pack', async () => {
+test('a low balance shows a bilingual renewal reminder without a pack offer', async () => {
   const f=await statusFixture(()=>Response.json({allowance:{remainingTextAttempts:3,includedTextAttempts:3,purchasedTextAttempts:0}}));
   assert.equal(f.element('allowance-tip').hidden,false);
   assert.match(f.element('allowance-tip').textContent,/还可发送 3 次/);
@@ -320,6 +327,7 @@ test('a low balance shows a bilingual gentle warning without charging or requiri
   assert.equal(f.element('send').disabled,false);
   f.element('language').onclick();
   assert.match(f.element('allowance-tip').textContent,/3 sends remain/);
+  assert.doesNotMatch(f.element('allowance-tip').textContent,/pack|purchas/i);
   assert.equal(f.paths.includes('/chat/conversation'),false);
 });
 
