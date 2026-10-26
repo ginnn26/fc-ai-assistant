@@ -51,16 +51,14 @@
     $('allowance-status').textContent = allowanceError
       ? errorCode === 'member_not_eligible' ? t(...errors.member_not_eligible) : t('暂时未能查到剩余次数，请点「刷新次数」。查询不会扣次数。', 'We could not check your remaining sends. Select “Refresh allowance”. Checking uses no sends.')
       : checkingAllowance ? t('正在查看你的剩余次数，不会扣次数。', 'Checking your remaining sends. This uses no sends.')
-      : allowance && supportsStatus ? t(`本月免费剩余 ${allowance.includedTextAttempts} 次 · 已购买剩余 ${allowance.purchasedTextAttempts} 次。`, voiceEnabled
-        ? `${allowance.includedTextAttempts} included units left · ${allowance.purchasedTextAttempts} purchased units left.`
-        : `${allowance.includedTextAttempts} included sends left · ${allowance.purchasedTextAttempts} purchased sends left.`) : '';
+      : allowance && supportsStatus ? t(`本月附送剩余 ${allowance.includedTextAttempts} 次。`, voiceEnabled
+        ? `${allowance.includedTextAttempts} included units left.`
+        : `${allowance.includedTextAttempts} included sends left.`) : '';
     const low = allowanceReady && !checkingAllowance && !allowanceError && allowance && allowance.remainingTextAttempts > 0 && allowance.remainingTextAttempts <= 10;
     $('allowance-tip').hidden = !low;
-    $('allowance-tip').textContent = low && !voiceEnabled ? t(`温馨提醒：还可发送 ${allowance.remainingTextAttempts} 次。用完后可等下月更新，加额由你自由选择。`, `A gentle reminder: ${allowance.remainingTextAttempts} sends remain. You can wait for next month or choose an optional pack.`) : low ? t(`温馨提醒：还剩 ${allowance.remainingTextAttempts} 次额度。打字发送用 1 次；录音转文字再发送合共用 2 次。用完后可等下月更新，加额由你自由选择。`, `A gentle reminder: ${allowance.remainingTextAttempts} units remain. A typed send uses 1; converting and sending a voice note uses 2. You can wait for next month or choose an optional pack.`) : '';
-    $('extra-title').textContent = t('想多聊一会儿？', 'A little more time to talk?');
-    $('extra-copy').textContent = t('你可以等下个月的新额度。聊天加额包计划每份 RM15，自由选择，不会自动扣款。付款功能尚未开放。', 'You can wait for next month’s included allowance. An optional Extra Chat Pack is planned at RM15 per pack, with no automatic charge. Purchasing is not available yet.');
-    $('extra-rules').textContent = t('查看加额包说明', 'Read pack details');
-    $('extra-rules').href = '/care-chat-pack.html?lang=' + lang;
+    $('allowance-tip').textContent = low && !voiceEnabled ? t(`温馨提醒：还可发送 ${allowance.remainingTextAttempts} 次。附送额度会在下个月 1 日更新。`, `A gentle reminder: ${allowance.remainingTextAttempts} sends remain. Included allowance renews on the 1st of next month.`) : low ? t(`温馨提醒：还剩 ${allowance.remainingTextAttempts} 次额度。打字发送用 1 次；录音转文字再发送合共用 2 次。附送额度会在下个月 1 日更新。`, `A gentle reminder: ${allowance.remainingTextAttempts} units remain. A typed send uses 1; converting and sending a voice note uses 2. Included allowance renews on the 1st of next month.`) : '';
+    $('extra-title').textContent = t('照顾自己，慢慢来。', 'Keep making time for yourself.');
+    $('extra-copy').textContent = t('本月聊天额度已用完。付费会员资格有效期间，附送额度会在下个月 1 日按马来西亚时间更新。你仍可按会员权限聆听音疗，也可以继续每日打卡。', 'Your chat allowance for this month has been used. Included allowance renews on the 1st of next month in Malaysia time while your paid membership remains active. You can keep listening within your membership and continue your daily check-ins.');
     $('extra-panel').hidden = !exhausted;
     $('error').textContent = errorCode ? t(...(errors[errorCode] || errors.fallback)) : '';
   }

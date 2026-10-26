@@ -67,5 +67,6 @@ configuration; run real model checks at the final200token structured-output cap;
 verify actual audio transcription and FC iframe/mobile permission behavior;
 confirm real multi-account wallet isolation and the FC page switch. SMTP and
 the owner's real code/identity/refresh/logout round trip have already passed.
-No additional customer charge or paid plan was introduced. RM15 packs remain
-an information preview until authoritative payment and credit handling exist.
+No additional customer charge or paid plan was introduced. On 26 October 2026
+the owner cancelled RM15 paid packs. There is no planned checkout integration;
+the customer interface now explains the monthly renewal without an upsell.

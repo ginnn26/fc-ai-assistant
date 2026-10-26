@@ -3,9 +3,9 @@
   function paint() {
     const english = language === 'en';
     document.documentElement.lang = english ? 'en' : 'zh-Hans';
-    document.title = english ? 'Extra Chat Pack · FC' : '聊天加额包 · FC';
-    document.getElementById('pack-title').textContent = english ? 'Extra Chat Pack' : '聊天加额包';
-    document.getElementById('pack-intro').textContent = english ? 'A little more time to talk, whenever you choose.' : '想多聊一会儿，由你自己选择。';
+    document.title = english ? 'Monthly chat allowance · FC' : '每月聊天额度 · FC';
+    document.getElementById('pack-title').textContent = english ? 'Your monthly chat allowance' : '每月聊天额度';
+    document.getElementById('pack-intro').textContent = english ? 'Keep making time for yourself.' : '照顾自己，慢慢来。';
     document.getElementById('back').textContent = english ? '← Care Chat' : '← 暖心聊聊';
     document.getElementById('back').href = '/care-chat.html?lang=' + language;
     document.getElementById('language').textContent = english ? '中文' : 'English';
