@@ -2,6 +2,16 @@
 
 ## Current status — 26 October 2026
 
+SMTP repair verified: owner generated a fresh Standard SMTP credential named
+FC Care Chat OTP 2 and personally saved it in Supabase. Agent did not read or
+enter the credential. A single authorized owner-address /auth/v1/otp test
+returned HTTP200. Brevo now shows the new key used on26October and a Sent plus
+Delivered event for the FC verify-email message to the owner. Old key retained.
+Private evidence: smtp-new-key-test.json and brevo-new-key-delivered.png.
+This proves SMTP authentication and provider-reported delivery, not OTP entry,
+successful user sign-in, paid-member eligibility or a production release.
+No paid AI call, customer import, plan change or deployment occurred.
+
 Owner explicitly authorized reading only Brevo ticket5636055 and LearnWorlds
 ticket395581 in Gmail. LearnWorlds Support Bot replied at03:11 Malaysia time:
 Pro Trainer has no supported Zapier-only read/sync route for enrollment expiry,
