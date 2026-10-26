@@ -36,9 +36,26 @@ test('a request only to be heard excludes recommendation candidates',async()=>{
   assert.deepEqual(candidatesFor(history),[]);
   const prepared=prepareConversation(history,'zh',{withListening:true});
   const result=await answerConversation(prepared,{ask:async(_,options)=>{
-    assert.equal(options.schema,undefined);return '嗯，你可以慢慢说，我先听你说。';
+    assert.ok(options.schema);return JSON.stringify({reply:'嗯，你可以慢慢说，我先听你说。',ids:[]});
   }});
   assert.deepEqual(result.recommendations,[]);
+});
+
+test('unified replies never expose JSON when there are no listening candidates',async()=>{
+  const prepared=prepareConversation([user('Just listen to me, no advice please.')],'en',{withListening:true});
+  assert.deepEqual(prepared.candidates,[]);
+  const result=await answerConversation(prepared,{ask:async(_,options)=>{
+    assert.ok(options.schema);
+    return JSON.stringify({reply:'Take your time. I am listening.',ids:[]});
+  }});
+  assert.equal(result.reply,'Take your time. I am listening.');
+  assert.deepEqual(result.recommendations,[]);
+  await assert.rejects(()=>answerConversation(prepared,{ask:async()=>JSON.stringify({reply:'Hi',ids:['invented']})}),/invalid_chat_response/);
+});
+
+test('natural English descriptions of arguing with a colleague find Conflict Resolution',()=>{
+  const prepared=prepareConversation([user('For two weeks I have been arguing with a colleague. I want a related FC listening theme, but I do not want to be told I must apologise.')],'en',{withListening:true});
+  assert.ok(prepared.candidates.some(i=>i.id==='conflict_resolution'));
 });
 
 test('invented tracks, malformed selections and hostile URLs never become listening cards',()=>{
