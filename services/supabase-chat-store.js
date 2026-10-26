@@ -1,7 +1,7 @@
 const crypto = require('node:crypto');
 const { createMemberMonthlyBudget } = require('./member-monthly-budget');
 
-function createSupabaseChatStore({ url, publicKey, serverKey, eligibleEmailHashes = null, requirePaidMembership = false, fetcher = fetch } = {}) {
+function createSupabaseChatStore({ url, publicKey, serverKey, eligibleEmailHashes = null, demoEmailHashes = [], requirePaidMembership = false, fetcher = fetch } = {}) {
   let origin;
   try {
     const parsed = new URL(url);
@@ -10,6 +10,8 @@ function createSupabaseChatStore({ url, publicKey, serverKey, eligibleEmailHashe
     origin = parsed.origin;
   } catch { return { ready: false }; }
   if (!publicKey || !serverKey) return { ready: false };
+  if (!Array.isArray(demoEmailHashes) || demoEmailHashes.length > 30 || demoEmailHashes.some(v => !/^[a-f0-9]{64}$/.test(v))) return { ready: false };
+  const demos = new Set(demoEmailHashes);
   const eligible = eligibleEmailHashes === null ? null : new Set(eligibleEmailHashes);
   const request = async (path, headers, body) => {
     const response = await fetcher(origin + path, {
@@ -24,6 +26,9 @@ function createSupabaseChatStore({ url, publicKey, serverKey, eligibleEmailHashe
   const emailHash = email => crypto.createHash('sha256').update(email.trim().toLowerCase()).digest('hex');
   async function paidMembership(email) {
     if (typeof email !== 'string' || !email.trim()) return false;
+    // Owner-approved team demo access is separate from payment records and
+    // operator privileges. It still requires verified Auth and the same wallet.
+    if (demos.has(emailHash(email))) return true;
     const response = await request('/rest/v1/rpc/fc_chat_paid_membership', serverHeaders,
       { p_email_hash: emailHash(email) });
     if (!response.ok) throw Error('member_verification_unavailable');
@@ -83,6 +88,7 @@ function createConfiguredMemberBudget(env = process.env) {
   if (mode === 'pilot' && (!hashes.length || hashes.length > 1000 || hashes.some(v => !/^[a-f0-9]{64}$/.test(v)))) return createMemberMonthlyBudget();
   const connection = createSupabaseChatStore({ url: env.FC_SUPABASE_URL,
     publicKey: env.FC_SUPABASE_PUBLISHABLE_KEY, serverKey: env.FC_SUPABASE_SERVER_KEY,
+    demoEmailHashes: mode === 'paid' ? String(env.FC_CARE_CHAT_DEMO_EMAIL_HASHES || '').split(',').map(v => v.trim()).filter(Boolean) : [],
     eligibleEmailHashes: mode === 'pilot' ? hashes : null, requirePaidMembership: mode === 'paid' });
   if (!connection.ready) return createMemberMonthlyBudget();
   const budget = createMemberMonthlyBudget({ verifyMember: connection.verifyMember,

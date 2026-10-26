@@ -122,3 +122,53 @@ test('paid configuration selects the durable membership check without silently u
   assert.equal(typeof createConfiguredMemberBudget(env).canRequestCode, 'function');
   assert.equal(createConfiguredMemberBudget({ ...env, FC_CARE_CHAT_ACCESS_MODE: 'typo' }).ready, false);
 });
+
+test('team demo access requires verified Auth and keeps the ordinary durable wallet', async () => {
+  const hash = require('node:crypto').createHash('sha256').update('demo@example.test').digest('hex');
+  let user = { id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', email: ' Demo@EXAMPLE.test ', email_confirmed_at: '2026-10-26' };
+  const calls = [];
+  const connection = createSupabaseChatStore({ ...config, requirePaidMembership: true, demoEmailHashes: [hash],
+    fetcher: async (url, options) => {
+      calls.push(url);
+      if (url.endsWith('/auth/v1/user')) return Response.json(user);
+      if (url.endsWith('/fc_chat_paid_membership')) return Response.json({ eligible: false });
+      assert.equal(url, config.url + '/rest/v1/rpc/fc_reserve_chat');
+      assert.equal(JSON.parse(options.body).p_limit_sen, 700);
+      return Response.json({ ok: true });
+    } });
+  const req = { headers: { authorization: token }, body: { email: 'demo@example.test', demo: true } };
+  assert.equal(await connection.canRequestCode('demo@example.test'), true);
+  assert.deepEqual(await connection.verifyMember(req), { subject: user.id });
+  assert.equal(calls.some(url => url.endsWith('/fc_chat_paid_membership')), false);
+  await connection.store.reserve({ member: 'a'.repeat(64), month: '2026-10', amountSen: 5, limitSen: 700, requestId: 'demo' });
+  user = { ...user, email: 'other@example.test' };
+  await assert.rejects(connection.verifyMember(req), /member_not_eligible/);
+  user = { ...user, email: 'demo@example.test', is_anonymous: true };
+  assert.equal(await connection.verifyMember(req), null);
+  user = { ...user, is_anonymous: false, email_confirmed_at: null };
+  assert.equal(await connection.verifyMember(req), null);
+  assert.equal(await connection.verifyMember({ body: { email: 'demo@example.test' } }), null);
+});
+
+test('removing team demo eligibility returns the account to the paid check without changing wallet identity', async () => {
+  const hash = require('node:crypto').createHash('sha256').update('demo@example.test').digest('hex');
+  const subject = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+  const fetcher = async url => url.endsWith('/auth/v1/user')
+    ? Response.json({ id: subject, email: 'demo@example.test', email_confirmed_at: '2026-10-26' })
+    : Response.json({ eligible: false });
+  const before = createSupabaseChatStore({ ...config, requirePaidMembership: true, demoEmailHashes: [hash], fetcher });
+  assert.deepEqual(await before.verifyMember({ headers: { authorization: token } }), { subject });
+  const after = createSupabaseChatStore({ ...config, requirePaidMembership: true, demoEmailHashes: [], fetcher });
+  await assert.rejects(after.verifyMember({ headers: { authorization: token } }), /member_not_eligible/);
+  assert.equal(await after.canRequestCode('demo@example.test'), false);
+});
+
+test('invalid demo configuration fails closed', () => {
+  for (const demoEmailHashes of ['all', ['not-a-hash'], Array(31).fill('a'.repeat(64))]) {
+    assert.equal(createSupabaseChatStore({ ...config, demoEmailHashes }).ready, false);
+  }
+  const env = { FC_CARE_CHAT_ENABLED: 'true', FC_CARE_CHAT_ACCESS_MODE: 'paid', FC_SUPABASE_URL: config.url,
+    FC_SUPABASE_PUBLISHABLE_KEY: config.publicKey, FC_SUPABASE_SERVER_KEY: config.serverKey,
+    FC_CARE_CHAT_MEMBER_HASH_SECRET: 'x'.repeat(32), FC_CARE_CHAT_DEMO_EMAIL_HASHES: 'invalid' };
+  assert.equal(createConfiguredMemberBudget(env).ready, false);
+});
