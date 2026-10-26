@@ -24,11 +24,11 @@
     short: ['录音太短，请再说一小段。还没有上传。', 'That recording was too short. Try a little longer. Nothing was uploaded.'],
     capture: ['录音中断，麦克风已关闭。还没有上传，你可以重录或打字。', 'Recording was interrupted and the microphone is off. Nothing was uploaded. You can record again or type.'],
     review: ['先回听，再选择转成文字。录音尚未上传。', 'Listen back, then choose to convert. The recording has not been uploaded.'],
-    consent: ['请先勾选下方的处理同意，再转成文字。', 'Please tick the processing consent below before converting.'],
+    consent: ['请先勾选聊天处理同意，再转成文字。', 'Please tick the chat processing consent before converting.'],
     converted: ['文字已放进输入框。请核对症状、数字和药名，再按发送。', 'Your transcript is in the draft. Check symptoms, numbers and medicine names before sending.'],
     speech_not_clear: ['没有听清楚，请重录或直接打字。识别已开始时仍可能使用一次额度。', 'We could not hear clear speech. Try recording again or type. A conversion that began may still use one allowance unit.'],
     please_shorten: ['内容较长，请分成短一点的留言。', 'Please split this into a shorter voice note.'],
-    monthly_allowance_reached: ['可用次数已用完。请查看下方的额度说明。', 'Your allowance has been used. Check the allowance information below.'],
+    monthly_allowance_reached: ['可用次数已用完。请查看额度说明。', 'Your allowance has been used. Check the allowance information.'],
     failed: ['未能取得文字，请稍后再试或打字。不会自动重试，已开始的识别可能使用一次额度。', 'We could not retrieve a transcript. Try later or type. We will not retry automatically; a conversion that began may use one allowance unit.'],
     invalid_voice_audio: ['这段录音格式无法读取，请重新录音。这次没有进行识别。', 'We could not read this recording format. Record again. No transcription was started.'],
     voice_duration_invalid: ['录音需在半秒至 60 秒之间，请重新录音。这次没有进行识别。', 'Record between half a second and 60 seconds. No transcription was started.'],
@@ -37,7 +37,8 @@
     voice_input_not_ready: ['录音转文字暂未开放，请先用打字聊天。', 'Voice conversion is not open yet. Please type for now.'],
   };
   function paint() {
-    $('voice-panel').hidden = !enabled;
+    $('voice-panel').hidden = !enabled || phase === 'idle' && !status;
+    $('record-voice').hidden = !enabled;
     $('voice-wave').classList.toggle('is-recording', phase === 'recording');
     $('voice-title').textContent = t('不想打字？轻轻说一说。', 'Prefer to speak? Take your time.');
     $('voice-hint').textContent = remainingUnits === 1 && phase === 'idle'
@@ -45,6 +46,7 @@
       : t('最多 60 秒 · 先转文字，再确认发送', 'Up to 60 seconds · Convert, review, then send');
     $('voice-cost').textContent = t('录音和回听不扣次数。按「转成文字」使用 1 次，确认发送再使用 1 次，与打字共用额度。', 'Recording and playback use no allowance. Conversion uses 1 unit; sending the reviewed text uses another. Both share your chat allowance.');
     $('record-voice-label').textContent = phase === 'recording' ? t('结束录音', 'Stop recording') : phase === 'starting' ? t('准备麦克风…', 'Preparing microphone…') : t('录音说一说', 'Record a voice note');
+    $('record-voice').title = $('record-voice-label').textContent;
     $('record-voice').disabled = !supported || (phase !== 'recording' && (!allowed || phase !== 'idle'));
     $('record-voice').classList.toggle('recording', phase === 'recording');
     $('convert-voice').textContent = phase === 'converting' ? t('正在转文字…', 'Converting…') : t('转成文字（用 1 次）', 'Convert to text (1 unit)');

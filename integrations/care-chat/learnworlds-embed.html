@@ -1,0 +1,27 @@
+<!-- FC /ai-assustant: bounded message history and a persistent composer.
+     Keep microphone permission on this iframe; do not restore min-height:720px. -->
+<div id="fc-care-embed" style="max-width:1120px;margin:auto;background:#f7f4ec">
+  <p style="padding:8px 16px;margin:0;color:#4e6557;font:13px/1.6 Arial,sans-serif">
+    <a href="https://fc-ai-assistant.onrender.com/care-chat.html" target="_blank" rel="noopener" style="color:#244b3e;text-decoration:underline">全屏聊天 / Open full screen ↗</a>
+  </p>
+  <iframe id="fc-care-frame" src="https://fc-ai-assistant.onrender.com/care-chat.html" width="100%" height="650" style="display:block;border:0;height:calc(100dvh - 125px);min-height:280px;max-height:900px;background:#f7f4ec;border-radius:16px" allow="microphone" referrerpolicy="no-referrer" title="FC 暖心聊聊 · Care Chat"></iframe>
+</div>
+<script>
+(function () {
+  var frame = document.getElementById('fc-care-frame');
+  if (!frame) return;
+  function fitChat() {
+    // Match the visible phone viewport when the keyboard opens in the school page.
+    var viewport = window.visualViewport;
+    var height = viewport ? viewport.height : window.innerHeight;
+    var top = frame.getBoundingClientRect().top - (viewport ? viewport.offsetTop : 0);
+    frame.style.height = Math.max(180, Math.min(900, height - Math.max(0, top) - 8)) + 'px';
+    frame.style.minHeight = '180px';
+  }
+  window.addEventListener('resize', fitChat);
+  window.addEventListener('load', fitChat);
+  frame.addEventListener('load', fitChat);
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', fitChat);
+  fitChat();
+}());
+</script>
