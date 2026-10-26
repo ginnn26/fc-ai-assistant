@@ -4,6 +4,13 @@ Current release state: **NOT OPEN TO CUSTOMERS**. Local implementation and mocke
 checks are not proof of real delivery, model quality, payment or membership.
 See `CARE-CHAT-READINESS.md` for evidence and current blockers.
 
+Staff portal deployed 26 October 2026 via merged PR #13, production fe637cd.
+https://fc-ai-assistant.onrender.com/care-admin.html
+Owner-approved four-email allowlist and Supabase backend settings are active.
+Eight deployed HTTP smoke checks passed; authenticated owner-staff acceptance is
+in progress. Customer chat/unified/voice remain disabled. Do not interpret staff
+deployment as completion of the customer service or individual staff training.
+
 Owner has accepted manual staff activation/renewal alongside existing FC work.
 Use integrations/care-chat/ADMIN-SETUP.md for this alternative to automatic
 LearnWorlds expiry sync. Staff portal and sixth migration are prepared locally;

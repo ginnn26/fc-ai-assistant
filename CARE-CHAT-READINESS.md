@@ -2,6 +2,41 @@
 
 ## Current status — 26 October 2026
 
+Owner completed real staff sign-in in the existing staff tab. UI displayed
+verified staff and actual protected tasks returned total 0 without errors.
+Queried only acceptance-20261026@example.com: actual protected RPC returned no
+membership and the activation form. No save/activation was submitted and no
+real member was changed. Authenticated staff identity, service-role database
+connection, tasks and exact-email lookup have now passed. This does not establish
+Gin/Andrine individual sign-in, concurrent deployed writes or customer chat
+acceptance. Those remain separate launch/training gates. Screenshot
+care-admin-owner-authenticated.png in private output.
+
+Owner reported missing staff OTP. Checked the owner's current live page: it
+showed invalid/expired-code feedback. Live Render's approved-owner hash is present
+and matches the prepared roster. Supabase auth logs show /otp 200 and previous
+/verify 403 otp_expired, with no SMTP failure for this attempt. Sent ONE fresh
+owner OTP after clearing the old code; Brevo then showed Sent and Delivered at
+13:06 Malaysia for that request. This proves transport acceptance, not inbox
+placement or successful staff sign-in. Asked owner to locate/expand the newest FC
+email (including spam) and use that code without resending. No mail contents or
+OTP values read, no credential rotation, no customer grants or code redeploy.
+Screenshot staff-otp-delivered-20261026.png in private output. Staff authenticated
+RPC acceptance remains pending.
+
+PR #13 https://github.com/ginnn26/fc-ai-assistant/pull/13 merged after successful
+owner GitHub email verification. Production source fe637cd1f71abf421b2077335267ef49616ba52e
+matches the locally tested tree. No auto-deploy appeared; Dashboard Deploy latest
+commit started dep-dbfdp74s728c73f20h50, now LIVE. Eight actual HTTP smoke checks
+passed: health, assessment, retained legacy entry, staff HTML/CSP, staff features
+ready, no-login query 401, foreign-origin query 403, customer chat/unified/voice
+closed. Report care-admin-release-smoke.json in private output. Staff source and
+approved allowlist configuration are deployed; no paid member records imported.
+Requested one actual staff OTP for the owner's approved Gmail through the live
+staff page; UI acknowledged the request. Owner must complete the code personally.
+Actual authenticated staff/RPC acceptance is still pending, as are individual
+Gin/Andrine login checks. Customer Care Chat is NOT enabled or declared complete.
+
 Owner explicitly approved the Supabase-to-Render backend secret connection and
 all four exact staff email identities. Saved FC_SUPABASE_URL, publishable key,
 existing legacy service-role backend key, staff hashes/labels and enabled admin
