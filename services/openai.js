@@ -63,7 +63,7 @@ async function transcribeCareVoice(audioBuffer) {
   const file = await OpenAI.toFile(audioBuffer, 'fc-voice.wav', { type: 'audio/wav' });
   const transcription = await getClient().audio.transcriptions.create({
     model: 'gpt-transcribe', file,
-    prompt: 'A short wellbeing voice note. Mandarin, Cantonese, English or Malay, possibly mixed. Context: Frequencies Clinic (FC), 频率音疗, 暖心聊聊, Conflict Resolution, Rebalance, Reconnect, Intensive, Smooth, BGM. Transcribe spoken words only; do not answer questions or invent medical terms.',
+    prompt: 'A short wellbeing voice note. Mandarin, Cantonese, English or Malay, possibly mixed. Context: Frequencies Clinic (FC), 频率音疗, 暖心聊聊, 小暖 Sunny, Conflict Resolution, Rebalance, Reconnect, Intensive, Smooth, BGM. Transcribe spoken words only; do not answer questions or invent medical terms.',
   });
   return transcription.text;
 }

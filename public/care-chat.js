@@ -16,7 +16,7 @@
     document.documentElement.lang = lang === 'zh' ? 'zh-Hans' : 'en';
     document.title = $('title').textContent = t('FC 暖心聊聊', 'FC Care Chat');
     $('language').textContent = t('English', '中文');
-    $('intro').textContent = t('说说今天的感受，我们一起慢慢了解，再找到适合此刻的频率音疗。打字或说话都可以。', 'Talk through how today feels. We can understand it together and explore a suitable FC listening theme. Type or use your voice.');
+    $('intro').textContent = t('我是小暖 Sunny，FC 的 AI 聊天伙伴。说说心事、整理心情，或找适合此刻的音疗，都可以慢慢跟我聊。打字或说话都可以。', 'Hi, I’m Sunny, your FC AI chat companion. Take your time to share what’s on your mind, talk through how you feel, or explore a suitable FC listening theme. Type or use your voice.');
     $('message-label').textContent = voiceEnabled ? t('打字，或点麦克风说一说', 'Type, or tap the microphone') : t('今天的你，感觉怎么样？', 'How are you feeling today?');
     document.documentElement.className = window.FCCareAuth.signedIn() ? 'chat-active' : '';
     $('chat-room').hidden = !window.FCCareAuth.signedIn();
