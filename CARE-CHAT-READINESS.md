@@ -11,6 +11,13 @@ RLS, activation, member isolation, retry, duplicate receipt, version conflict,
 paid-through cancellation, revoke and audit. Fictional fixtures rolled back.
 Screenshot care-admin-production-db-verified.png. Server credentials, staff
 access activation, deployed API acceptance and customer release remain pending.
+Full release suite re-run after the logout fix: 195 passed, no skips. Git remote
+main matches the live commit. A normal release-branch push could not authenticate;
+started the installed official Git Credential Manager device flow and reached
+the GitHub authorization review without accepting it. Owner action-time approval
+is pending for that app's broad repo/Gist/workflow scopes, and separately for the
+Supabase-to-Render secret connection and four staff identities. No source upload,
+production environment change or staff privilege activation has occurred.
 
 Owner supplied four login emails for Agnes (two), Gin and Andrine (one each).
 Prepared disabled SHA256 allowlist/name mapping outside the repository at
