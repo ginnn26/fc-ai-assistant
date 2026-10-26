@@ -7,16 +7,17 @@ See `CARE-CHAT-READINESS.md` for evidence and current blockers.
 Staff portal deployed 26 October 2026 via merged PR #13, production fe637cd.
 https://fc-ai-assistant.onrender.com/care-admin.html
 Owner-approved four-email allowlist and Supabase backend settings are active.
-Eight deployed HTTP smoke checks passed; authenticated owner-staff acceptance is
-in progress. Customer chat/unified/voice remain disabled. Do not interpret staff
+Eight deployed HTTP smoke checks, the owner's actual staff sign-in, protected
+tasks and fictional-email query passed. Customer chat/unified/voice remain disabled. Do not interpret staff
 deployment as completion of the customer service or individual staff training.
 
 Owner has accepted manual staff activation/renewal alongside existing FC work.
 Use integrations/care-chat/ADMIN-SETUP.md for this alternative to automatic
-LearnWorlds expiry sync. Staff portal and sixth migration are prepared locally;
-no staff rights or production membership data have been provisioned. Individual
-Agnes/Gin/Andrine email approvals, real database acceptance and deployment remain
-required. The internal SOP is a training version pending formal activation.
+LearnWorlds expiry sync. Staff portal and sixth migration are deployed; four
+email identities are approved and configured. No real customer memberships have
+been imported or activated. Gin/Andrine individual sign-in, concurrent deployed
+writes and customer acceptance remain required. The internal SOP distinguishes
+the staff deployment from the still-closed customer service.
 
 ## First release scope
 
