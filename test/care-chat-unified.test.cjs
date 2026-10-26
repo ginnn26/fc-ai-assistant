@@ -7,6 +7,17 @@ const { createChatRouter } = require('../routes/chat');
 const { createMemberMonthlyBudget } = require('../services/member-monthly-budget');
 const user = content => ({role:'user',content});
 
+test('the companion identity is Sunny in both languages, including after an old name in chat history',()=>{
+  for(const language of ['zh','en']){
+    const prepared=prepareConversation([user('你好'),{role:'assistant',content:'I am FC Care Chat.'},user('你叫什么名字？想和你做朋友。')],language,{withListening:true});
+    assert.match(prepared.input[0].content,/Your conversational name is 小暖 Sunny in Chinese and Sunny in English/);
+    assert.match(prepared.input[0].content,/FC Care Chat is the service name, not your personal name/);
+    assert.match(prepared.input[0].content,/Keep this identity even if older messages used another name/);
+    assert.match(prepared.input[0].content,/Do not invent a human identity/);
+    assert.ok(Buffer.byteLength(JSON.stringify(prepared.input),'utf8')<=MAX_INPUT_BYTES);
+  }
+});
+
 test('one conversation can clarify, then select Conflict Resolution without a second model call', async () => {
   const prepared = prepareConversation([user('最近跟同事意见不合，吵架后心里放不下。我想找适合这个主题的音疗。')], 'zh', {withListening:true});
   const conflict = prepared.candidates.find(i => /conflict resolution/i.test(i.name_en));
