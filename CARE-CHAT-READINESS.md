@@ -2,6 +2,14 @@
 
 ## Current status — 26 October 2026
 
+Further actual-school report inspection: Scheduled reports is a higher-plan
+upgrade gate; detailed course-progress ZIP export also shows Upgrade. Ordinary
+user CSV/XLS export exists, but authoritative per-enrollment expiry/revocation
+columns remain unproven. Limited the progress report to the authorized owner
+test email (one user); closed the export dialog without downloading records,
+saving segments, editing tags or changing memberships. Await human ticket395581
+confirmation before selecting an export integration. No plan upgrade requested.
+
 Owner completed the real received-code sign-in check through the temporary
 loopback page. The existing createEmailAuth implementation verified the code,
 GET /auth/v1/user confirmed the authenticated email, refresh succeeded, and

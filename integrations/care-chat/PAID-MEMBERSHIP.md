@@ -27,6 +27,24 @@ workflow are implemented and verified. An enrollment-only trigger is insufficien
 
 ## Backend enforcement details
 
+### Additional actual-school report checks
+
+Read-only26October checks in the owner dashboard:
+- Users > All users > Actions offers CSV/XLS export. That menu alone does not
+  establish that per-product expiry or revocation fields are exported.
+- Reports > Scheduled reports explicitly displays a higher-plan upgrade gate;
+  Schedule report is disabled. No scheduled job was created.
+- Reports center > Overall user progress can be filtered by the owner's
+  authorized test email. Confirmed the filtered result contains one user.
+- Its Actions > Export user progress as zip dialog offers course selection,
+  but detailed course reports show Upgrade. The dialog describes course status,
+  progress, time and scores; this is not proof of authoritative expiry fields.
+- Closed the export dialog without requesting/downloading any report. No
+  customer export, saved segment, tag edit, access change or upgrade occurred.
+
+The current-plan export alternative remains unverified. Do not describe the
+mere presence of an export button as an automatic eligibility integration.
+
 `FC_CARE_CHAT_ACCESS_MODE=pilot` remains the default and requires the explicit
 pilot email-hash roster. `paid` selects a separate private-database eligibility
 lookup after Supabase verifies the bearer and canonical email. A browser email,
