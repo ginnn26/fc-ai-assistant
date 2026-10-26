@@ -7,7 +7,12 @@ No separate recommendation/chat products or separate RM7 allowances.
 ## Implemented locally
 
 - Existing bounded voice-draft input and text messages use one verified member
-  wallet. Conversion reserves one5sen unit; reviewed text send reserves one more.
+  wallet. Conversion reserves one5sen unit; the following chat send reserves one more.
+  Customers can explicitly send a finished voice note in one action: the browser
+  converts it, then submits the transcript to the same protected conversation
+  route. Optional text preview still converts only, with a separate later send.
+  Recording and playback are local and free. A failed stage never auto-retries;
+  a successful transcript is preserved if the chat stage cannot finish.
   Local recording/playback and allowance reads do not call a paid provider.
 - Unified conversation locally narrows the owner-recorded catalog; a single
   bounded model call produces a short reply and zero-to-three catalog IDs.

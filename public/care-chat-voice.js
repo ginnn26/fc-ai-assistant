@@ -23,7 +23,7 @@
     draft: ['请先发送或清空当前文字，再开始录音。', 'Send or clear your current draft before recording.'],
     short: ['录音太短，请再说一小段。还没有上传。', 'That recording was too short. Try a little longer. Nothing was uploaded.'],
     capture: ['录音中断，麦克风已关闭。还没有上传，你可以重录或打字。', 'Recording was interrupted and the microphone is off. Nothing was uploaded. You can record again or type.'],
-    review: ['先回听，再选择转成文字。录音尚未上传。', 'Listen back, then choose to convert. The recording has not been uploaded.'],
+    review: ['录好了。按「发送录音」即可聊天，也可以先看文字。尚未上传。', 'Ready. Send your voice note, or preview the text first. Nothing has been uploaded.'],
     consent: ['请先勾选聊天处理同意，再转成文字。', 'Please tick the chat processing consent before converting.'],
     converted: ['文字已放进输入框。请核对症状、数字和药名，再按发送。', 'Your transcript is in the draft. Check symptoms, numbers and medicine names before sending.'],
     speech_not_clear: ['没有听清楚，请重录或直接打字。识别已开始时仍可能使用一次额度。', 'We could not hear clear speech. Try recording again or type. A conversion that began may still use one allowance unit.'],
@@ -43,13 +43,13 @@
     $('voice-title').textContent = t('不想打字？轻轻说一说。', 'Prefer to speak? Take your time.');
     $('voice-hint').textContent = remainingUnits === 1 && phase === 'idle'
       ? t('还剩 1 次额度，可以直接打字发送。录音转文字再发送需要 2 次额度。', 'You have 1 unit left and can send a typed message. Converting and sending a voice note needs 2 units.')
-      : t('最多 60 秒 · 先转文字，再确认发送', 'Up to 60 seconds · Convert, review, then send');
-    $('voice-cost').textContent = t('录音和回听不扣次数。按「转成文字」使用 1 次，确认发送再使用 1 次，与打字共用额度。', 'Recording and playback use no allowance. Conversion uses 1 unit; sending the reviewed text uses another. Both share your chat allowance.');
+      : t('最多 60 秒 · 录完直接发送，也可先看文字', 'Up to 60 seconds · Send when ready, or preview text first');
+    $('voice-cost').textContent = t('录音和回听不扣次数。发送录音合共用 2 次：自动转文字 1 次，发送聊天 1 次。也可选择先看文字，再自行发送。', 'Recording and playback use no allowance. Sending voice uses 2 units: 1 for transcription and 1 for chat. You can also preview text and send it yourself.');
     $('record-voice-label').textContent = phase === 'recording' ? t('结束录音', 'Stop recording') : phase === 'starting' ? t('准备麦克风…', 'Preparing microphone…') : t('录音说一说', 'Record a voice note');
     $('record-voice').title = $('record-voice-label').textContent;
     $('record-voice').disabled = !supported || (phase !== 'recording' && (!allowed || phase !== 'idle'));
     $('record-voice').classList.toggle('recording', phase === 'recording');
-    $('convert-voice').textContent = phase === 'converting' ? t('正在转文字…', 'Converting…') : t('转成文字（用 1 次）', 'Convert to text (1 unit)');
+    $('convert-voice').textContent = phase === 'converting' ? t('正在处理录音…', 'Processing voice note…') : t('先看文字（用 1 次）', 'Preview text (1 unit)');
     $('convert-voice').hidden = !clip; $('convert-voice').disabled = !allowed || phase !== 'review';
     $('discard-voice').textContent = t('放弃这段录音', 'Discard recording');
     $('discard-voice').hidden = phase === 'idle';
@@ -133,35 +133,44 @@
   }
   $('record-voice').onclick = () => phase === 'recording' ? finish() : start();
   $('discard-voice').onclick = reset;
-  $('convert-voice').onclick = async () => {
-    if (phase !== 'review' || !clip || !allowed) return;
-    if (!$('consent').checked) { status = 'consent'; paint(); $('consent').focus(); return; }
+  async function convert(directSend = false) {
+    if (phase !== 'review' || !clip || !allowed) return false;
+    if (!$('consent').checked) { status = 'consent'; paint(); $('consent').focus(); return false; }
     const before = epoch, abort = request = new AbortController();
+    let converted = false;
     const timeout = setTimeout(() => abort.abort(), 35000);
     phase = 'converting'; status = ''; notify();
     try {
       const headers = await window.FCCareAuth.headers();
-      if (before !== epoch) return;
+      if (before !== epoch) return false;
       const body = new FormData(); body.append('audio', clip, 'fc-voice.wav'); body.append('consent', 'true');
       const response = await fetch('/chat/voice-draft', { method: 'POST', headers, body, signal: abort.signal });
       const data = await response.json();
-      if (before !== epoch) return;
+      if (before !== epoch) return false;
       if (data.allowance) window.dispatchEvent(new CustomEvent('fc-care-voice-allowance', { detail: data.allowance }));
       if (!response.ok) throw Error(data.error);
       if (typeof data.transcript !== 'string' || !data.transcript.trim() || data.transcript.length > 1200) throw Error('failed');
-      clearClip(); phase = 'idle'; status = 'converted';
-      window.dispatchEvent(new CustomEvent('fc-care-voice-transcript', { detail: data.transcript }));
+      clearClip(); phase = 'idle'; status = directSend ? '' : 'converted'; converted = true;
+      window.dispatchEvent(new CustomEvent(directSend ? 'fc-care-voice-send-draft' : 'fc-care-voice-transcript', { detail: data.transcript }));
+      return true;
     } catch (error) {
-      if (before !== epoch) return;
+      if (before !== epoch) return false;
       clearClip(); phase = 'idle'; status = messages[error.message] ? error.message : 'failed';
       if (error.message === 'member_login_required') window.FCCareAuth.requireSignIn();
+      return false;
     } finally {
       clearTimeout(timeout);
-      if (before === epoch) { request = null; notify(); window.dispatchEvent(new Event('fc-care-voice-refresh')); }
+      if (before === epoch) {
+        request = null; notify();
+        // Direct send continues to conversation immediately. Do not race it with
+        // a balance lookup; that would block the send after spending on conversion.
+        if (!directSend || !converted) window.dispatchEvent(new Event('fc-care-voice-refresh'));
+      }
     }
-  };
+  }
+  $('convert-voice').onclick = () => convert(false);
   window.FCCareVoice = { configure(value) { enabled = value.enabled; allowed = value.allowed; lang = value.language; remainingUnits = value.remainingUnits ?? null; paint(); },
-    active: () => phase !== 'idle', reset };
+    active: () => phase !== 'idle', readyToSend: () => phase === 'review' && !!clip, convertForSend: () => convert(true), reset };
   window.addEventListener('fc-care-auth-changed', reset);
   window.addEventListener('pagehide', reset);
   document.addEventListener('visibilitychange', () => { if (document.hidden) reset(); });

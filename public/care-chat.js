@@ -17,7 +17,7 @@
     document.title = $('title').textContent = t('FC 暖心聊聊', 'FC Care Chat');
     $('language').textContent = t('English', '中文');
     $('intro').textContent = t('说说今天的感受，我们一起慢慢了解，再找到适合此刻的频率音疗。打字或说话都可以。', 'Talk through how today feels. We can understand it together and explore a suitable FC listening theme. Type or use your voice.');
-    $('message-label').textContent = voiceEnabled ? t('打字，或点麦克风说一说', 'Type, or tap the microphone') : t('今天的你，感觉怎么样？', 'How are you feeling today?');
+    $('message-label').textContent = window.FCCareVoice?.readyToSend?.() ? t('录音已准备好', 'Your voice note is ready') : voiceEnabled ? t('打字，或点麦克风说一说', 'Type, or tap the microphone') : t('今天的你，感觉怎么样？', 'How are you feeling today?');
     document.documentElement.className = window.FCCareAuth.signedIn() ? 'chat-active' : '';
     $('chat-room').hidden = !window.FCCareAuth.signedIn();
     $('consent-copy').textContent = voiceEnabled
@@ -25,12 +25,14 @@
       : t('我同意使用 FC AI 处理这次聊天。', 'I agree to AI processing this chat for FC Care Chat.');
     $('privacy-label').textContent = t('隐私与使用说明', 'Privacy & how it works');
     $('privacy-copy').textContent = t('FC 暖心聊聊使用 OpenAI 提供 AI 回复和录音转文字。你发送的聊天文字，以及选择转文字的录音，会传送给 OpenAI 处理。请避免提供姓名、电话及可识别个人身份的资料。录音在你选择转文字前不会上传。', 'FC Care Chat uses OpenAI for AI replies and voice transcription. Chat text you send and recordings you choose to convert are sent to OpenAI for processing. Leave out names, phone numbers and identifying details. Recordings are not uploaded until you choose to convert them.');
-    $('usage-copy').textContent = t('打字发送用 1 次额度；录音转文字用 1 次，核对后发送再用 1 次。录音和回听不扣次数。每月 1 日按马来西亚时间更新附送额度。', 'A typed send uses 1 unit. Converting a recording uses 1; sending the reviewed text uses 1 more. Recording and playback use no allowance. Included allowance renews on the 1st in Malaysia time.');
+    $('usage-copy').textContent = t('打字发送用 1 次额度。发送录音合共用 2 次：自动转文字用 1 次，发送聊天再用 1 次。选择「先看文字」会先用 1 次，之后发送再用 1 次。录音和回听不扣次数。每月 1 日按马来西亚时间更新附送额度。', 'A typed send uses 1 unit. Sending a voice note uses 2 in total: 1 for automatic transcription and 1 for the chat send. Previewing text uses 1 first; sending it later uses 1 more. Recording and playback use no allowance. Included allowance renews on the 1st in Malaysia time.');
     $('latest-message').textContent = t('查看最新回复 ↓', 'Latest reply ↓');
     $('chat-scroll').ariaLabel = t('聊天消息', 'Chat messages');
     $('allowance-summary').textContent = allowance ? t(`本月还剩 ${allowance.remainingTextAttempts} 次 · 额度说明`, `${allowance.remainingTextAttempts} units left · Allowance`) : t('我的聊天额度', 'My chat allowance');
     $('clear').textContent = t('清空聊天', 'Clear chat');
-    $('send').textContent = busy ? t('正在回复…', 'Replying…') : t('发送 ↗', 'Send ↗');
+    const voiceReady = window.FCCareVoice?.readyToSend?.() === true;
+    $('send').textContent = busy ? t('正在回复…', 'Replying…') : voiceReady ? t('发送录音 · 用 2 次 ↗', 'Send voice · 2 units ↗') : t('发送 ↗', 'Send ↗');
+    $('chat-form').className = voiceReady ? 'has-voice-draft' : '';
     $('boundary').textContent = t('提供日常身心支持，不作诊断或医疗建议。紧急不适请先就医。', 'Everyday wellbeing support, not diagnosis or medical advice. Seek care first for urgent symptoms.');
     $('starter-title').textContent = t('今天，想从哪里开始？', 'Where would you like to begin?');
     $('starter-hint').textContent = t('选一个开头，也可以直接写。选完不会自动发送。', 'Pick a starting point, or write your own. Nothing is sent until you choose Send.');
@@ -52,7 +54,7 @@
       allowed: ready && !busy && !exhausted && !waitingForAllowance && window.FCCareAuth.signedIn() &&
         (!allowance || allowance.remainingTextAttempts >= 2), language: lang, remainingUnits: allowance?.remainingTextAttempts ?? null });
     $('message').disabled = !ready || busy || exhausted || waitingForAllowance || voiceActive || !window.FCCareAuth.signedIn();
-    $('send').disabled = !ready || busy || exhausted || waitingForAllowance || voiceActive || !window.FCCareAuth.signedIn();
+    $('send').disabled = !ready || busy || exhausted || waitingForAllowance || voiceActive && !voiceReady || !window.FCCareAuth.signedIn();
     $('refresh-allowance').hidden = !ready || !supportsStatus || !window.FCCareAuth.signedIn();
     $('refresh-allowance').disabled = busy || checkingAllowance || voiceActive;
     $('refresh-allowance').textContent = checkingAllowance ? t('正在查看…', 'Checking…') : t('刷新次数', 'Refresh allowance');
@@ -192,8 +194,15 @@
   };
   $('chat-form').onsubmit = async event => {
     event.preventDefault();
-    if (!ready || busy || exhausted || window.FCCareVoice?.active() || supportsStatus && (!allowanceReady || checkingAllowance)) return;
+    if (!ready || busy || exhausted || supportsStatus && (!allowanceReady || checkingAllowance)) return;
     if (!$('consent').checked) { $('consent').focus(); return; }
+    if (window.FCCareVoice?.active()) {
+      if (!window.FCCareVoice.readyToSend?.()) return;
+      // One explicit voice-send action. The capture module locks conversion
+      // synchronously, so a double click cannot upload or send twice.
+      if (await window.FCCareVoice.convertForSend()) return $('chat-form').onsubmit(event);
+      return;
+    }
     const content = $('message').value.trim();
     if (!content) return;
     const pending = [...turns.slice(-6).map(({role, content}) => ({role, content})), { role: 'user', content }];
@@ -206,8 +215,10 @@
     const request = controller = new AbortController();
     const timer = setTimeout(() => request.abort(), 35000);
     try {
+      const headers = await window.FCCareAuth.headers();
+      if (controller !== request) return;
       const response = await fetch('/chat/conversation', {
-        method: 'POST', headers: { 'Content-Type': 'application/json', ...await window.FCCareAuth.headers() },
+        method: 'POST', headers: { 'Content-Type': 'application/json', ...headers },
         body: JSON.stringify({ consent: true, language: lang, turns: pending }), signal: request.signal,
       });
       const data = await response.json();
@@ -242,6 +253,11 @@
   });
   window.addEventListener('fc-care-voice-transcript', event => {
     $('message').value = event.detail; fitDraft(); errorCode = ''; paint(); $('message').focus();
+  });
+  window.addEventListener('fc-care-voice-send-draft', event => {
+    // Keep the transcript if the following chat request fails, without opening
+    // the keyboard or making the customer review it before the direct send.
+    $('message').value = event.detail; fitDraft(); errorCode = ''; paint();
   });
   window.addEventListener('fc-care-auth-changed', () => {
     controller?.abort(); controller = null; busy = false; turns = []; allowance = null; exhausted = false; errorCode = '';
