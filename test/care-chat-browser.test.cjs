@@ -10,8 +10,8 @@ function browserFixture(file, fetcher, auth, storedSession) {
     ? [['fc-care-chat-session-v1', JSON.stringify(storedSession)]] : []);
   const element = id => {
     if (!elements.has(id)) elements.set(id, { value: '', checked: false, hidden: false,
-      disabled: false, textContent: '', children: [], reportValidity: () => true,
-      focus() {}, replaceChildren(...nodes) { this.children = nodes; } });
+      disabled: false, textContent: '', children: [], scrollTop: 0, scrollHeight: 800, clientHeight: 400, offsetTop: 0, style: {}, reportValidity: () => true,
+      focus() {}, replaceChildren(...nodes) { this.children = nodes; this.lastElementChild = nodes.at(-1); if (this.lastElementChild) this.lastElementChild.offsetTop = 650; } });
     return elements.get(id);
   };
   const window = { FCCareAuth: auth,
@@ -51,6 +51,52 @@ test('listening suggestions stay in the conversation and only trusted FC links r
 });
 const submit = { preventDefault() {} };
 const session = { accessToken: 'x'.repeat(40), refreshToken: 'fixture-refresh-token', expiresAt: Date.now() / 1000 + 3600 };
+
+test('new replies reveal their beginning, while reading older messages is not interrupted', async () => {
+  let finish;
+  const f = browserFixture('care-chat.js', async url => url === '/chat/features'
+    ? Response.json({conversation:true,emailLogin:true})
+    : new Promise(resolve => { finish = resolve; }),
+  {language(){},configure(){},signedIn:()=>true,headers:async()=>({})});
+  await settle();
+  f.element('consent').checked=true;
+  const history=f.element('chat-scroll');history.scrollTop=400;
+  f.element('message').value='Fictional test';
+  const first=f.element('chat-form').onsubmit(submit); await settle();
+  finish(Response.json({reply:'Start of a long reply',allowance:{remainingTextAttempts:139,includedTextAttempts:139,purchasedTextAttempts:0}}));
+  await first;
+  assert.equal(history.scrollTop,638);
+  assert.equal(f.element('latest-message').hidden,true);
+  history.scrollTop=20;f.element('message').value='Second fictional test';
+  const second=f.element('chat-form').onsubmit(submit);await settle();
+  finish(Response.json({reply:'Another reply',allowance:{remainingTextAttempts:138,includedTextAttempts:138,purchasedTextAttempts:0}}));await second;
+  assert.equal(history.scrollTop,20);
+  assert.equal(f.element('latest-message').hidden,false);
+  f.element('language').onclick();assert.equal(history.scrollTop,20);
+  f.element('latest-message').onclick();assert.equal(history.scrollTop,638);
+});
+
+test('scrolling up while a reply is pending preserves the reading position',async()=>{
+  let finish;
+  const f=browserFixture('care-chat.js',async url=>url==='/chat/features'?Response.json({conversation:true,emailLogin:true}):new Promise(r=>{finish=r;}),
+    {language(){},configure(){},signedIn:()=>true,headers:async()=>({})});
+  await settle();f.element('consent').checked=true;f.element('message').value='Fictional test';f.element('chat-scroll').scrollTop=400;
+  const pending=f.element('chat-form').onsubmit(submit);await settle();f.element('chat-scroll').scrollTop=40;
+  finish(Response.json({reply:'Fixture reply',allowance:{remainingTextAttempts:139,includedTextAttempts:139,purchasedTextAttempts:0}}));await pending;
+  assert.equal(f.element('chat-scroll').scrollTop,40);assert.equal(f.element('latest-message').hidden,false);
+});
+
+test('plain consent stays affirmative and detailed provider disclosure remains bilingual',async()=>{
+  let calls=0;
+  const f=browserFixture('care-chat.js',async url=>{if(url==='/chat/features')return Response.json({conversation:true,emailLogin:true});calls++;throw Error('not expected');},
+    {language(){},configure(){},signedIn:()=>true,headers:async()=>({})});
+  await settle();
+  assert.doesNotMatch(f.element('consent-copy').textContent,/OpenAI/);
+  assert.match(f.element('privacy-copy').textContent,/OpenAI/);
+  f.element('message').value='Fictional test';await f.element('chat-form').onsubmit(submit);assert.equal(calls,0);
+  f.element('language').onclick();assert.match(f.element('consent-copy').textContent,/I agree/);
+  assert.match(f.element('privacy-copy').textContent,/sent to OpenAI/);
+});
 
 test('concurrent expired-session callers share one refresh instead of rotating the same token twice', async () => {
   let calls = 0, finish;

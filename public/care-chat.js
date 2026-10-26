@@ -17,10 +17,18 @@
     document.title = $('title').textContent = t('FC 暖心聊聊', 'FC Care Chat');
     $('language').textContent = t('English', '中文');
     $('intro').textContent = t('说说今天的感受，我们一起慢慢了解，再找到适合此刻的频率音疗。打字或说话都可以。', 'Talk through how today feels. We can understand it together and explore a suitable FC listening theme. Type or use your voice.');
-    $('message-label').textContent = t('今天的你，感觉怎么样？', 'How are you feeling today?');
+    $('message-label').textContent = voiceEnabled ? t('打字，或点麦克风说一说', 'Type, or tap the microphone') : t('今天的你，感觉怎么样？', 'How are you feeling today?');
+    document.documentElement.className = window.FCCareAuth.signedIn() ? 'chat-active' : '';
+    $('chat-room').hidden = !window.FCCareAuth.signedIn();
     $('consent-copy').textContent = voiceEnabled
-      ? t('我同意将本次聊天文字及选择转写的录音交由 OpenAI 处理。我会避免姓名、电话等个人资料。', 'I agree to OpenAI processing my chat text and recordings I choose to convert. I will leave out names, phone numbers and identifying details.')
-      : t('我同意将本次聊天文字交由 OpenAI 处理。不包含姓名、电话等个人资料。', 'I agree to OpenAI processing this conversation. I will leave out names, phone numbers and identifying details.');
+      ? t('我同意使用 FC AI 处理聊天和所选录音。', 'I agree to AI processing my chat and selected recordings.')
+      : t('我同意使用 FC AI 处理这次聊天。', 'I agree to AI processing this chat for FC Care Chat.');
+    $('privacy-label').textContent = t('隐私与使用说明', 'Privacy & how it works');
+    $('privacy-copy').textContent = t('FC 暖心聊聊使用 OpenAI 提供 AI 回复和录音转文字。你发送的聊天文字，以及选择转文字的录音，会传送给 OpenAI 处理。请避免提供姓名、电话及可识别个人身份的资料。录音在你选择转文字前不会上传。', 'FC Care Chat uses OpenAI for AI replies and voice transcription. Chat text you send and recordings you choose to convert are sent to OpenAI for processing. Leave out names, phone numbers and identifying details. Recordings are not uploaded until you choose to convert them.');
+    $('usage-copy').textContent = t('打字发送用 1 次额度；录音转文字用 1 次，核对后发送再用 1 次。录音和回听不扣次数。每月 1 日按马来西亚时间更新附送额度。', 'A typed send uses 1 unit. Converting a recording uses 1; sending the reviewed text uses 1 more. Recording and playback use no allowance. Included allowance renews on the 1st in Malaysia time.');
+    $('latest-message').textContent = t('查看最新回复 ↓', 'Latest reply ↓');
+    $('chat-scroll').ariaLabel = t('聊天消息', 'Chat messages');
+    $('allowance-summary').textContent = allowance ? t(`本月还剩 ${allowance.remainingTextAttempts} 次 · 额度说明`, `${allowance.remainingTextAttempts} units left · Allowance`) : t('我的聊天额度', 'My chat allowance');
     $('clear').textContent = t('清空聊天', 'Clear chat');
     $('send').textContent = busy ? t('正在回复…', 'Replying…') : t('发送 ↗', 'Send ↗');
     $('boundary').textContent = t('提供日常身心支持，不作诊断或医疗建议。紧急不适请先就医。', 'Everyday wellbeing support, not diagnosis or medical advice. Seek care first for urgent symptoms.');
@@ -63,6 +71,7 @@
     $('error').textContent = errorCode ? t(...(errors[errorCode] || errors.fallback)) : '';
   }
   function showTurns() {
+    const previousScroll = $('chat-scroll').scrollTop || 0;
     $('messages').replaceChildren(...turns.map(turn => {
       const li = document.createElement('li');
       li.className = turn.role;
@@ -97,7 +106,35 @@
       }
       return li;
     }));
+    $('chat-scroll').scrollTop = previousScroll;
   }
+  function jumpToReply() {
+    const scroll = $('chat-scroll');
+    const reply = $('messages').lastElementChild;
+    // Read the start of a long reply, rather than skipping to the end of its cards.
+    scroll.scrollTop = reply ? Math.max(0, reply.offsetTop - scroll.offsetTop - 12) : scroll.scrollHeight;
+    $('latest-message').hidden = true;
+  }
+  $('latest-message').onclick = jumpToReply;
+  $('chat-scroll').onscroll = () => {
+    const scroll = $('chat-scroll');
+    if (scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 40) $('latest-message').hidden = true;
+  };
+  function fitDraft() {
+    const input = $('message');
+    if (!input.style) return;
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 100) + 'px';
+  }
+  $('message').oninput = fitDraft;
+  function fitViewport() {
+    // Dynamic height also follows the on-screen keyboard in full-screen browsers.
+    const height = window.visualViewport?.height || window.innerHeight;
+    if (height) document.documentElement.style?.setProperty('--chat-height', height + 'px');
+  }
+  window.visualViewport?.addEventListener('resize', fitViewport);
+  window.addEventListener('resize', fitViewport);
+  fitViewport();
   const errors = {
     member_not_eligible: ['这个账户暂未获得暖心聊聊使用资格，不必重复登录。每月附送额度仅限有效付费会员；如有疑问，请联系 FC 核对。', 'Care Chat access is not enabled for this account. You do not need to sign in again. Monthly included allowance is for active paid members only. Contact FC if you need an eligibility check.'],
     member_login_required: ['请先用你的 FC 邮箱完成验证。', 'Please verify the email you use for FC first.'],
@@ -145,13 +182,13 @@
     // Prepare a draft only. Choosing a card never submits data or uses a send.
     if (busy || exhausted || window.FCCareVoice?.active()) return;
     if (!$('message').value.trim()) $('message').value = t(zh, en);
-    $('message').focus();
+    fitDraft(); $('message').focus();
   };
   $('language').onclick = () => { lang = lang === 'zh' ? 'en' : 'zh'; showTurns(); paint(); };
   $('clear').onclick = () => {
     window.FCCareVoice?.reset();
     controller?.abort(); controller = null; busy = false; turns = []; showTurns();
-    $('message').value = ''; errorCode = ''; paint(); loadAllowance();
+    $('message').value = ''; $('latest-message').hidden = true; $('chat-scroll').scrollTop = 0; fitDraft(); errorCode = ''; paint(); loadAllowance();
   };
   $('chat-form').onsubmit = async event => {
     event.preventDefault();
@@ -162,6 +199,9 @@
     const pending = [...turns.slice(-6).map(({role, content}) => ({role, content})), { role: 'user', content }];
     while (pending.length > 1 && new TextEncoder().encode(JSON.stringify(pending)).length > 8500)
       pending.splice(0, 2);
+    const scroll = $('chat-scroll');
+    const wasNearLatest = scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 80;
+    const scrollBeforeRequest = scroll.scrollTop;
     busy = true; errorCode = ''; paint();
     const request = controller = new AbortController();
     const timer = setTimeout(() => request.abort(), 35000);
@@ -178,7 +218,10 @@
       turns = [...turns, { role: 'user', content }, { role: 'assistant', content: data.reply,
         recommendations: Array.isArray(data.recommendations) ? data.recommendations : [] }].slice(-40);
       allowance = data.allowance; exhausted = allowance?.remainingTextAttempts === 0;
-      showTurns(); $('message').value = '';
+      const stayedNearLatest = Math.abs(scroll.scrollTop - scrollBeforeRequest) < 40;
+      showTurns(); $('message').value = ''; fitDraft(); paint();
+      if (wasNearLatest && stayedNearLatest) jumpToReply();
+      else $('latest-message').hidden = false;
     } catch (error) {
       if (controller === request) {
         errorCode = error.message;
@@ -198,7 +241,7 @@
     allowance = event.detail; exhausted = allowance.remainingTextAttempts === 0; paint();
   });
   window.addEventListener('fc-care-voice-transcript', event => {
-    $('message').value = event.detail; errorCode = ''; paint(); $('message').focus();
+    $('message').value = event.detail; fitDraft(); errorCode = ''; paint(); $('message').focus();
   });
   window.addEventListener('fc-care-auth-changed', () => {
     controller?.abort(); controller = null; busy = false; turns = []; allowance = null; exhausted = false; errorCode = '';
