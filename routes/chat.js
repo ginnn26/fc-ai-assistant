@@ -44,6 +44,7 @@ function createChatRouter({
   now = Date.now,
   memberBudget = createConfiguredMemberBudget(),
   converse = answerConversation,
+  unifiedEnabled = process.env.FC_CARE_CHAT_UNIFIED_ENABLED === 'true',
   // The existing recommendation assistant has its own release/budget policy.
   // Enabling private Care Chat must not silently disable its live microphone.
   // Care Chat conversation/voice-draft ALWAYS reserve verified allowance below.
@@ -103,6 +104,7 @@ function createChatRouter({
   }
   router.get('/features', (req, res) => res.json({
     name: { zh: 'FC 暖心聊聊', en: 'FC Care Chat' },
+    unified: unifiedEnabled,
     conversation: memberBudget.ready === true,
     emailLogin: memberBudget.ready === true && emailAuth.ready === true,
     allowanceStatus: typeof memberBudget.status === 'function',
@@ -171,7 +173,7 @@ function createChatRouter({
     if (req.body?.consent !== true)
       return res.status(422).json({ error: 'consent_required' });
     let prepared;
-    try { prepared = prepareConversation(req.body.turns, req.body.language || 'zh'); }
+    try { prepared = prepareConversation(req.body.turns, req.body.language || 'zh', { withListening: unifiedEnabled }); }
     catch (error) { return res.status(422).json({ error: error.message }); }
     const allowance = await reserveAllowance(req, res);
     if (!allowance) return;
@@ -199,6 +201,7 @@ function createChatRouter({
     "/transcribe",
     upload.single("audio"),
     withSlot(async (req, res) => {
+      if (unifiedEnabled) return res.status(409).json({ error: 'use_care_chat' });
       if (req.body.consent !== "true")
         return res.status(422).json({ error: "consent_required" });
       if (!req.file) return res.status(400).json({ error: "audio_required" });
@@ -222,6 +225,9 @@ function createChatRouter({
     }),
   );
   const recommendation = withSlot(async (req, res) => {
+    // Once the single service is enabled, old API URLs cannot spend outside
+    // the shared member wallet. Use conversation and bounded voice-draft only.
+    if (unifiedEnabled) return res.status(409).json({ error: 'use_care_chat' });
     if (req.body?.consent !== true)
       return res.status(422).json({ error: "consent_required" });
     if (

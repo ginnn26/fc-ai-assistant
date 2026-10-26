@@ -6,6 +6,15 @@ See `CARE-CHAT-READINESS.md` for evidence and current blockers.
 
 ## First release scope
 
+Owner has now explicitly unified the old voice recommendation assistant and
+Care Chat into ONE customer service. See integrations/care-chat/UNIFIED-SERVICE.md.
+The new `FC_CARE_CHAT_UNIFIED_ENABLED` release gate redirects old entry pages and
+blocks every legacy spending route. Unified conversation selects catalog themes
+within the same bounded model call, rather than calling a second recommendation
+model. The shared member ledger covers voice conversion, dialogue and selection.
+Keep this flag false until membership/secret configuration and real-provider
+checks are complete; the current live service has not been switched.
+
 Prefer free text chat first. Keep the RM15 pack as an information preview only
 until authoritative payment, credit, refund and support handling are connected.
 Do not expose a checkout button or accept payment for a preview.
@@ -29,7 +38,8 @@ automatic retry is enabled. Do not equate the prototype140 units to140 complete
 voice exchanges: this draft policy permits70 conversion+send pairs
 if no other units are used. Final model/cost policy must be presented clearly.
 
-The existing voice assistant is live and retains its existing access policy.
+Until the unified release gate is enabled, the existing voice assistant is live
+and retains its existing access policy.
 Care Chat now always meters its own conversation/voice-draft routes independently.
 Enabling FC_CARE_CHAT_ENABLED no longer changes legacy transcription/recommendation.
 The separate FC_ASSISTANT_MEMBER_BUDGET_ENABLED flag defaults off; leave it off

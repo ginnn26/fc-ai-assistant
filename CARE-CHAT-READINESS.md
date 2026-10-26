@@ -2,6 +2,22 @@
 
 ## Current status — 26 October 2026
 
+Owner clarified that Care Chat and audio recommendation must be ONE service.
+Implemented a gated unified flow locally: local catalog retrieval plus one
+structured model reply/selection, inline bilingual exact-theme-cover cards,
+and shared voice/text member wallet. Unified release redirects old entry pages
+and rejects legacy spending endpoints before provider calls. The flag remains
+false and no production switch/deploy occurred. The full180-check suite passed,
+including inline bilingual card state, shared-wallet enforcement, old-entry
+redirects and the no-spend unified evaluation plan.
+Fictional real-browser Chinese and English previews passed conversational
+clarification -> inline Conflict Resolution card -> member-version expansion.
+They used mocked replies, not real AI quality evidence. Exact screenshots:
+care-chat-unified-card-zh.png and care-chat-unified-card-en.png in private output.
+Full verified effects/use explanations and private shared-content retrieval are
+not present in this repo's catalog; only metadata/links are grounded. Do not
+claim complete FC knowledge. See integrations/care-chat/UNIFIED-SERVICE.md.
+
 Further actual-school report inspection: Scheduled reports is a higher-plan
 upgrade gate; detailed course-progress ZIP export also shows Upgrade. Ordinary
 user CSV/XLS export exists, but authoritative per-enrollment expiry/revocation

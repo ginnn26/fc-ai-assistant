@@ -16,7 +16,7 @@
     document.documentElement.lang = lang === 'zh' ? 'zh-Hans' : 'en';
     document.title = $('title').textContent = t('FC 暖心聊聊', 'FC Care Chat');
     $('language').textContent = t('English', '中文');
-    $('intro').textContent = t('有效付费会员每月附送聊天额度，免费试用不包含。不用急着说清楚，从今天的感受开始。', 'Active paid FC members receive a monthly chat allowance; free trials are not included. There is no rush. Start with how today feels.');
+    $('intro').textContent = t('说说今天的感受，我们一起慢慢了解，再找到适合此刻的频率音疗。打字或说话都可以。', 'Talk through how today feels. We can understand it together and explore a suitable FC listening theme. Type or use your voice.');
     $('message-label').textContent = t('今天的你，感觉怎么样？', 'How are you feeling today?');
     $('consent-copy').textContent = voiceEnabled
       ? t('我同意将本次聊天文字及选择转写的录音交由 OpenAI 处理。我会避免姓名、电话等个人资料。', 'I agree to OpenAI processing my chat text and recordings I choose to convert. I will leave out names, phone numbers and identifying details.')
@@ -69,6 +69,34 @@
       const li = document.createElement('li');
       li.className = turn.role;
       li.textContent = turn.content;
+      if (turn.role === 'assistant' && Array.isArray(turn.recommendations)) {
+        const node = (tag, text) => { const el = document.createElement(tag); el.textContent = text; return el; };
+        const safe = (value, player = false) => {
+          try { const u = new URL(value); return u.protocol === 'https:' && u.hostname === 'frequencies-clinic.learnworlds.com' && !u.username && !u.password &&
+            (player ? u.pathname === '/path-player' && !!u.searchParams.get('courseid') && !!u.searchParams.get('unit') : /^\/detail-[a-z0-9-]+$/.test(u.pathname)); } catch { return false; }
+        };
+        const link = (label, href) => { const el = node('a', label); el.href = href; el.target = '_blank'; el.rel = 'noopener noreferrer'; return el; };
+        for (const item of turn.recommendations.slice(0,3)) {
+          if (typeof item.name !== 'string' || !safe(item.descriptionUrl)) continue;
+          const card = node('article', ''); card.className = 'listening-card';
+          const cover = window.FCThemeMedia?.[item.id];
+          if (cover && /^\/assets\/themes-v1\/[a-z0-9_-]+\.webp$/.test(cover.src)) {
+            const image = node('img', ''); image.src = cover.src; image.alt = ''; image.width = 768; image.height = 512; image.loading = 'lazy';
+            card.append(image);
+          }
+          card.append(node('p', t('给此刻的聆听选择', 'A listening choice for now')), node('h3', (lang === 'zh' ? item.nameZh : item.nameEn) || item.name),
+            node('p', item.source === 'catalog-theme' ? t('与你刚才谈到的主题相近，可以按自己的感受选择。', 'A listening theme related to what you shared; choose what feels comfortable.') : item.reason),
+            node('p', item.source === 'catalog-theme' ? t('先看这首音疗的使用说明，选择你会员可用的版本，按舒适音量聆听。', 'Read this recording’s instructions, choose a version available to your membership and listen at a comfortable volume.') : item.usage),
+            link(t('查看音疗说明 ↗', 'Read the audio guide ↗'), item.descriptionUrl));
+          const versions = node('details', '');
+          versions.append(node('summary', t('选择会员音疗版本', 'Choose your member recording')));
+          const courseNames = { 'sound-healing': t('订阅会员', 'Subscription'), 'private-soundhealing': t('私人音疗', 'Private library'), 'trial-soundhealing': t('试用音疗', 'Trial library') };
+          for (const r of (Array.isArray(item.recordings) ? item.recordings : []).slice(0,12)) {
+            if (safe(r.url, true)) versions.append(link(`${courseNames[r.course] || t('会员音疗', 'Member library')} · ${r.version || ''}`, r.url));
+          }
+          card.append(versions); li.append(card);
+        }
+      }
       return li;
     }));
   }
@@ -121,7 +149,7 @@
     if (!$('message').value.trim()) $('message').value = t(zh, en);
     $('message').focus();
   };
-  $('language').onclick = () => { lang = lang === 'zh' ? 'en' : 'zh'; paint(); };
+  $('language').onclick = () => { lang = lang === 'zh' ? 'en' : 'zh'; showTurns(); paint(); };
   $('clear').onclick = () => {
     window.FCCareVoice?.reset();
     controller?.abort(); controller = null; busy = false; turns = []; showTurns();
@@ -133,7 +161,7 @@
     if (!$('consent').checked) { $('consent').focus(); return; }
     const content = $('message').value.trim();
     if (!content) return;
-    const pending = [...turns.slice(-6), { role: 'user', content }];
+    const pending = [...turns.slice(-6).map(({role, content}) => ({role, content})), { role: 'user', content }];
     while (pending.length > 1 && new TextEncoder().encode(JSON.stringify(pending)).length > 8500)
       pending.splice(0, 2);
     busy = true; errorCode = ''; paint();
@@ -149,7 +177,8 @@
       if (controller !== request) return;
       if (typeof data.reply !== 'string' || !data.reply.trim() || data.reply.length > 1200 || !validAllowance(data.allowance))
         throw Error('invalid_chat_response');
-      turns = [...turns, { role: 'user', content }, { role: 'assistant', content: data.reply }].slice(-40);
+      turns = [...turns, { role: 'user', content }, { role: 'assistant', content: data.reply,
+        recommendations: Array.isArray(data.recommendations) ? data.recommendations : [] }].slice(-40);
       allowance = data.allowance; exhausted = allowance?.remainingTextAttempts === 0;
       showTurns(); $('message').value = '';
     } catch (error) {

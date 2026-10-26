@@ -18,14 +18,37 @@ function browserFixture(file, fetcher, auth, storedSession) {
     addEventListener: (name, fn) => listeners.set(name, fn),
     dispatchEvent: event => listeners.get(event.type)?.(event) };
   vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../public', file), 'utf8'), {
-    window, document: { getElementById: element, documentElement: {}, createElement: () => ({}) },
+    window, document: { getElementById: element, documentElement: {}, createElement: () => ({ children: [], append(...nodes) { this.children.push(...nodes); } }) },
     localStorage: { getItem: key => saved.get(key), setItem: (key, value) => saved.set(key, value), removeItem: key => saved.delete(key) },
     fetch: fetcher, AbortController, AbortSignal, Event, TextEncoder, setTimeout, clearTimeout,
-    setInterval: () => 0, Date, console, URLSearchParams, location: { search: '' },
+    setInterval: () => 0, Date, console, URL, URLSearchParams, location: { search: '' },
   });
   return { element, window, saved };
 }
 const settle = () => new Promise(resolve => setImmediate(resolve));
+
+test('listening suggestions stay in the conversation and only trusted FC links render',async()=>{
+  const sent=[];
+  const auth={language(){},configure(){},signedIn:()=>true,headers:async()=>({})};
+  const f=browserFixture('care-chat.js',async(url,options)=>{
+    if(url==='/chat/features')return Response.json({conversation:true,emailLogin:true});
+    sent.push(JSON.parse(options.body));
+    return Response.json({reply:'A little space to unwind.',allowance:{remainingTextAttempts:139,includedTextAttempts:139,purchasedTextAttempts:0},recommendations:[
+      {id:'conflict_resolution',name:'Conflict Resolution',reason:'A theme related to your story.',usage:'Read the audio guide.',descriptionUrl:'https://frequencies-clinic.learnworlds.com/detail-conflict-resolution',recordings:[
+        {course:'sound-healing',version:'smooth',url:'https://frequencies-clinic.learnworlds.com/path-player?courseid=sound-healing&unit=fixture'},
+        {url:'javascript:alert(1)'}]},
+      {name:'Hostile card',descriptionUrl:'https://attacker.example/detail-fake',recordings:[]}]});
+  },auth);
+  await settle();f.element('consent').checked=true;f.element('message').value='A fictional conflict';
+  await f.element('chat-form').onsubmit({preventDefault(){}});
+  const reply=f.element('messages').children[1];
+  assert.equal(reply.children.length,1);
+  const card=reply.children[0];assert.equal(card.className,'listening-card');
+  assert.equal(card.children.at(-1).children.length,2);
+  assert.equal(card.children.at(-1).children[1].rel,'noopener noreferrer');
+  f.element('message').value='Thank you';await f.element('chat-form').onsubmit({preventDefault(){}});
+  assert.ok(sent[1].turns.every(t=>Object.keys(t).sort().join(',')==='content,role'));
+});
 const submit = { preventDefault() {} };
 const session = { accessToken: 'x'.repeat(40), refreshToken: 'fixture-refresh-token', expiresAt: Date.now() / 1000 + 3600 };
 

@@ -21,6 +21,10 @@ app.use((req, res, next) => {
   res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; media-src 'self' blob:; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'self' https://frequencies-clinic.learnworlds.com");
   next();
 });
+app.get(['/', '/index.html'], (req, res, next) => {
+  if (process.env.FC_CARE_CHAT_UNIFIED_ENABLED !== 'true') return next();
+  res.redirect(302, '/care-chat.html' + (req.query.lang === 'en' ? '?lang=en' : ''));
+});
 app.use(express.static(require("node:path").join(__dirname, "public")));
 
 app.get("/health", (req, res) => {

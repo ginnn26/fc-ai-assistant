@@ -25,6 +25,12 @@ const detectLanguage = (s) =>
   (String(s).match(/[\u3400-\u9fff]/g) || []).length > 1 ? "zh" : "en";
 const concepts = [
   {
+    terms: /conflict|argument|disagree|同事|争执|爭執|吵架|意见不合|意見不合|冲突|衝突/i,
+    titles: /conflict resolution/i,
+    why: ['与你提到的人际冲突主题相近，可作为整理心情时的聆听选择。',
+      'Matches the interpersonal conflict theme you shared, as an optional listening companion.'],
+  },
+  {
     terms: /sleep|insomnia|bedtime|睡|失眠|夜醒/i,
     titles: /sleep|relax/i,
     why: [

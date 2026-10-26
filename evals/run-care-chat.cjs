@@ -6,10 +6,11 @@ const { prepareConversation, answerConversation, MODEL, BASELINE_MODEL, CANDIDAT
 const { RATES, MYR_PER_USD_WITH_MARGIN, estimateTextCost } = require('./care-chat-costs.cjs');
 const cases = require('./care-chat-cases.json');
 const followupCases = require('./care-chat-followup-cases.json');
+const unifiedCases = require('./care-chat-unified-cases.json');
 const MODELS = [BASELINE_MODEL, CANDIDATE_MODEL];
 const RESERVE_SEN = 10, INPUT_TOKEN_ENVELOPE = 13000;
 
-async function run({ live = false, output = null, simulateResponse = null, maxPaidCalls = 20, budgetSen = 200, followup = false } = {}) {
+async function run({ live = false, output = null, simulateResponse = null, maxPaidCalls = 20, budgetSen = 200, followup = false, unified = false } = {}) {
   if (!Number.isInteger(maxPaidCalls) || maxPaidCalls < 0 || maxPaidCalls > 20 ||
       !Number.isInteger(budgetSen) || budgetSen < 0 || budgetSen > 200) throw Error('Evaluation limits cannot exceed the approved RM2/20-call envelope.');
   if (live && simulateResponse) throw Error('Simulation cannot be labelled a live evaluation.');
@@ -19,13 +20,13 @@ async function run({ live = false, output = null, simulateResponse = null, maxPa
   let calls = 0, reservedSen = 0, stopPaidCalls = false;
   const rows = [];
   // Interleave models, so a limited/partial run never uses all its calls on one.
-  for (const item of (followup ? followupCases : cases)) for (const model of MODELS) {
-    const prepared = prepareConversation(item.turns, item.language);
+  for (const item of (unified ? unifiedCases : followup ? followupCases : cases)) for (const model of MODELS) {
+    const prepared = prepareConversation(item.turns, item.language, {withListening:unified});
     const row = { id: item.id, model, expectedStatus: item.status, reviewChecklist: item.review,
       realModelCalled: false, providerAttempted: false, humanQualityReview: 'pending', reply: null };
     try {
       const answer = await answerConversation(prepared, { model, ask: async (input, options) => {
-        if (!execute) { row.outcome = 'plan-only'; return '[PLAN ONLY]'; }
+        if (!execute) { row.outcome = 'plan-only'; return options.schema ? JSON.stringify({reply:'[PLAN ONLY]',ids:[]}) : '[PLAN ONLY]'; }
         const [inputRate, outputRate] = RATES[model];
         const worstSen = (INPUT_TOKEN_ENVELOPE * inputRate + MAX_OUTPUT_TOKENS * outputRate) / 1e6 * MYR_PER_USD_WITH_MARGIN * 100;
         if (Buffer.byteLength(JSON.stringify(input), 'utf8') > MAX_INPUT_BYTES || worstSen > RESERVE_SEN ||
@@ -36,7 +37,8 @@ async function run({ live = false, output = null, simulateResponse = null, maxPa
         let response;
         try {
           response = await execute({ model: options.model, input, store: false,
-            max_output_tokens: options.maxOutputTokens, reasoning: { effort: 'none' } });
+            max_output_tokens: options.maxOutputTokens, reasoning: { effort: 'none' },
+            ...(options.schema ? {text:{format:{type:'json_schema',name:'fc_audio_selection',strict:true,schema:options.schema}}} : {}) });
          } catch (error) {
           row.outcome = 'provider-failed';
           const status = Number(error?.status);
@@ -55,6 +57,7 @@ async function run({ live = false, output = null, simulateResponse = null, maxPa
         row.outcome = 'response-received'; return response.output_text;
       } });
       row.status = answer.status;
+      if (unified) row.recommendationIds = (answer.recommendations || []).map(i=>i.id);
       row.routePassed = answer.status === item.status;
       if (row.outcome !== 'plan-only') row.reply = answer.reply;
       if (!row.outcome) row.outcome = 'rules-only';
@@ -74,7 +77,7 @@ async function run({ live = false, output = null, simulateResponse = null, maxPa
       estimatedSenWithMarginForKnownUsage: known.reduce((sum,row) => sum + row.costEstimate.estimatedSenWithMargin,0) };
   });
   const result = { mode: live ? 'real-model-comparison' : simulateResponse ? 'simulated-provider-no-real-calls' : 'plan-only-no-model-calls',
-    suite: followup ? 'followup-short-and-long' : 'initial-comparison',
+    suite: unified ? 'unified-conversation-and-listening' : followup ? 'followup-short-and-long' : 'initial-comparison',
     callsAttempted: calls, reservedSen, budgetSen, realModelQualityVerified: false,
     costAssumptions: { rates: RATES, myrPerUsdWithMargin: MYR_PER_USD_WITH_MARGIN,
       cachedInputDiscountApplied: false, invoiceVerified: false,
@@ -86,6 +89,7 @@ async function run({ live = false, output = null, simulateResponse = null, maxPa
 if (require.main === module) {
   const args = process.argv.slice(2), outputAt = args.indexOf('--output');
   run({ live: args.includes('--run'), followup: args.includes('--follow-up'),
+    unified: args.includes('--unified'),
     ...(args.includes('--follow-up') ? {maxPaidCalls:10,budgetSen:100} : {}),
     output: outputAt >= 0 ? args[outputAt+1] : null })
     .then(result => console.log(JSON.stringify({mode:result.mode,cases:result.rows.length,callsAttempted:result.callsAttempted,reservedSen:result.reservedSen,realModelQualityVerified:false})))

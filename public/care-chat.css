@@ -9,3 +9,5 @@ header{flex-wrap:wrap}.conversation{margin-bottom:20px}#login-panel h2{font-fami
 
 #allowance-tip{padding:13px 16px;border-radius:16px;background:#fbefd5;color:#765b32;border:1px solid #ead7ae;line-height:1.8}
 #login-panel h2{text-wrap:balance}#login-copy,#login-status{font-size:14px;line-height:1.85}
+.listening-card{white-space:normal;margin-top:18px;padding:20px;border:1px solid #d4dfcb;border-radius:22px;background:linear-gradient(135deg,#fff6df,#e4efe6);box-shadow:0 8px 24px #315e5009}.listening-card h3{font-size:21px;line-height:1.4;margin:6px 0 12px}.listening-card p{font-size:14px;margin:8px 0}.listening-card>p:first-child{font-size:12px;color:#836736;letter-spacing:.5px}.listening-card a{display:block;color:#285c50;text-decoration:underline;text-underline-offset:4px;margin:12px 0;overflow-wrap:anywhere}.listening-card details{margin-top:16px;padding-top:12px;border-top:1px solid #cbd8c5}.listening-card summary{cursor:pointer;font-size:14px;font-weight:600}.listening-card details a{font-size:14px}
+.listening-card>img{display:block;width:calc(100% + 40px);max-width:none;height:150px;object-fit:cover;margin:-20px -20px 18px;border-radius:21px 21px 0 0}

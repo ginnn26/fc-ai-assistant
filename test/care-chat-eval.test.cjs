@@ -13,6 +13,19 @@ test('fictional comparison plan covers both models and does not fabricate qualit
   assert.ok(result.rows.every(row => row.routePassed && !row.realModelCalled && row.humanQualityReview === 'pending'));
 });
 
+test('unified evaluation includes catalog decisions and forwards the final structured-output cap without spending',async()=>{
+  const plan=await run({unified:true});assert.equal(plan.rows.length,16);
+  assert.equal(plan.callsAttempted,0);assert.ok(plan.rows.every(row=>row.routePassed));
+  let structured=0;
+  const simulated=await run({unified:true,maxPaidCalls:2,simulateResponse:async request=>{
+    assert.equal(request.max_output_tokens,200);
+    if(request.text?.format?.type==='json_schema')structured++;
+    return {status:'completed',output_text:JSON.stringify({reply:'A fictional kind reply.',ids:[]}),usage:{input_tokens:100,output_tokens:30}};
+  }});
+  assert.equal(structured,2);assert.equal(simulated.callsAttempted,2);
+  assert.equal(simulated.realModelQualityVerified,false);
+});
+
 test('candidate selection stays server-side and unsupported models fail before a paid call', async () => {
   let calls = 0, model;
   const prepared = prepareConversation([{ role: 'user', content: 'I just want someone to listen.' }], 'en');
