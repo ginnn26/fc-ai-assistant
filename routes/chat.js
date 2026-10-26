@@ -6,6 +6,7 @@ const { createEmailResendGuard } = require('../services/care-chat-email-guard');
 const { createEmailAuth } = require('../services/care-chat-email-auth');
 const { transcribeAudio, transcribeCareVoice } = require("../services/openai");
 const { inspectVoiceWav, MAX_BYTES } = require('../services/care-chat-audio');
+const { knowledge, listeningItems } = require('../services/care-chat-knowledge');
 const {
   generateRecommendations,
 } = require("../services/assistant-recommendation");
@@ -44,7 +45,9 @@ function createChatRouter({
   now = Date.now,
   memberBudget = createConfiguredMemberBudget(),
   converse = answerConversation,
+  contentKnowledge = knowledge,
   unifiedEnabled = process.env.FC_CARE_CHAT_UNIFIED_ENABLED === 'true',
+  listeningEnabled = unifiedEnabled || process.env.FC_CARE_CHAT_LISTENING_ENABLED === 'true',
   // The existing recommendation assistant has its own release/budget policy.
   // Enabling private Care Chat must not silently disable its live microphone.
   // Care Chat conversation/voice-draft ALWAYS reserve verified allowance below.
@@ -173,10 +176,15 @@ function createChatRouter({
     if (req.body?.consent !== true)
       return res.status(422).json({ error: 'consent_required' });
     let prepared;
-    try { prepared = prepareConversation(req.body.turns, req.body.language || 'zh', { withListening: unifiedEnabled }); }
+    try { prepared = prepareConversation(req.body.turns, req.body.language || 'zh', { withListening: listeningEnabled }); }
     catch (error) { return res.status(422).json({ error: error.message }); }
     const allowance = await reserveAllowance(req, res);
     if (!allowance) return;
+    if (listeningEnabled) {
+      const feed = await contentKnowledge.snapshot();
+      prepared = prepareConversation(req.body.turns, req.body.language || 'zh', {
+        withListening: true, listeningItems: listeningItems(feed) });
+    }
     const answer = await converse(prepared);
     res.json({ ...answer, allowance });
   }));

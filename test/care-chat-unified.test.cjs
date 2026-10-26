@@ -36,9 +36,26 @@ test('a request only to be heard excludes recommendation candidates',async()=>{
   assert.deepEqual(candidatesFor(history),[]);
   const prepared=prepareConversation(history,'zh',{withListening:true});
   const result=await answerConversation(prepared,{ask:async(_,options)=>{
-    assert.equal(options.schema,undefined);return '嗯，你可以慢慢说，我先听你说。';
+    assert.ok(options.schema);return JSON.stringify({reply:'嗯，你可以慢慢说，我先听你说。',ids:[]});
   }});
   assert.deepEqual(result.recommendations,[]);
+});
+
+test('unified replies never expose JSON when there are no listening candidates',async()=>{
+  const prepared=prepareConversation([user('Just listen to me, no advice please.')],'en',{withListening:true});
+  assert.deepEqual(prepared.candidates,[]);
+  const result=await answerConversation(prepared,{ask:async(_,options)=>{
+    assert.ok(options.schema);
+    return JSON.stringify({reply:'Take your time. I am listening.',ids:[]});
+  }});
+  assert.equal(result.reply,'Take your time. I am listening.');
+  assert.deepEqual(result.recommendations,[]);
+  await assert.rejects(()=>answerConversation(prepared,{ask:async()=>JSON.stringify({reply:'Hi',ids:['invented']})}),/invalid_chat_response/);
+});
+
+test('natural English descriptions of arguing with a colleague find Conflict Resolution',()=>{
+  const prepared=prepareConversation([user('For two weeks I have been arguing with a colleague. I want a related FC listening theme, but I do not want to be told I must apologise.')],'en',{withListening:true});
+  assert.ok(prepared.candidates.some(i=>i.id==='conflict_resolution'));
 });
 
 test('invented tracks, malformed selections and hostile URLs never become listening cards',()=>{
@@ -117,4 +134,42 @@ test('the old public page redirects to the one chat entry only during the unifie
     if(previous===undefined)delete process.env.FC_CARE_CHAT_UNIFIED_ENABLED;else process.env.FC_CARE_CHAT_UNIFIED_ENABLED=previous;
     server.closeAllConnections();await new Promise(resolve=>server.close(resolve));
   }
+});
+
+test('editorial lookup runs only after verified allowance, without any conversation argument',async()=>{
+  let reads=0,calls=0,permitted=false;
+  const app=express();app.use(express.json());
+  app.use('/chat',createChatRouter({unifiedEnabled:true,
+    memberBudget:{ready:true,reserveText:async()=>{
+      if(!permitted)throw Error('member_not_eligible');
+      return {remainingTextAttempts:139,includedTextAttempts:139,purchasedTextAttempts:0};
+    }},contentKnowledge:{snapshot:async(...args)=>{assert.equal(args.length,0);reads++;return null;}},
+    converse:async()=>{calls++;return {status:'conversation',reply:'A little space to talk.',recommendations:[]};}}));
+  const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
+  const base='http://127.0.0.1:'+server.address().port;
+  const send=()=>fetch(base+'/chat/conversation',{method:'POST',headers:{Origin:base,'Content-Type':'application/json'},
+    body:JSON.stringify({consent:true,turns:[user('sleep')]})});
+  try{
+    assert.equal((await send()).status,403);assert.equal(reads,0);assert.equal(calls,0);
+    permitted=true;
+    assert.equal((await send()).status,200);assert.equal(reads,1);assert.equal(calls,1);
+  }finally{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
+});
+
+test('private listening acceptance does not switch the existing public assistant entry',async()=>{
+  let legacy=0;
+  const app=express();app.use(express.json());
+  app.use('/chat',createChatRouter({unifiedEnabled:false,listeningEnabled:true,
+    memberBudget:{ready:true,reserveText:async()=>({remainingTextAttempts:139,includedTextAttempts:139,purchasedTextAttempts:0})},
+    contentKnowledge:{snapshot:async()=>null},
+    recommend:async()=>{legacy++;return {message:'Existing assistant retained'};},
+    converse:async prepared=>{assert.equal(prepared.withListening,true);return {reply:'Private unified test',recommendations:[]};}}));
+  const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
+  const base='http://127.0.0.1:'+server.address().port;
+  const send=(path,body)=>fetch(base+path,{method:'POST',headers:{Origin:base,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  try{
+    assert.equal((await send('/chat/conversation',{consent:true,turns:[user('sleep')]})).status,200);
+    assert.equal((await send('/chat/recommend',{consent:true,message:'sleep'})).status,200);
+    assert.equal(legacy,1);
+  }finally{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
 });
