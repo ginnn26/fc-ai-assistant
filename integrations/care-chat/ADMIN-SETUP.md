@@ -3,7 +3,11 @@
 Owner approved a manual additional workflow on26October2026. Active paid
 coverage is confirmed by staff, rather than automatically read from LearnWorlds.
 First intended operators: Agnes, Gin and Andrine; Andrine is the main responsible
-person. Their individual login emails are pending. Names are not authorization.
+person. Owner supplied four individual login emails for these three staff on
+26 October 2026 (Agnes has two). A disabled configuration was prepared outside
+the repository; actual access approval and production verification remain pending.
+Agnes's emails share a display label but remain distinct verified audit actors.
+Names alone are not authorization.
 
 ## Prepared locally
 
@@ -26,10 +30,12 @@ Apply the two prepared migrations in dependency order only after review:
 1. `20261026_care_chat_paid_membership.sql` (fifth migration).
 2. `20261026_care_chat_operator_admin.sql` (sixth migration).
 
-They are NOT applied to the real Supabase project yet. The first four ledger
-migrations already passed separate real-database fixture checks. Local PGlite
-tests applied all six into an ephemeral database using fictional data; that does
-not substitute for actual Supabase permissions/concurrency acceptance.
+Both were applied to the real Supabase project on 26 October 2026 after owner
+approval to proceed. care_admin_verify.sql passed actual private permissions,
+RLS, lifecycle, isolation, duplicate receipt, version and audit checks using
+fictional fixtures and rollback. The first four ledger migrations already passed
+separate real-database fixture checks. Concurrent deployed HTTP acceptance remains
+required; serial SQL checks do not substitute for it.
 
 Enable staff operations with `FC_CARE_ADMIN_ENABLED=true` only after its keys,
 staff emails and approved labels are configured and checked. Use
@@ -79,7 +85,7 @@ private. No health text, OTP or credential is stored in the operator tables.
 
 ## Acceptance before use
 
-- Owner approves each of the three email/name mappings and access scope.
+- Owner approves all four email identities for the three staff and access scope.
 - Real SMTP and individual staff login/denial checks; no shared login.
 - Real Supabase RLS/RPC and two-operator concurrent-update checks.
 - Fictional/test-account activation, expiry, cancel, renew, approval restore,

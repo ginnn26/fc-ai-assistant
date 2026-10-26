@@ -2,6 +2,22 @@
 
 ## Current status — 26 October 2026
 
+Owner authorized proceeding toward activation after verification and confirmed
+Render workspace Agnes's workspace (tea-d9qubcqjnfac73e877m0). Existing service
+srv-d9qugn5bedkc73fpmq40 remains on live f588c429; no deployment yet. Applied fifth
+and sixth migrations through the authenticated Supabase SQL editor successfully.
+Ran care_admin_verify.sql in the actual project: PASS for private permissions,
+RLS, activation, member isolation, retry, duplicate receipt, version conflict,
+paid-through cancellation, revoke and audit. Fictional fixtures rolled back.
+Screenshot care-admin-production-db-verified.png. Server credentials, staff
+access activation, deployed API acceptance and customer release remain pending.
+
+Owner supplied four login emails for Agnes (two), Gin and Andrine (one each).
+Prepared disabled SHA256 allowlist/name mapping outside the repository at
+care-admin-staff-config.pending.json in the private output folder. No real staff
+grant, database mutation, email invitation or deployment was made. Exact roster
+and membership-operations access scope await action-time owner confirmation.
+
 Final complete local suite passed195checks, with the optional PGlite module
 enabled (no database test skipped). All six migrations ran only in the isolated
 fictional database. The5-page PDF staff SOP was rendered with Poppler and every
@@ -11,7 +27,7 @@ this host, so the unverified DOCX is internal only and is not delivered.
 
 Owner approved manual per-member operations without a LearnWorlds upgrade and
 requested a complete staff SOP. Intended staff: Agnes, Gin and Andrine (main
-responsible person); exact login emails requested and still pending. Implemented
+responsible person); exact login emails now supplied as described above. Implemented
 a disabled-by-default staff portal/API and a sixth prepared-only migration:
 verified staff allowlist, individually attributed audit, paid date registration,
 renew/cancel/revoke/approval restore, separate FC audio confirmation, paged tasks,
