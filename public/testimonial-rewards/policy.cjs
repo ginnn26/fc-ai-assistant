@@ -1,4 +1,6 @@
 'use strict';
+// LEGACY ONLY: preserves already approved day-based records. New shares use
+// the authenticated points ledger; do not apply this calculator to new awards.
 const POLICY=Object.freeze({version:'FC-TESTIMONIAL-2026-10-v1',daysPerShare:1,annualCap:15,redeemAfterPaidRenewal:true});
 // Reference calculator for staff tests/documentation. It is not a trusted
 // entitlement service and never edits LearnWorlds membership or payment records.

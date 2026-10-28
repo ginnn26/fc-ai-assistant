@@ -42,6 +42,7 @@ app.get("/", (req, res) => {
 
 app.use("/chat", chatRoute);
 app.use('/care-admin', require('./routes/care-admin').createCareAdminRouter());
+app.use('/rewards-api', require('./routes/testimonial-points').createPointsRouter());
 
 app.use((error, req, res, next) => {
   if (error instanceof SyntaxError && error.status === 400 && "body" in error) {

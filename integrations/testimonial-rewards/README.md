@@ -1,5 +1,21 @@
 # FC testimonial rewards — native audio discussions
 
+## Current release: verified testimonial points
+
+The new `/testimonial-rewards/member.html` and `/testimonial-rewards/staff.html` use the existing verified-email member login and allowlisted staff login, and an append-only Supabase points ledger. Apply `migrations/20261028_testimonial_points.sql` before deployment. `FC_REWARDS_ENABLED=false` disables points routes; otherwise existing configured Supabase and staff credentials are required, and the features check remains unavailable until the RPCs exist. No new staff permissions or demo eligibility are granted.
+
+Each original verified testimonial earns exactly **10 points**. Seven owner-approved redemption thresholds and retail values are authoritative in the database catalogue and `REWARDS-CONFIRMED-20261028.json`. Paid active membership is checked in the database at claim submission, approval, redemption, stock confirmation and fulfilment; requests do not trust the browser's email, balance or item price. No paid renewal is required, including for the 50-point free day. Inactive members retain history; cancellation/refund remains possible while inactive. No automatic balance expiry or legacy conversion has been added.
+
+Requests reserve points atomically; confirmed/fulfilled orders retain the reservation as the spend, and cancellations refund once. Member locks serialize concurrent requests. Staff verify original author/comment ID, genuine use and no prior legacy reward. A globally unique approved original ID and unique award prevent repeat credit. Review decisions and fulfilment actions have replay-safe request IDs and a staff audit trail. Staff enter only references, not health narratives or addresses. Google reviews and check-in rewards are excluded.
+
+Stock quantities stay private and are checked manually. Members can cancel an unconfirmed request themselves; staff may cancel a requested/confirmed order with a reason to return points, allowing a fresh selection. Posted orders preserve their points price. Shipping is RM9 for shipped physical rewards, paid by the customer; collection and services have no shipping fee. Staff record received shipping and tracking/appointment/access evidence. Free days require actual LearnWorlds access changes and exactly one day between before/after final access dates; the app does not edit billing/enrolment itself.
+
+New submissions use the points system from deployment. Existing approved legacy days are retained in the original staff ledger, without silent conversion. Staff must check it before crediting an original comment. `policy.cjs` and the legacy formulas below are retained only for those historical records.
+
+Run `node --test test/testimonial-points.test.cjs test/testimonial-points-http.test.cjs` with the isolated PGlite dependency available for SQL transaction tests. The local fictional browser QA server is outside the production repository. Build the native panel with `node scripts/build-testimonial-rewards.cjs`; rebuild the combined one-language LearnWorlds body using the preserved original and `scripts/build-fc-language.cjs`. Replace only the existing reward block; preserve all other site scripts.
+
+## Historical installation and day-based policy (retained records only)
+
 Installed on 28 October 2026 by appending `LEARNWORLDS-BODY.html` to the existing **Site custom code → body logged in** slot. The original slot was preserved separately in the operator's local output folder. The installed panel needs no Render request, new login or third-party database.
 
 ## Policy and fulfilment
