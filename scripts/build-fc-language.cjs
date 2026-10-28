@@ -31,6 +31,6 @@ let result=body.replace(/<script([^>]*)>([\s\S]*?)<\/script>/g,(all,attrs,source
 });
 const marker='<!-- FC testimonial rewards v1';const reward=result.indexOf(marker);if(reward<0)throw Error('Expected existing reward block not found; refusing to guess.');
 result=result.slice(0,reward)+fs.readFileSync(path.join(base,'integrations/testimonial-rewards/LEARNWORLDS-BODY.html'),'utf8');
-result='<!-- FC single-language display v1 | 2026-10-28 -->\n<script>\n'+runtime+'\n</script>\n'+result;
+result='<!-- FC single-language display v1 | 2026-10-28 -->\n<script>\n'+fs.readFileSync(path.join(base,'public/fc-language.js'),'utf8')+'\n'+runtime+'\n</script>\n'+result;
 for(const m of result.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g))new vm.Script(m[1]);
 fs.writeFileSync(args[1],result);console.log('Prepared '+changed.join(', ')+'. All scripts parse.');
