@@ -1,0 +1,117 @@
+{
+  "version": "2026-10-28",
+  "status": "implemented-release; verify deployment evidence in RELEASE-POINTS.md",
+  "program": "FC testimonial points rewards",
+  "earning": {
+    "pointsPerVerifiedOriginalTestimonial": 10,
+    "humanVerificationRequired": true,
+    "automaticAwardOnSubmission": false,
+    "positiveReviewRequired": false,
+    "medicalReportRequired": false,
+    "googleReviewEligible": false
+  },
+  "eligibility": {
+    "paidMembershipRequired": true,
+    "activeAccountRequired": true,
+    "sufficientAvailablePointsRequired": true,
+    "paidRenewalRequiredToRedeem": false,
+    "unspentBalanceAccumulatesWhileActive": true,
+    "customerServiceArrangesRedemption": true
+  },
+  "shipping": {
+    "currency": "MYR",
+    "fee": 9,
+    "paidBy": "customer",
+    "appliesTo": "physical-rewards-requiring-shipping"
+  },
+  "inventory": {
+    "showQuantitiesToMembers": false,
+    "checkedByCustomerServiceAtRequest": true,
+    "outOfStock": "offer another available reward within the member's available points; member chooses; no automatic substitution"
+  },
+  "catalogue": [
+    {
+      "id": "membership-day",
+      "points": 50,
+      "quantity": 1,
+      "name_en": "Free Membership Day",
+      "name_zh": "免费会员天数",
+      "days": 1
+    },
+    {
+      "id": "gold-lucky-turtle",
+      "points": 100,
+      "quantity": 1,
+      "name_en": "Gold Lucky Turtle",
+      "name_zh": "招财金龟",
+      "valueMYR": 99
+    },
+    {
+      "id": "essential-oil-10ml",
+      "points": 150,
+      "quantity": 1,
+      "name_en": "Essential Oil",
+      "name_zh": "精油",
+      "volumeMl": 10,
+      "choices": [
+        "Stress Away",
+        "Good Night"
+      ],
+      "valueMYR": 198
+    },
+    {
+      "id": "ritual-tea",
+      "points": 180,
+      "quantity": 1,
+      "name_en": "Ritual Tea",
+      "name_zh": "仪式花草茶",
+      "sachetsPerPacket": 10,
+      "choices": [
+        "Calm",
+        "Relax",
+        "Sleep"
+      ],
+      "valueMYR": 190
+    },
+    {
+      "id": "salt-room-60min",
+      "points": 200,
+      "quantity": 1,
+      "name_en": "Energy Salt Room Therapy",
+      "name_zh": "能量盐房疗愈",
+      "minutes": 60,
+      "appointmentRequired": true,
+      "valueMYR": 190
+    },
+    {
+      "id": "aura-energy-cleanse-50ml",
+      "points": 300,
+      "quantity": 1,
+      "name_en": "Aura Spray — Energy Cleanse",
+      "name_zh": "气场喷雾 — 能量净化款",
+      "volumeMl": 50,
+      "valueMYR": 298
+    },
+    {
+      "id": "aura-abundance-50ml",
+      "points": 350,
+      "quantity": 1,
+      "name_en": "Aura Spray — Abundance",
+      "name_zh": "气场喷雾 — 丰盛款",
+      "volumeMl": 50,
+      "valueMYR": 298
+    }
+  ],
+  "notSpecifiedByOwner": [
+    "earned-points annual cap",
+    "treatment of balance after account expiry or reactivation",
+    "new-program free-day annual cap",
+    "effective cutover date and legacy reward migration"
+  ],
+  "legacy": {
+    "doNotSilentlyConvertOrEraseExistingRewards": true,
+    "doNotDoubleRewardTheSameTestimonial": true,
+    "checkInRewardsRemainSeparate": true,
+    "oldRenewalConditionDoesNotApplyToThisNewPointsRedemption": true
+  }
+}
