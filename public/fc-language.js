@@ -18,6 +18,7 @@
     if(!safe)return href;
     const next=valid(intent)?intent:language;
     if(school&&homes.has(u.pathname))u.pathname=next==='en'?'/home-clone':'/pages/home';
+    if(school&&['/courses','/courses-clone'].includes(u.pathname))u.pathname=next==='en'?'/courses':'/courses-clone';
     u.searchParams.set('lang',next);return u.href;
   }
   if(typeof module!=='undefined'&&module.exports)module.exports={initial,link};
@@ -40,7 +41,16 @@
     const next=link(a.getAttribute('href'),location.href,language,a.dataset.fcLanguageIntent);if(next!==a.href)a.setAttribute('href',next);
   }}
   window.FCLanguage={get:()=>language,set,link:(href,intent)=>link(href,location.href,language,intent),refresh};persist();document.documentElement.dataset.fcLanguage=language;
-  document.addEventListener('click',e=>{const a=e.target.closest?.('a[href]');if(!a)return;if(valid(a.dataset.fcLanguageIntent))set(a.dataset.fcLanguageIntent);const next=link(a.getAttribute('href'),location.href,language,a.dataset.fcLanguageIntent);if(next!==a.href)a.href=next;},true);
+  document.addEventListener('click',e=>{
+    const a=e.target.closest?.('a[href]');if(!a)return;
+    if(valid(a.dataset.fcLanguageIntent))set(a.dataset.fcLanguageIntent);
+    const next=link(a.getAttribute('href'),location.href,language,a.dataset.fcLanguageIntent);if(next!==a.href)a.href=next;
+    // LearnWorlds pagelink handlers otherwise ignore href and use their old page slug.
+    // Respect modified clicks and new-tab links; normal owned page links use the localized URL.
+    if(a.getAttribute('data-interactive-link-type')==='pagelink'&&new URL(a.href).origin===SCHOOL&&new URL(a.href).searchParams.get('lang')===language&&!e.ctrlKey&&!e.metaKey&&!e.shiftKey&&!e.altKey&&(e.button===undefined||e.button===0)&&(!a.target||a.target==='_self')){
+      e.preventDefault();e.stopImmediatePropagation();location.assign(a.href);
+    }
+  },true);
   window.addEventListener('message',e=>{
     if(![SCHOOL,APP,location.origin].includes(e.origin)||!valid(e.data?.language))return;
     const parent=e.source===window.parent&&window.parent!==window;

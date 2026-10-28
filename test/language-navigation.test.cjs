@@ -14,6 +14,8 @@ test('home links and logo return to the selected language in both directions',()
   assert.equal(link(home,SCHOOL+'/start','en'),SCHOOL+'/home-clone?lang=en');
  }
  assert.equal(link('/pages/home',SCHOOL+'/home-clone','en','zh'),SCHOOL+'/pages/home?lang=zh');
+ assert.equal(link('/courses',SCHOOL+'/start','zh'),SCHOOL+'/courses-clone?lang=zh');
+ assert.equal(link('/courses-clone',SCHOOL+'/start','en'),SCHOOL+'/courses?lang=en');
 });
 test('player identity, bookmark position and embedded app language survive navigation',()=>{
  const u=new URL(link('/path-player?courseid=private-soundhealing&unit=abcUnit#player',SCHOOL+'/start','en'));
@@ -28,7 +30,7 @@ test('embedded language accepts only the expected frame and origin; persists no 
  const vm=require('node:vm'),fs=require('node:fs');
  const listeners={},saved=new Map(),child={},frame={contentWindow:child},root={dataset:{}};
  const location=new URL(SCHOOL+'/start?lang=en');
- const document={documentElement:root,readyState:'loading',querySelectorAll:s=>s==='iframe'?[frame]:[],addEventListener(){}};
+ const document={documentElement:root,readyState:'loading',querySelectorAll:s=>s==='iframe'?[frame]:[],addEventListener:(type,fn)=>listeners['dom:'+type]=fn};
  const window={addEventListener:(type,fn)=>listeners[type]=fn,dispatchEvent(){},parent:null};window.parent=window;
  const context={window,document,location,URL,localStorage:{getItem:k=>saved.get(k),setItem:(k,v)=>saved.set(k,v)},history:{},CustomEvent:class{},MutationObserver:class{}};
  vm.runInNewContext(fs.readFileSync(require.resolve('../public/fc-language'),'utf8'),context);
@@ -38,4 +40,8 @@ test('embedded language accepts only the expected frame and origin; persists no 
  send(SCHOOL,child,'fc:language:changed','xx');assert.equal(window.FCLanguage.get(),'en');
  send(SCHOOL,child,'fc:language:changed','zh');assert.equal(window.FCLanguage.get(),'zh');
  assert.deepEqual([...saved.keys()].sort(),['fc-guide-language','fc-site-language','fc-testimonial-language']);
+ let destination='',stopped=false;location.assign=href=>destination=href;
+ const a={href:SCHOOL+'/pages/home?lang=zh',dataset:{},target:'',getAttribute:k=>k==='href'?a.href:k==='data-interactive-link-type'?'pagelink':null};
+ listeners['dom:click']({target:{closest:()=>a},button:0,preventDefault(){},stopImmediatePropagation(){stopped=true;}});
+ assert.equal(destination,SCHOOL+'/pages/home?lang=zh');assert.equal(stopped,true,'native stale-slug navigation must not override localized href');
 });
