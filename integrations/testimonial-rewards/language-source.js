@@ -58,6 +58,16 @@ const pairs=[
  ["账户设置", "Account settings"],
  ["我的每日身心指南 · My Daily Guide", "My daily wellbeing guide"],
  ["音疗资料与研究 · 点击展开", "Audio information & research · expand"],
+ ["正在核对你的会员权限", "Checking your membership access…"],
+ ["请稍候，不需要重新购买。", "Please wait. You do not need to purchase again."],
+ ["暂时未能核实会员权限", "We could not verify your access right now."],
+ ["这个入口不属于你当前的会员权限", "This entrance is not included in your current membership access."],
+ ["可能是连接暂时中断。请重试；这不代表你的会员资格已失效。", "Please retry. This does not mean your membership has expired."],
+ ["你的账号已有付费音疗库权限。免费试用用于首次体验，请从下方的付费会员入口进入。", "Your account already has paid-library access. Please use your paid membership entrance below."],
+ ["请使用下方已开通的入口。如果你已购买此方案，请确认登录的是购买时使用的账号，或联系客服核对。", "Use an available entrance below. Already purchased this plan? Check your login account or contact support."],
+ ["订阅会员音疗库", "Subscription audio library"],
+ ["长期／私人会员音疗库", "Long-term / private audio library"],
+ ["免费试用音疗库", "Free trial audio library"],
  ['选择','Select '],['查看','View '],['播放','Play '],['最近播放：','Last played: ']
 ];
 const exact=new Map();for(const[z,e]of pairs){exact.set(z,[z,e]);exact.set(e,[z,e]);exact.set(z+' · '+e,[z,e]);exact.set(e+' · '+z,[z,e]);exact.set(z+' '+e,[z,e]);exact.set(z+'\n'+e,[z,e]);}
@@ -67,7 +77,7 @@ for(const[raw,z,e]of[
 ])exact.set(raw,[z,e]);
 for(const[z,e]of[['每日身心指南','Daily guide'],['七色自我探索','Chakra reflection (Chinese)'],['会员方案','Membership']])exact.set(z,[z,e]);
 for(const[raw,z,e]of[
- ['首页 Home','首页','Home'],['未开通此入口 · Not included','未开通此入口','Not included'],['可进入 · Available','可进入','Available'],['请使用付费会员入口 · Use your paid entrance','请使用付费会员入口','Use your paid entrance'],['聆听主题','聆听主题','Listening themes'],['全屏聊天 / Open full screen ↗','全屏聊天 ↗','Open full screen ↗'],
+ ['首页 Home','首页','Home'],["重新核对 · Retry", "重新核对", "Retry"],["返回我的音疗 · My Audio", "返回我的音疗", "My audio"],["关闭提示 · Close", "关闭提示", "Close"],["联系客服 · Contact support", "联系客服", "Contact support"],["点击重新核对 · Click to check", "点击重新核对", "Click to check"],["进入订阅会员音疗库 · Enter", "进入订阅会员音疗库", "Open subscription audio library"],["进入长期／私人会员音疗库 · Enter", "进入长期／私人会员音疗库", "Open long-term / private audio library"],["进入免费试用音疗库 · Enter", "进入免费试用音疗库", "Open free trial audio library"],['未开通此入口 · Not included','未开通此入口','Not included'],['可进入 · Available','可进入','Available'],['请使用付费会员入口 · Use your paid entrance','请使用付费会员入口','Use your paid entrance'],['聆听主题','聆听主题','Listening themes'],['全屏聊天 / Open full screen ↗','全屏聊天 ↗','Open full screen ↗'],
  ['返回音疗页 · Back to course page','返回音疗页','Back to audio library'],['也可以按版本找音疗 · Versions','也可以按版本找音疗','Browse by version'],['暂时无法载入说明，请使用下方链接阅读。 Please use the link below.','暂时无法载入说明，请使用下方链接阅读。','Description unavailable. Please use the link below.'],['呼吸与咳嗽 Breathing & Cough','呼吸与咳嗽','Breathing & Cough'],['血液与循环 Blood & Circulation','血液与循环','Blood & Circulation'],['眼部 Eyes','眼部','Eyes'],['肝脏与关节 Liver & Joints','肝脏与关节','Liver & Joints']
 ])exact.set(raw,[z,e]);
 const mixedEntries=Array.from(exact.entries()).filter(([k])=>/[\u3400-\u9fff]/.test(k)&&/[A-Za-z]/.test(k)).sort((a,b)=>b[0].length-a[0].length);
@@ -119,7 +129,7 @@ function schoolCopy(){
  if(location.pathname==='/course/fc-daily-guide-pilot'||(location.pathname==='/path-player'&&new URL(location.href).searchParams.get('courseid')==='fc-daily-guide-pilot')){const title=lang==='en'?'FC Daily Wellbeing Guide':'FC 每日身心指南';if(document.title!==title)document.title=title;}
  if(location.pathname==='/course/assessment'){const title=lang==='en'?'FC Personal Wellbeing Check-in':'免费身心状态评估';if(document.title!==title)document.title=title;}
  const nav=document.getElementById('section_1564405797906_0');
- const roots=[nav];if(location.pathname==='/course/assessment')roots.push(document.querySelector('#sectionsWrapper,.sectionsWrapper'));if(location.pathname==='/ai-assustant')roots.push(document.getElementById('fc-care-embed'),document.querySelector('summary'));if(location.pathname==='/start')roots.push(document.getElementById('history_1758239268946_738'));
+ const roots=[nav,document.querySelector('.fcg-dialog')];if(location.pathname==='/course/assessment')roots.push(document.querySelector('#sectionsWrapper,.sectionsWrapper'));if(location.pathname==='/ai-assustant')roots.push(document.getElementById('fc-care-embed'),document.querySelector('summary'));if(location.pathname==='/start')roots.push(document.getElementById('history_1758239268946_738'));
  for(const root of roots){if(!root)continue;const walker=document.createTreeWalker(root,4);let n;while(n=walker.nextNode()){
   if(n.parentElement.closest('script,style,#fc-testimonial-reward,[data-fc-copy-root]'))continue;
   const raw=n.textContent,t=raw.trim();if(texts.has(n)&&raw===value(texts.get(n),lang))continue;
@@ -138,6 +148,7 @@ function mount(){schoolCopy();const legacy=document.getElementById('el_176150416
  const nav=document.getElementById('section_1564405797906_0');if(nav){const walker=document.createTreeWalker(nav,4);let n;while(n=walker.nextNode()){if(texts.has(n))continue;const raw=n.textContent,t=raw.trim();if(exact.has(t)||(root===nav&&value(raw,lang)!==raw)){texts.set(n,raw);n.textContent=value(raw,lang);}}}
  if(library){document.querySelectorAll('.sectionsWrapper>section,#sectionsWrapper>section').forEach(section=>{if(section.contains(target)||section===nav||section.querySelector('form,input,textarea'))return;prepare(section);});}
 }
+style.textContent+='.fcg-dialog .fcg-en{display:none!important}';
 style.textContent+='@media(min-width:1000px){html[data-fc-language="en"] #section_1564405797906_0 .lw-topbar-menu,html[data-fc-language="en"] #section_1564405797906_0 .lw-topbar-menu a,html[data-fc-language="en"] #section_1564405797906_0 .lw-topbar-menu span{font-size:15px!important}}';
 function ready(){mount();new MutationObserver(schoolCopy).observe(document.body,{childList:true,subtree:true});}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready,{once:true});else ready();setInterval(mount,1500);
