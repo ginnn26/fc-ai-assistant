@@ -3,7 +3,7 @@
 const fs=require('node:fs'),path=require('node:path');
 const base=path.join(__dirname,'..');
 const catalog=JSON.parse(fs.readFileSync(path.join(base,'public/daily-guide/catalog.json'),'utf8'));
-const records=catalog.map(r=>({u:r.unit,c:r.course,n:(r.title.split(' / ')[1]||r.title)+' · '+r.version.toUpperCase(),z:r.title.split(' / ')[0]}));
+const records=catalog.map(r=>({u:r.unit,c:r.course,v:r.version,n:(r.title.split(' / ')[1]||r.title)+' · '+r.version.toUpperCase(),z:r.title.split(' / ')[0]}));
 const source=fs.readFileSync(path.join(base,'public/testimonial-rewards/embed-source.js'),'utf8');
 const built=source.replace('__FC_RECORDINGS__',JSON.stringify(records));
 new(require('node:vm').Script)(built);
