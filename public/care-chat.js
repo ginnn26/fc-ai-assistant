@@ -1,7 +1,7 @@
 (() => {
   'use strict';
   const $ = id => document.getElementById(id);
-  let lang = new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'zh';
+  let lang = window.FCLanguage?.get() || 'zh';
   let ready = false, busy = false, turns = [], allowance = null, includedSends = null, exhausted = false, errorCode = '', controller;
   let supportsStatus = false, allowanceReady = false, checkingAllowance = false, allowanceError = false, allowanceController;
   let voiceEnabled = false;
@@ -15,7 +15,7 @@
     window.FCCareAuth.language(lang);
     document.documentElement.lang = lang === 'zh' ? 'zh-Hans' : 'en';
     document.title = $('title').textContent = t('FC 暖心聊聊', 'FC Care Chat');
-    $('language').textContent = t('English', '中文');
+    $('language').textContent = t('English', 'Chinese');
     $('intro').textContent = t('我是小暖 Sunny，FC 的 AI 聊天伙伴。说说心事、整理心情，或找适合此刻的音疗，都可以慢慢跟我聊。打字或说话都可以。', 'Hi, I’m Sunny, your FC AI chat companion. Take your time to share what’s on your mind, talk through how you feel, or explore a suitable FC listening theme. Type or use your voice.');
     $('message-label').textContent = voiceEnabled ? t('打字，或点麦克风说一说', 'Type, or tap the microphone') : t('今天的你，感觉怎么样？', 'How are you feeling today?');
     document.documentElement.className = window.FCCareAuth.signedIn() ? 'chat-active' : '';
@@ -186,7 +186,7 @@
     if (!$('message').value.trim()) $('message').value = t(zh, en);
     fitDraft(); $('message').focus();
   };
-  $('language').onclick = () => { lang = lang === 'zh' ? 'en' : 'zh'; showTurns(); paint(); };
+  $('language').onclick = () => { lang = lang === 'zh' ? 'en' : 'zh'; window.FCLanguage?.set(lang); showTurns(); paint(); };
   $('clear').onclick = () => {
     window.FCCareVoice?.reset();
     controller?.abort(); controller = null; busy = false; turns = []; showTurns();
@@ -276,4 +276,5 @@
     voiceEnabled = data?.voiceInput === true;
     window.FCCareAuth.configure(data || {}); paint(); loadAllowance();
   }).catch(() => { ready = false; paint(); });
+window.addEventListener('fc:language',e=>{if(e.detail?.language===lang)return;lang=e.detail.language;showTurns();paint();});
 })();

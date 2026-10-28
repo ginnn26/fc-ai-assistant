@@ -1,7 +1,7 @@
 (() => {
   "use strict";
   const $ = (id) => document.getElementById(id);
-  let lang = "zh",
+  let lang = window.FCLanguage?.get() || "zh",
     busy = false,
     recording = false,
     recorder = null,
@@ -91,7 +91,7 @@
     document.title = t("FC 暖心聊聊", "FC Care Chat");
     document.documentElement.lang = lang === "zh" ? "zh-Hans" : "en";
     for (const [id, c] of Object.entries(copy)) $(id).textContent = t(...c);
-    $("language").textContent = t("English", "中文");
+    $("language").textContent = t("English", "Chinese");
     $("steps").replaceChildren(
       ...[
         t("说说近况", "Share"),
@@ -632,6 +632,7 @@
   }
   $("language").onclick = () => {
     lang = lang === "zh" ? "en" : "zh";
+    window.FCLanguage?.set(lang);
     paint();
     status("已切换语言。", "Language changed.");
   };
@@ -768,4 +769,5 @@
   });
   paint();
   status("可以录音，也可以直接输入。", "Record your voice or type instead.");
+window.addEventListener('fc:language',e=>{if(e.detail?.language===lang)return;lang=e.detail.language;paint();});
 })();

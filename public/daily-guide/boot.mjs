@@ -2,6 +2,7 @@
 // Self-reported scores stay in the authenticated LearnWorlds runtime.
 const base=new URL('./',import.meta.url);
 try{
+ await import(new URL('../fc-language.js',base).href);
  const response=await fetch(new URL('index.html',base),{credentials:'same-origin',cache:'no-store',referrerPolicy:'strict-origin-when-cross-origin'});
  if(!response.ok)throw Error('暂时无法载入页面');
  const parsed=new DOMParser().parseFromString(await response.text(),'text/html');

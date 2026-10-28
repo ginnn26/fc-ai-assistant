@@ -1,8 +1,8 @@
-let language='zh';
-try{if(localStorage.getItem('fc-guide-language')==='en')language='en';}catch{}
+let language=globalThis.FCLanguage?.get()||'zh';
+try{if(!globalThis.FCLanguage){const q=new URLSearchParams(location.search).get('lang');language=['zh','en'].includes(q)?q:localStorage.getItem('fc-site-language')||localStorage.getItem('fc-guide-language')||'zh';}}catch{}
 export const getLanguage=()=>language;
 export const tx=(zh,en)=>language==='en'?en:zh;
-export function setLanguage(next){language=next==='en'?'en':'zh';try{localStorage.setItem('fc-guide-language',language);}catch{}return language;}
+export function setLanguage(next){language=next==='en'?'en':'zh';globalThis.FCLanguage?.set(language);try{localStorage.setItem('fc-guide-language',language);}catch{}return language;}
 export function applyLanguage(root=document){root.documentElement?.setAttribute('lang',language==='en'?'en':'zh-Hans');for(const e of root.querySelectorAll('[data-zh]'))e.textContent=e.dataset[language];for(const e of root.querySelectorAll('[data-zh-label]'))e.setAttribute('aria-label',e.dataset[language+'Label']);for(const e of root.querySelectorAll('[data-zh-placeholder]'))e.setAttribute('placeholder',e.dataset[language+'Placeholder']);}
 const names={pain:['疼痛与不适','Pain & discomfort'],sleep:['睡眠困扰','Sleep difficulties'],mood:['情绪困扰','Emotional distress'],tension:['紧绷与压力','Tension & stress'],fatigue:['疲倦与乏力','Fatigue & low energy'],focus:['专注困难','Difficulty focusing']};
 const hints={pain:['0 = 没有疼痛；10 = 非常严重','0 = no pain; 10 = very severe'],sleep:['回顾上一晚：0 = 睡得很好；10 = 非常不好','Last night: 0 = slept well; 10 = very poorly'],mood:['0 = 平稳舒适；10 = 非常困扰','0 = settled; 10 = very distressed'],tension:['0 = 很放松；10 = 非常紧绷','0 = relaxed; 10 = very tense'],fatigue:['0 = 精力充足；10 = 非常疲倦','0 = energetic; 10 = very tired'],focus:['0 = 很容易专注；10 = 非常难专注','0 = easy to focus; 10 = very difficult']};
