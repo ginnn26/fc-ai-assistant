@@ -14,6 +14,50 @@ const pairs=[
  ['头部','Head'],['头部与五官','Head & senses'],['胸口','Chest'],['胸口 · 心脏与呼吸','Chest · heart & breathing'],['腹部','Abdomen'],['腹部与泌尿','Abdomen & urinary topics'],['手臂','Arms & hands'],['手臂、手部与关节','Arms, hands & joints'],['腿脚','Legs & feet'],['腿部、脚部与关节','Legs, feet & joints'],['选择分类显示方式','Choose a browsing view'],['人体找音疗','Browse by body area'],['分类卡片','Topic cards'],['跟着身体，找到适合的音疗','Find audio by body area'],['点身体上的圆点或旁边的标签，再选择想浏览的分类。','Select a body point or label, then choose a related category.'],['柔和多彩的人体部位插画，标示头部、胸口、腹部、手臂和腿脚','Body illustration showing the head, chest, abdomen, arms and legs'],['选择身体部位','Choose a body area'],['选择下方分类，查看全部版本的音疗。','Choose a category below to see its audio versions.'],['载入中…','Loading…'],['请查看全部分类','Browse all categories'],['← 重新选择身体部位','← Choose another body area'],['人体图示用于按部位浏览分类','Explore categories by body area'],['全身与生活主题','Whole-body & everyday themes'],['也可以从这些主题开始','Or start with a theme'],['情绪、睡眠、能量与全身照顾，直接点选即可。','Explore emotion, sleep, energy and whole-body care.'],['人体图暂未载入','Body illustration unavailable'],
  ['顾客体验分享','Customer experiences'],['查看 Facebook 原帖','View original Facebook post'],['观看示范视频','Watch the demonstration'],['研究参考','Research background'],['阅读研究','Read the study'],['阅读综述','Read the review'],['关于 Frequency Clinic','About Frequency Clinic'],['重要说明','Important information'],['个人体验','Personal experience'],['首页','Home'],['我的音疗','My audio'],['每日身心指南','Daily wellbeing guide'],['七色自我探索','Seven-colour reflection (Chinese)'],['会员方案','Membership plans'],['暖心聊聊','Care Chat'],['会员社区','Community'],['更多','More'],['我的账户','My account'],['退出','Sign out'],['上一首','previous'],['下一首','next'],
  ['首页','Home'],['欢迎回来','Welcome back'],['我的个人资料','My profile'],['今天，想听什么？','What would you like to hear today?'],['订阅会员','Subscription membership'],['长期／私人会员','Long-term / private membership'],['免费试用','Free trial'],['适用于月度、半年及年度方案。','For monthly, half-year and annual plans.'],['进入与你的长期或私人方案对应的音疗库。','Open the library included with your long-term or private plan.'],['首次体验，从试用音疗库开始。','New here? Start with the trial audio library.'],['进入订阅会员音疗库','Open subscription audio library'],['进入长期／私人音疗库','Open long-term / private audio library'],['进入免费试用音疗库','Open trial audio library'],['正在核对会员权限 · Checking…','Checking membership access…'],['未开通此入口 · Not included','Not included'],['可进入 · Available','Available'],['请使用付费会员入口 · Use your paid entrance','Use your paid membership entrance'],['无法进入？请先确认登录账号及会员方案是否正确。','Cannot open a library? Check your sign-in account and membership plan.'],['进入你的会员音疗库，可搜索名称、按主题分类，或筛选 Intensive 集中版、Smooth 平稳版和 BGM 音乐版。点击封面或标题即可播放。','Open your membership library. Search by name or topic, or filter Intensive, Smooth and BGM. Select a cover or title to play.'],
+ ["免费身心状态评估", "Free mind–body wellbeing check-in"],
+ ["从情绪、睡眠到身体感受，整理最近两周的状态。", "Reflect on your emotions, sleep and physical comfort over the past two weeks."],
+ ["约 5–8 分钟，完成后即可查看六个观察方向、日常照顾建议及可选音疗主题。", "In about 5–8 minutes, explore six areas, everyday self-care ideas and optional listening themes."],
+ ["无需等待人工回复，也不用 WhatsApp 索取报告。", "Your report is available immediately, without waiting for a reply or requesting it on WhatsApp."],
+ ["开始评估", "Begin your check-in"],
+ ["先看清感受，再选择下一步", "Understand your feelings, then choose a next step"],
+ ["有时很难说清自己是累了、睡不好，还是最近承受了太多。", "It can be hard to tell whether you are tired, sleeping poorly, or carrying too much lately."],
+ ["这份自评把你的回答整理成六个观察方向：", "This check-in organizes your responses into six areas:"],
+ ["情绪与心理感受", "Emotional wellbeing"],
+ ["紧张相关的身体反应", "Tension-related physical responses"],
+ ["睡眠与日常节奏", "Sleep and daily rhythms"],
+ ["身体不适", "Physical discomfort"],
+ ["饮食与生活影响", "Food and everyday influences"],
+ ["整体主观感受", "Overall personal wellbeing"],
+ ["回顾最近两周，按自己的真实感受回答。没有标准答案，也不需要刻意提高或降低分数。", "Answer honestly about the past two weeks. There are no right answers, and no need to raise or lower your scores."],
+ ["你的自动报告包括：", "Your automatic report includes:"],
+ ["六个部分的平均分与计算说明", "Average scores for six areas and how they are calculated"],
+ ["本次相对较突出的感受", "Feelings that stand out in this check-in"],
+ ["适合尝试的日常照顾建议", "Everyday self-care ideas to try"],
+ ["可选的 FC 聆听主题", "Optional FC listening themes"],
+ ["经你单独同意后，加入 AI 补充解读", "Additional AI explanation only with your separate consent"],
+ ["分数用于整理自述感受，不用于诊断疾病、推断病因或判断神经系统损伤。", "Scores organize your self-reported feelings. They do not diagnose conditions, identify causes or assess nervous system damage."],
+ ["给想了解自己的你", "For those who want to understand themselves"],
+ ["适合希望梳理日常情绪、睡眠、压力感受与生活节奏的成年人。", "For adults who want to reflect on everyday emotions, sleep, stress and daily rhythms."],
+ ["37 项自评，约 5–8 分钟；背景问题可选填。血压没有测量或不确定时，可以如实选择“不确定”。", "37 reflection items, about 5–8 minutes; background questions are optional. If you have not measured your blood pressure or are unsure, choose “Not sure”."],
+ ["如有急性胸痛、严重呼吸困难或其他紧急情况，请先寻求医疗帮助，不要等待完成问卷。", "For acute chest pain, severe breathing difficulties or another emergency, seek medical help first. Do not wait to complete this questionnaire."],
+ ["即时报告，清楚呈现", "An immediate, clear report"],
+ ["提交后，系统按固定规则计算六个部分的分数，直接在页面显示报告，无需等待治疗师逐份处理。", "After submission, fixed rules calculate scores for six areas and display your report directly, without waiting for a therapist to process it."],
+ ["AI 补充说明由你单独选择是否开启。开启后，系统只发送计算后的分数及固定选项标签给 OpenAI，不发送姓名、联系方式或自由填写的背景文字。", "You choose separately whether to enable additional AI explanation. If enabled, only calculated scores and fixed-choice labels go to OpenAI. Your name, contact details and freely written background are not sent."],
+ ["AI 暂时无法回应时，固定规则报告仍可查看；AI 不会改动你的分数。", "If AI is unavailable, the fixed-rule report is still available. AI does not change your scores."],
+ ["报告由你掌握", "Your report stays in your hands"],
+ ["完成后即可查看，并可打印或保存为 PDF。报告无需通过 WhatsApp 领取，也不会自动发给治疗师。", "View your report immediately, then print or save it as a PDF. There is no need to request it on WhatsApp, and it is not automatically sent to a therapist."],
+ ["若希望进一步交流，你可以自行联系 FC 团队并选择分享哪些内容。", "For further discussion, you may contact the FC team and choose what to share."],
+ ["这是一份日常身心觉察工具，不是经过临床验证的量表，也不能替代医生的诊断、检查或治疗。", "This tool supports everyday wellbeing awareness. It is not a clinically validated scale and cannot replace medical diagnosis, examination or treatment."],
+ ["从了解此刻的自己开始。", "Start by noticing yourself today."],
+ ["按自己的节奏，带走一个照顾自己的小方向。", "Go at your own pace, and take a small step towards caring for yourself."],
+ ["开始评估", "Begin your check-in"],
+ ["从这里开始", "Start here"],
+ ["其他会员", "Other members"],
+ ["消息", "Messages"],
+ ["个人资料", "Profile"],
+ ["账户设置", "Account settings"],
+ ["我的每日身心指南 · My Daily Guide", "My daily wellbeing guide"],
+ ["音疗资料与研究 · 点击展开", "Audio information & research · expand"],
  ['选择','Select '],['查看','View '],['播放','Play '],['最近播放：','Last played: ']
 ];
 const exact=new Map();for(const[z,e]of pairs){exact.set(z,[z,e]);exact.set(e,[z,e]);exact.set(z+' · '+e,[z,e]);exact.set(e+' · '+z,[z,e]);exact.set(z+' '+e,[z,e]);exact.set(z+'\n'+e,[z,e]);}
@@ -72,8 +116,10 @@ window.FC_I18N={get:()=>lang,set,value:translate,assign,attr,prepare};
 window.addEventListener('fc:language',e=>{if(['zh','en'].includes(e.detail?.language)&&lang!==e.detail.language){lang=e.detail.language;paint();}});
 const style=document.createElement('style');style.id='fc-one-language-style';style.textContent=`html[data-fc-language="en"] [data-fc-only="zh"],html[data-fc-language="en"] [data-fc-block="zh"],html[data-fc-language="zh"] [data-fc-only="en"],html[data-fc-language="zh"] [data-fc-block="en"]{display:none!important}html[data-fc-language="en"] .fc-outline-zh,html[data-fc-language="zh"] .fc-outline-en{display:none!important}.fcl-category-en,.fcb-option-copy>small:not(.fcb-option-count),.fcb-body-label>span{display:none!important}html[data-fc-language="zh"] .fcb-region-en{display:none!important}#fc-language-switch{box-sizing:border-box;display:flex;align-items:center;justify-content:flex-end;padding:9px 18px;gap:12px;background:#f7f8f2;color:#254f43;font:15px/1.5 Arial,"Microsoft YaHei",sans-serif}#fc-language-switch button{min-height:42px;border:1px solid #b7c9bc;background:white;color:#254f43;padding:8px 17px;border-radius:22px;font:inherit;cursor:pointer}#fc-language-switch button:focus-visible{outline:3px solid #ba7d35;outline-offset:3px}`;document.head.append(style);paint();
 function schoolCopy(){
+ if(location.pathname==='/course/fc-daily-guide-pilot'||(location.pathname==='/path-player'&&new URL(location.href).searchParams.get('courseid')==='fc-daily-guide-pilot')){const title=lang==='en'?'FC Daily Wellbeing Guide':'FC 每日身心指南';if(document.title!==title)document.title=title;}
+ if(location.pathname==='/course/assessment'){const title=lang==='en'?'FC Personal Wellbeing Check-in':'免费身心状态评估';if(document.title!==title)document.title=title;}
  const nav=document.getElementById('section_1564405797906_0');
- const roots=[nav];if(location.pathname==='/start')roots.push(document.getElementById('history_1758239268946_738'));
+ const roots=[nav];if(location.pathname==='/course/assessment')roots.push(document.querySelector('#sectionsWrapper,.sectionsWrapper'));if(location.pathname==='/ai-assustant')roots.push(document.getElementById('fc-care-embed'),document.querySelector('summary'));if(location.pathname==='/start')roots.push(document.getElementById('history_1758239268946_738'));
  for(const root of roots){if(!root)continue;const walker=document.createTreeWalker(root,4);let n;while(n=walker.nextNode()){
   if(n.parentElement.closest('script,style,#fc-testimonial-reward,[data-fc-copy-root]'))continue;
   const raw=n.textContent,t=raw.trim();if(texts.has(n)&&raw===value(texts.get(n),lang))continue;
@@ -84,7 +130,7 @@ function schoolCopy(){
   const walker=document.createTreeWalker(home,4);let n;while(n=walker.nextNode())if(!n.parentElement.closest('script,style')){const raw=n.textContent;if(/[\u3400-\u9fff]/.test(raw)&&exact.has(raw.trim())){if(n.parentElement.tagName==='P'&&n.parentElement.closest('#fcp-themes'))n.parentElement.hidden=true;else n.textContent=value(raw,'en');}}
  }
 }
-function mount(){schoolCopy();const player=location.pathname==='/path-player'&&['sound-healing','private-soundhealing','trial-soundhealing'].includes(new URL(location.href).searchParams.get('courseid')),detail=location.pathname.startsWith('/detail-'),library=location.pathname.startsWith('/courseui-');if(!player&&!detail&&!library)return;
+function mount(){schoolCopy();const legacy=document.getElementById('el_1761504169559_346');if(location.pathname==='/courseui-private'&&legacy)prepare(legacy);if(location.pathname==='/course/assessment'&&!document.getElementById('fc-language-switch')){const title=document.getElementById('el_1771027075771_355');if(title){const bar=document.createElement('div');bar.id='fc-language-switch';const button=document.createElement('button');button.type='button';button.onclick=()=>set(lang==='zh'?'en':'zh');bar.append(button);title.before(bar);paint();}}const player=location.pathname==='/path-player'&&['sound-healing','private-soundhealing','trial-soundhealing'].includes(new URL(location.href).searchParams.get('courseid')),detail=location.pathname.startsWith('/detail-'),library=location.pathname.startsWith('/courseui-');if(!player&&!detail&&!library)return;
  const target=player?document.getElementById('fc-player-tools'):detail?document.getElementById('el_1761234391437_607'):document.getElementById('fc-library');if(!target)return;
  if(!document.getElementById('fc-language-switch')){const bar=document.createElement('div');bar.id='fc-language-switch';const button=document.createElement('button');button.type='button';button.onclick=()=>set(lang==='zh'?'en':'zh');bar.append(button);target.before(bar);paint();}
  if(detail){prepare(target);const title=document.getElementById('el_1761234376531_579');if(title&&!title.hasAttribute('data-fc-language-prepared'))prepare(title);const intro=document.getElementById('el_1761234367074_567');if(intro&&!intro.hasAttribute('data-fc-language-prepared'))prepare(intro);const extra=document.getElementById('el_1791992999937_354');if(extra&&!extra.hasAttribute('data-fc-language-prepared'))prepare(extra);}
@@ -93,5 +139,6 @@ function mount(){schoolCopy();const player=location.pathname==='/path-player'&&[
  if(library){document.querySelectorAll('.sectionsWrapper>section,#sectionsWrapper>section').forEach(section=>{if(section.contains(target)||section===nav||section.querySelector('form,input,textarea'))return;prepare(section);});}
 }
 style.textContent+='@media(min-width:1000px){html[data-fc-language="en"] #section_1564405797906_0 .lw-topbar-menu,html[data-fc-language="en"] #section_1564405797906_0 .lw-topbar-menu a,html[data-fc-language="en"] #section_1564405797906_0 .lw-topbar-menu span{font-size:15px!important}}';
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();setInterval(mount,1500);
+function ready(){mount();new MutationObserver(schoolCopy).observe(document.body,{childList:true,subtree:true});}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready,{once:true});else ready();setInterval(mount,1500);
 })();
