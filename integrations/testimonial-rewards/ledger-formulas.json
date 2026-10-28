@@ -1,0 +1,143 @@
+[
+  {
+    "updateCells": {
+      "start": {
+        "sheetId": 870281,
+        "rowIndex": 5,
+        "columnIndex": 0
+      },
+      "rows": [
+        {
+          "values": [
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {
+              "userEnteredValue": {
+                "formulaValue": "=IF(B6=\"\",\"\",IFERROR(VLOOKUP(B6,Members!$A$6:$C$1000,2,FALSE),\"UNKNOWN MEMBER\"))"
+              }
+            },
+            {
+              "userEnteredValue": {
+                "formulaValue": "=IF(B6=\"\",\"\",IFERROR(VLOOKUP(B6,Members!$A$6:$C$1000,3,FALSE),\"\"))"
+              }
+            },
+            {
+              "userEnteredValue": {
+                "formulaValue": "=IF(OR(B6=\"\",NOT(ISNUMBER(G6)),NOT(ISNUMBER(H6))),\"\",B6&\"|\"&TEXT(G6,\"yyyy-mm-dd\")&\"|\"&TEXT(H6,\"yyyy-mm-dd\"))"
+              }
+            },
+            {
+              "userEnteredValue": {
+                "formulaValue": "=IF(A6=\"\",\"\",TEXTJOIN(\"; \",TRUE,IF(COUNTIF($A$6:$A$305,A6)<>1,\"Duplicate review ID\",\"\"),IF(COUNTIF(Members!$A$6:$A$1000,B6)<>1,\"Check member ID\",\"\"),IF(OR(C6=\"\",D6=\"\",E6=\"\"),\"Need audio and original comment evidence\",\"\"),IF(AND(E6<>\"\",COUNTIF($E$6:$E$305,E6)<>1),\"Duplicate original comment\",\"\"),IF(OR(NOT(ISNUMBER(F6)),NOT(ISNUMBER(G6)),NOT(ISNUMBER(H6)),H6<G6,F6<G6,F6>H6),\"Check sharing / annual term dates\",\"\"),IF(AND(L6=\"Approved\",OR(I6<>\"Yes\",J6<>\"Yes\",K6<>\"Yes\",M6=\"\",NOT(ISNUMBER(N6)))),\"Approval verification incomplete\",\"\")))"
+              }
+            },
+            {
+              "userEnteredValue": {
+                "formulaValue": "=IF(A6=\"\",\"\",IF(AND(L6=\"Approved\",S6=\"\",I6=\"Yes\",J6=\"Yes\",K6=\"Yes\",M6<>\"\",ISNUMBER(N6)),\"Yes\",\"No\"))"
+              }
+            },
+            {
+              "userEnteredValue": {
+                "formulaValue": "=IF(OR(A6=\"\",B6=\"\",NOT(ISNUMBER(F6))),\"\",COUNTIFS($B$6:$B$305,B6,$F$6:$F$305,F6))"
+              }
+            },
+            {
+              "userEnteredValue": {
+                "formulaValue": "=IF(A6=\"\",\"\",IF(S6<>\"\",\"Resolve record checks\",IF(T6=\"Yes\",\"Verified · accumulate; redeem after paid renewal\",IF(OR(L6=\"Rejected\",L6=\"Cancelled\"),\"No reward\",\"Staff verification required\"))))"
+              }
+            }
+          ]
+        }
+      ],
+      "fields": "userEnteredValue"
+    }
+  },
+  {
+    "updateCells": {
+      "start": {
+        "sheetId": 870282,
+        "rowIndex": 5,
+        "columnIndex": 0
+      },
+      "rows": [
+        {
+          "values": [
+            {},
+            {},
+            {},
+            {},
+            {
+              "userEnteredValue": {
+                "formulaValue": "=IF(W6=\"\",\"\",COUNTIFS('Testimonial Reviews'!$R$6:$R$305,W6,'Testimonial Reviews'!$T$6:$T$305,\"Yes\"))"
+              }
+            },
+            {
+              "userEnteredValue": {
+                "formulaValue": "=IF(E6=\"\",\"\",MIN(15,E6))"
+              }
+            },
+            {
+              "userEnteredValue": {
+                "formulaValue": "=IF(E6=\"\",\"\",IF(E6>15,\"15-day cap; more comments welcome\",\"Up to 15 days per annual term\"))"
+              }
+            },
+            {},
+            {
+              "userEnteredValue": {
+                "formulaValue": "=IF(A6=\"\",\"\",IF(H6=\"\",\"Renewal required\",IF(AND(COUNTIFS(Payments!$A$6:$A$1000,H6,Payments!$B$6:$B$1000,B6,Payments!$F$6:$F$1000,\"Verified\",Payments!$D$6:$D$1000,\">0\",Payments!$G$6:$G$1000,\">\"&D6)=1,COUNTIF(Payments!$A$6:$A$1000,H6)=1),\"Verified payment\",\"Check payment / coverage\")))"
+              }
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {
+              "userEnteredValue": {
+                "formulaValue": "=IF(A6=\"\",\"\",TEXTJOIN(\"; \",TRUE,IF(COUNTIF($A$6:$A$305,A6)<>1,\"Duplicate redemption ID\",\"\"),IF(COUNTIF(Members!$A$6:$A$1000,B6)<>1,\"Check member ID\",\"\"),IF(OR(NOT(ISNUMBER(C6)),NOT(ISNUMBER(D6)),D6<C6),\"Check original annual term\",\"\"),IF(AND(W6<>\"\",COUNTIFS($W$6:$W$305,W6,$O$6:$O$305,\"<>Cancelled\")>1,O6<>\"Cancelled\"),\"Duplicate annual-term claim\",\"\"),IF(AND(H6<>\"\",COUNTIFS($H$6:$H$305,H6,$O$6:$O$305,\"<>Cancelled\")>1,O6<>\"Cancelled\"),\"Renewal payment reused\",\"\"),IF(I6<>\"Verified payment\",\"Paid renewal not verified\",\"\"),IF(L6<>\"Yes\",\"Verify paid renewal and annual term\",\"\"),IF(OR(K6=\"\",M6<>\"Approved\"),\"Staff approval required\",\"\"),IF(OR(NOT(ISNUMBER(N6)),N6<1,N6>F6,N6>15,N6<>INT(N6)),\"Check approved days\",\"\"),IF(NOT(ISNUMBER(J6)),\"Verify actual FC access end before reward\",\"\")))"
+              }
+            },
+            {
+              "userEnteredValue": {
+                "formulaValue": "=IF(A6=\"\",\"\",IF(O6=\"Cancelled\",\"Cancelled · no fulfilment\",IF(S6<>\"\",\"HOLD · \"&S6,IF(O6<>\"Applied\",\"Ready for manual application\",IF(AND(ISNUMBER(P6),ISNUMBER(Q6),Q6=J6+N6,R6<>\"\"),\"Applied · evidence recorded\",\"HOLD · check applied date, FC end date and action evidence\")))))"
+              }
+            },
+            {
+              "userEnteredValue": {
+                "formulaValue": "=IF(B6=\"\",\"\",IFERROR(VLOOKUP(B6,Members!$A$6:$C$1000,2,FALSE),\"UNKNOWN MEMBER\"))"
+              }
+            },
+            {
+              "userEnteredValue": {
+                "formulaValue": "=IF(B6=\"\",\"\",IFERROR(VLOOKUP(B6,Members!$A$6:$C$1000,3,FALSE),\"\"))"
+              }
+            },
+            {
+              "userEnteredValue": {
+                "formulaValue": "=IF(OR(B6=\"\",NOT(ISNUMBER(C6)),NOT(ISNUMBER(D6))),\"\",B6&\"|\"&TEXT(C6,\"yyyy-mm-dd\")&\"|\"&TEXT(D6,\"yyyy-mm-dd\"))"
+              }
+            }
+          ]
+        }
+      ],
+      "fields": "userEnteredValue"
+    }
+  }
+]
