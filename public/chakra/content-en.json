@@ -1,0 +1,88 @@
+{
+  "version":"FC Chakra Reflection v0.8 EN",
+  "date":"2026-11-03",
+  "chakras":[
+    {"name":"Root chakra","en":"Root","sanskrit":"Muladhara","color":"#BC4051","theme":"Stability · Safety · Everyday foundations","facets":["Feeling grounded","Daily rhythm","Sources of support"],"questions":[
+      "When things feel uncertain, I can identify one small thing I can deal with now.",
+      "I can make a little time to feel at ease in familiar surroundings.",
+      "I keep some basic regularity in meals, rest or everyday tasks.",
+      "When there is a lot to do, I can distinguish what must be done today from what can wait.",
+      "When practical difficulties arise, I know whom I can ask for information or help.",
+      "I notice when my body needs rest and make a small adjustment.",
+      "Even when no new problem has arisen, I keep worrying that my everyday security will be lost.",
+      "After my schedule changes, I find it difficult to regain my daily rhythm.",
+      "To feel secure, I repeatedly check the same thing and find it hard to stop."
+    ],"pressure":"uncertainty, repeated checking or a disrupted routine","practice":["Sit comfortably, notice your feet touching the floor and name five things you can see. Breathe naturally.","Write down one thing you can deal with today and someone you could ask for help. Choose just one next step.","Set aside a realistic time to rest tonight and note whether you managed it."],"reflect":"What practical support would help me feel a little more grounded now?","audioTheme":"Safety, grounding and relaxation","context":"When work plans change or everyday tasks feel worrying, start with one manageable action.","checkin":"What helped me feel a little more grounded today?"},
+    {"name":"Sacral chakra","en":"Sacral","sanskrit":"Svadhisthana","color":"#C76A26","theme":"Feelings · Creativity · Everyday enjoyment","facets":["Recognising feelings","Everyday enjoyment","Flexibility and creativity"],"questions":[
+      "I can name one or two feelings I am having without immediately judging them as good or bad.",
+      "When my feelings change, I allow myself to pause before deciding how to respond.",
+      "I can find some enjoyment in an ordinary activity, such as cooking, listening to music or looking at a view.",
+      "I make a little room for activities I enjoy without having to prove they are useful first.",
+      "When an original plan does not fit, I am willing to try another approach.",
+      "I can express some of my feelings through writing, colour, movement or another form.",
+      "I suppress uncomfortable feelings and only notice them when they become hard to bear.",
+      "I find it difficult to feel interested in everyday activities I used to enjoy.",
+      "To escape uncomfortable feelings, I keep seeking stimulation and end up feeling more tired."
+    ],"pressure":"suppressed feelings, reduced enjoyment or continually seeking stimulation","practice":["Use three words to describe how you feel. You do not need to explain or immediately change it.","Draw lines in any colours for five minutes. This is an expression exercise; colours are not used to diagnose illness.","Plan one enjoyable activity lasting less than ten minutes, with no performance target."],"reflect":"If I did not have to perform well, how would I like to express myself today?","audioTheme":"Emotional support and ease","context":"Make space for feelings and rest outside work. Use colour or words to express how you feel now.","checkin":"What did I feel today? Did I allow myself a small moment of enjoyment?"},
+    {"name":"Solar plexus chakra","en":"Solar Plexus","sanskrit":"Manipura","color":"#A47A12","theme":"Autonomy · Action · Self-affirmation","facets":["Personal choice","Taking action","Self-affirmation"],"questions":[
+      "Within my abilities, I can make a small decision for myself.",
+      "When others offer opinions, I can distinguish which advice fits my situation.",
+      "I can break a goal into a small step I can start today.",
+      "When I experience a temporary setback, I am willing to adjust my approach rather than give up completely.",
+      "After finishing something, I can acknowledge my effort or contribution.",
+      "I can set reasonable boundaries without needing everyone's agreement every time.",
+      "When a small task goes wrong, I judge my whole self negatively.",
+      "To prove myself, I often take on more than I can currently manage.",
+      "When others do things differently, I find it difficult to let go of the urge to control the outcome."
+    ],"pressure":"self-criticism, taking on too much or trying to control outcomes","practice":["Write down one choice for today: what can you decide, and what needs discussion?","Choose a goal and work on it for five minutes. Record the small step you completed without judging your personal worth.","Practise a boundary: 'What I can do now is ... The rest needs another arrangement.'"],"reflect":"What excessive expectation can I release while still taking responsibility for myself?","audioTheme":"Confidence, motivation and gentle relaxation","context":"Break a work goal into a small step. Practise personal choice and reasonable boundaries.","checkin":"What small step did I complete today? Did I take on more than I could manage?"},
+    {"name":"Heart chakra","en":"Heart","sanskrit":"Anahata","color":"#2F8467","theme":"Care · Connection · Relationship boundaries","facets":["Self-kindness","Supportive connection","Care and boundaries"],"questions":[
+      "When I make a mistake or feel tired, I can speak to myself more gently.",
+      "I can acknowledge my needs without treating self-care as selfish.",
+      "I can share an honest account of how I am doing with someone I trust.",
+      "When someone offers help, I can choose to accept some support.",
+      "When caring for others, I also consider my current time and energy.",
+      "During a disagreement, I can try to understand the other person while keeping my own boundaries.",
+      "To avoid disappointing others, I often ignore my own needs.",
+      "Even with people around me, I find it hard to feel connected.",
+      "Unpleasant experiences in relationships keep replaying in my mind and affect present interactions."
+    ],"pressure":"over-giving, disconnection or repeatedly dwelling on relationship difficulties","practice":["Write yourself the same kind words you would offer a friend today.","Send a simple greeting to someone you trust. You decide whether to share more.","List one thing you are willing to give and one boundary you currently need."],"reflect":"What kind of care looks after both others and me?","audioTheme":"Self-care and relaxation around relationships","context":"In family or team relationships, consider your own needs as well as other people's feelings.","checkin":"How did I care for myself today, and how did I give or accept support?"},
+    {"name":"Throat chakra","en":"Throat","sanskrit":"Vishuddha","color":"#287DA4","theme":"Expression · Listening · Honest communication","facets":["Expressing needs","Listening to understand","Consistent communication"],"questions":[
+      "When needed, I can make a clear, specific request.",
+      "In a safe and appropriate setting, I can express a different opinion.",
+      "When listening, I am willing to check what the other person means before responding.",
+      "I can leave space in a conversation rather than rushing to fill every silence.",
+      "My promises generally match what I can currently do.",
+      "When speaking directly is difficult, I can choose writing or another suitable way to express myself.",
+      "I often hold back important words and continue to regret it afterwards.",
+      "In a tense conversation, I interrupt or rush to defend myself.",
+      "To please others, I agree to things I do not really want to agree to."
+    ],"pressure":"holding back, responding too quickly or agreeing against your wishes","practice":["Write a specific request: 'When ... happens, I feel ... and I would like ...'.","In an everyday conversation, summarise the other person's point before sharing your view.","Before accepting a new request, try: 'I need to check my schedule and get back to you.'"],"reflect":"Which important words could I express more clearly and gently?","audioTheme":"Relaxation before communication and processing feelings","context":"Before an important conversation, write down your needs, the facts and one specific request.","checkin":"What did I express more clearly today?"},
+    {"name":"Third eye chakra","en":"Third Eye","sanskrit":"Ajna","color":"#5856A5","theme":"Awareness · Clarity · Reflection","facets":["Present awareness","Clear thinking","Open reflection"],"questions":[
+      "I can notice when my thoughts are influencing how I feel.",
+      "When distracted, I can gently bring my attention back to what I am doing.",
+      "When something troubles me, I can separate known facts from my assumptions.",
+      "When there is too much information, I can choose the one thing that needs attention now.",
+      "When new evidence appears, I am willing to reconsider my earlier judgement.",
+      "I can consider my inner feelings while also checking my thoughts against the actual situation.",
+      "I think about the same problem repeatedly but find it hard to take a next step.",
+      "After receiving too much information, my thoughts feel crowded and decisions become difficult.",
+      "I quickly treat my assumptions as facts and then find it difficult to change my view."
+    ],"pressure":"repetitive thinking, information overload or premature conclusions","practice":["Make two columns on paper: 'Facts I know' and 'Assumptions I am making'.","Turn off one source of notifications for ten minutes and focus on a small task.","When a judgement feels strong, ask: 'What other reasonable explanation could there be?'"],"reflect":"Do I need more facts, or a quiet moment first?","audioTheme":"Less overthinking, clarity and relaxation","context":"When handling work information, separate facts from assumptions and choose one task to complete first.","checkin":"When did my thoughts feel clearer today? What led to repetitive thinking?"},
+    {"name":"Crown chakra","en":"Crown","sanskrit":"Sahasrara","color":"#8753A3","theme":"Meaning · Values · Open connection","facets":["Values and direction","Space to pause","Openness and connection"],"questions":[
+      "I can name one recent small thing that felt meaningful to me.",
+      "Some of my everyday choices reflect the values I care about.",
+      "I allow myself a quiet pause even when it produces no clear output.",
+      "When something has no answer yet, I can allow some uncertainty.",
+      "I am willing to respect ways of living or beliefs that differ from my own.",
+      "I can feel connected through people, nature, creativity or faith in any form that fits me.",
+      "Everyday life feels like merely coping, and I struggle to see personal meaning in it.",
+      "In searching for a perfect answer, I neglect the everyday things that need attention.",
+      "When I encounter different views, I immediately feel threatened and find it hard to learn more."
+    ],"pressure":"reduced meaning, pressure to find answers or tension around different views","practice":["Write down three important values. Circle one you could express through a small action today.","Allow yourself two quiet minutes, breathing naturally without seeking an unusual experience.","Recall a moment of connection with a person, nature or creativity. Religious belief is not required to answer."],"reflect":"What small action today would bring my life closer to what matters to me?","audioTheme":"Quiet reflection and everyday relaxation","context":"Recall a small action that fits your values. Beliefs and occupations are not ranked.","checkin":"What felt meaningful or connecting today?"}
+  ],
+  "sources":[
+    {"name":"Eclectic Energies — questionnaire structure","url":"https://www.eclecticenergies.com/nederlands/chakras/chakratest","note":"Interaction format informed the design; source questions, scoring and openness labels were not copied."},
+    {"name":"Cleveland Clinic — chakra background and scientific limits","url":"https://health.clevelandclinic.org/chakras","note":"Background on modern seven-colour associations and traditional concepts. This tool does not measure bodily energy."},
+    {"name":"Seventh Life Path — longer questionnaire format","url":"https://seventhlifepath.com/chakra-test/","note":"A reference for grouping a longer questionnaire by theme. The number of questions does not establish validity."}
+  ]
+}
