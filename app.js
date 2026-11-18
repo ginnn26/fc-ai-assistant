@@ -34,6 +34,13 @@ app.get("/health", (req, res) => {
   });
 });
 
+// Separate dependency readiness from process health: a provider outage must
+// not restart the otherwise usable assessment, member or rewards service.
+app.get('/service-readiness', async (req, res) => {
+  const result = await require('./services/openai').checkProviderReadiness();
+  res.status(result.available ? 200 : 503).json(result);
+});
+
 app.get("/", (req, res) => {
   res.json({
     status: "FC AI Assistant backend is running",

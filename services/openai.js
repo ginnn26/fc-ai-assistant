@@ -68,8 +68,19 @@ async function transcribeCareVoice(audioBuffer) {
   return transcription.text;
 }
 
+let readiness;
+function checkProviderReadiness() {
+  readiness ||= require('./provider-readiness').createProviderReadiness({
+    probe: () => getClient().responses.inputTokens.count({
+      model: 'gpt-5.4-mini', input: 'FC connection check',
+    }, { timeout: 15000, maxRetries: 0 }).withResponse(),
+  });
+  return readiness();
+}
+
 module.exports = {
   askOpenAI,
   transcribeAudio,
   transcribeCareVoice,
+  checkProviderReadiness,
 };
