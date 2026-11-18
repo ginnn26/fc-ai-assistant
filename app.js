@@ -40,6 +40,10 @@ app.get('/service-readiness', async (req, res) => {
   const result = await require('./services/openai').checkProviderReadiness();
   res.status(result.available ? 200 : 503).json(result);
 });
+app.get('/service-scope-check', async (req, res) => {
+  const result = await require('./services/openai').verifyProviderScope();
+  res.status(result.verified ? 200 : 503).json(result);
+});
 
 app.get("/", (req, res) => {
   res.json({

@@ -78,9 +78,28 @@ function checkProviderReadiness() {
   return readiness();
 }
 
+// Owner-approved one-off free scope verification. This does not set client
+// defaults or affect any member conversation/transcription request.
+let scopeVerification;
+function verifyProviderScope() {
+  return scopeVerification ||= (async () => {
+    try {
+      const data = await getClient().responses.inputTokens.count({
+        model: 'gpt-5.4-mini', input: 'FC scope check',
+      }, { timeout: 15000, maxRetries: 0, headers: {
+        'OpenAI-Organization': 'org-M1dOGyUrYU8XxnOPCwbCUEyv',
+        'OpenAI-Project': 'proj_otDNOM6iUKo268kkhejMw1Kb',
+      } });
+      const verified = Number.isInteger(data?.input_tokens) && data.input_tokens >= 0;
+      return { verified, check: 'free_scope_verification' };
+    } catch { return { verified: false, check: 'free_scope_verification' }; }
+  })();
+}
+
 module.exports = {
   askOpenAI,
   transcribeAudio,
   transcribeCareVoice,
   checkProviderReadiness,
+  verifyProviderScope,
 };

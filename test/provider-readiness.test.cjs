@@ -61,3 +61,21 @@ test('public readiness returns dependency status while process health stays inde
     assert.equal((await up.json()).available,true);
   } finally {provider.checkProviderReadiness=original;await new Promise(resolve=>server.close(resolve));}
 });
+
+test('one-off scope verification is cached and never changes normal client routing',async()=>{
+  const vm=require('node:vm'),fs=require('node:fs');let calls=0,clientOptions,requestOptions;
+  class FakeOpenAI {constructor(options){clientOptions=options;this.responses={inputTokens:{count:async(body,options)=>{
+    calls++;requestOptions=options;assert.equal(body.model,'gpt-5.4-mini');return {input_tokens:4};
+  }}};}}
+  const module={exports:{}};
+  vm.runInNewContext(fs.readFileSync(require.resolve('../services/openai'),'utf8'),{
+    module,require:name=>{assert.equal(name,'openai');return FakeOpenAI;},
+    process:{env:{OPENAI_API_KEY:'fictional-key-not-a-credential'}},Buffer,
+  });
+  const [a,b]=await Promise.all([module.exports.verifyProviderScope(),module.exports.verifyProviderScope()]);
+  assert.equal(a.verified,true);assert.equal(b.verified,true);assert.equal(calls,1);
+  assert.equal(clientOptions.organization,undefined);assert.equal(clientOptions.project,undefined);
+  assert.equal(requestOptions.headers['OpenAI-Organization'],'org-M1dOGyUrYU8XxnOPCwbCUEyv');
+  assert.equal(requestOptions.headers['OpenAI-Project'],'proj_otDNOM6iUKo268kkhejMw1Kb');
+  assert.doesNotMatch(JSON.stringify(a),/org-|proj_|fictional/);
+});
