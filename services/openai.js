@@ -75,7 +75,10 @@ function checkProviderReadiness() {
       model: 'gpt-5.4-mini', input: 'FC connection check',
     }, { timeout: 15000, maxRetries: 0 }).withResponse(),
   });
-  return readiness();
+  return readiness().then(result => ({ ...result,
+    billingRoutingPinned: process.env.OPENAI_ORG_ID === 'org-M1dOGyUrYU8XxnOPCwbCUEyv' &&
+      process.env.OPENAI_PROJECT_ID === 'proj_otDNOM6iUKo268kkhejMw1Kb',
+  }));
 }
 
 // Owner-approved one-off free scope verification. This does not set client
